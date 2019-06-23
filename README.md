@@ -149,7 +149,7 @@ http://nvdla.org/
 Acknowledgement
 @inproceeding{
 
-  girshick14CVPR,
+	girshick14CVPR,
   
 	Author = {Girshick, Ross and Donahue, Jeff and Darrell, Trevor and Malik, Jitendra},
   
