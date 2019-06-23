@@ -1,0 +1,28 @@
+CXX      = g++
+CXXFLAGS = -std=c++11 -g -lm -Werror `pkg-config --cflags --libs opencv` # 附加参数 pkg-config --cflags --libs opencv 包含opencv所有lib和include，可以在cmd中输入pkg-config --cflags --libs opencv查看
+#INC_PATH = -I /usr/local/include/  \
+#           -I /usr/local/include/opencv \
+#           -I /usr/local/include/opencv2                     # 头文件查找路径
+LIBS     =  -L /home/abcd/rcnn/sjtu_demo/project/rcnn/ \
+            -l caffe
+        #   -l opencv_core \
+        #   -l opencv_imgproc \
+        #   -l opencv_highgui \
+        #   -l opencv_imgcodecs                                  # 链接库查找地址
+SRCFILES = src/main_lite_v1.cpp                                # wildcard把 指定目录 ./ 下的所有后缀是cpp的文件全部展开。
+OBJS     = $(SRCFILES:.cpp=.o)                                 # OBJS将$(SRCS)下的.cpp文件转化为.o文件
+TARGET   = main                                                # 输出程序名称
+
+all default: $(TARGET)
+
+#$(TARGET): $(OBJS)
+#	$(CXX) $^ -o $@ $(INC_PATH) $(LIBS) 
+#
+#%.o : main.cpp
+#	$(CXX) -c $(CXXFLAGS) $< 
+$(TARGET): $(OBJS)
+	$(CXX) $<  $(CXXFLAGS) $(LIBS) -g -o $(TARGET) 
+
+clean:
+	rm -rf *.out *.o $(OBJS)
+

@@ -1,0 +1,4 @@
+File Name                                  Description
+main_v1_20180517.cpp                       2018.05.17 Submitted verion 1. All system components connected with Debug defines. Hyperparameters need to be optimized.
+main.cpp     
+read_txt.cpp                               Read the data in ../txt//.txt
