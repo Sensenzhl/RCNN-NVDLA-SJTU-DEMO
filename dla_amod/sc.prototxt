@@ -1,0 +1,1069 @@
+name: "AlexNet"
+state {
+  phase: TEST
+}
+debug_info: true
+layer {
+  name: "data"
+  type: "Data"
+  top: "data"
+  top: "label"
+  include {
+    phase: TEST
+  }
+  transform_param {
+    mirror: false
+    crop_size: 227
+    mean_file: "/home/scratch.yilinz_t19x/git/dla_amod/data/ilsvrc12/imagenet_mean.binaryproto"
+    force_int_mean: true
+  }
+  data_param {
+    source: "/home/scratch.yilinz_t19x/git/db/val_db0"
+    batch_size: 50
+    backend: LMDB
+  }
+}
+layer {
+  name: "data_convert0"
+  type: "Convertor"
+  bottom: "data"
+  top: "data"
+  convert_param {
+    to: INT
+    to_coef {
+      scale: 16858
+      shifter: 15
+      post_scale: 1
+      bits: 8
+    }
+    method: SIMPLE_RN
+    allow_saturate: true
+    dr_ratio: 0.3
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "conv1"
+  type: "Convolution"
+  bottom: "data"
+  top: "conv1"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 96
+    kernel_size: 11
+    stride: 4
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+    engine: SPLITC
+    bias_convert {
+      to: INT
+      to_coef {
+        scale: 147.6359938215559
+        shifter: 0
+        post_scale: 1
+        bits: 16
+      }
+      method: STD_RN
+      allow_saturate: false
+      dr_ratio: 0.4
+    }
+    input_mean: 0
+    output_truncat {
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 0
+        post_scale: 1
+        bits: 32
+      }
+      method: SIMPLE_RN
+      allow_saturate: true
+      dr_ratio: 0
+    }
+    weight_convert {
+      to: INT
+      to_coef {
+        scale: 286.9697618664577
+        shifter: 0
+        post_scale: 1
+        bits: 8
+      }
+      method: STD_RN
+      allow_saturate: false
+      dr_ratio: 0.98
+    }
+  }
+}
+layer {
+  name: "relu1"
+  type: "ReLU"
+  bottom: "conv1"
+  top: "relu1"
+}
+layer {
+  name: "relu1_convert0"
+  type: "Convertor"
+  bottom: "relu1"
+  top: "relu1"
+  convert_param {
+    to: INT
+    to_coef {
+      scale: 18357
+      shifter: 25
+      post_scale: 1
+      bits: 8
+    }
+    method: SIMPLE_RN
+    allow_saturate: true
+    dr_ratio: 0.3
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "norm1_convert_in0"
+  type: "Convertor"
+  bottom: "relu1"
+  top: "relu1"
+  convert_param {
+    to: INT
+    to_coef {
+      scale: 25307
+      shifter: 13
+      post_scale: 1
+      bits: 9
+    }
+    method: SIMPLE_RN
+    allow_saturate: true
+    dr_ratio: 0.1
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "norm1"
+  type: "NVLRN"
+  bottom: "relu1"
+  top: "norm1"
+  nv_lrn_param {
+    local_size: 5
+    alpha: 0.0001
+    beta: 0.75
+    norm_region: ACROSS_CHANNELS
+    k: 1
+    lut_param {
+      x_step_method: EXP_STEP
+      exp_x_shifter: -32
+      x_start: 0
+      x_end: 4294967296
+      y_start: 7094.2377531130414
+      y_end: 138166.23775311303
+      x_tbl_entry: 65
+      y_tbl_entry: 257
+      sym: NO_SYM
+      lut_convert {
+        to: INT
+        to_coef {
+          scale: 32767
+          shifter: 0
+          post_scale: 1
+          bits: 16
+        }
+        method: STD_RN
+        allow_saturate: false
+        dr_ratio: 0
+      }
+      priority: Y_TBL
+      overflow_priority: X_TBL
+      underflow_priority: X_TBL
+      interp_bits: 16
+      disable_y: false
+      x_overflow_slope: 0
+      x_overflow_shifter: 0
+      x_underflow_slope: 0
+      x_underflow_shifter: 0
+      y_overflow_slope: -2147483648
+      y_overflow_shifter: 72
+      y_underflow_slope: -2147483648
+      y_underflow_shifter: 69
+      pipe: INT
+      shifter: -4
+    }
+  }
+}
+layer {
+  name: "norm1_convert0"
+  type: "Convertor"
+  bottom: "norm1"
+  top: "norm1"
+  convert_param {
+    to: INT
+    to_coef {
+      scale: 16588
+      shifter: 27
+      post_scale: 1
+      bits: 8
+    }
+    method: SIMPLE_RN
+    allow_saturate: true
+    dr_ratio: 0.3
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "pool1"
+  type: "Pooling"
+  bottom: "norm1"
+  top: "pool1"
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 2
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "conv2"
+  type: "Convolution"
+  bottom: "pool1"
+  top: "conv2"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 256
+    pad: 2
+    kernel_size: 5
+    group: 2
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.1
+    }
+    engine: SPLITC
+    bias_convert {
+      to: INT
+      to_coef {
+        scale: 265.59132190752149
+        shifter: 0
+        post_scale: 1
+        bits: 16
+      }
+      method: STD_RN
+      allow_saturate: false
+      dr_ratio: 0.4
+    }
+    input_mean: 0
+    output_truncat {
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 0
+        post_scale: 1
+        bits: 32
+      }
+      method: SIMPLE_RN
+      allow_saturate: true
+      dr_ratio: 0
+    }
+    weight_convert {
+      to: INT
+      to_coef {
+        scale: 262.84411998001553
+        shifter: 0
+        post_scale: 1
+        bits: 8
+      }
+      method: STD_RN
+      allow_saturate: false
+      dr_ratio: 0.8
+    }
+  }
+}
+layer {
+  name: "relu2"
+  type: "ReLU"
+  bottom: "conv2"
+  top: "conv2"
+}
+layer {
+  name: "relu2_convert0"
+  type: "Convertor"
+  bottom: "conv2"
+  top: "conv2"
+  convert_param {
+    to: INT
+    to_coef {
+      scale: 17318
+      shifter: 24
+      post_scale: 1
+      bits: 8
+    }
+    method: SIMPLE_RN
+    allow_saturate: true
+    dr_ratio: 0.3
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "norm2_convert_in0"
+  type: "Convertor"
+  bottom: "conv2"
+  top: "conv2"
+  convert_param {
+    to: INT
+    to_coef {
+      scale: 29823
+      shifter: 13
+      post_scale: 1
+      bits: 9
+    }
+    method: SIMPLE_RN
+    allow_saturate: true
+    dr_ratio: 0.1
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "norm2"
+  type: "NVLRN"
+  bottom: "conv2"
+  top: "norm2"
+  nv_lrn_param {
+    local_size: 5
+    alpha: 0.0001
+    beta: 0.75
+    norm_region: ACROSS_CHANNELS
+    k: 1
+    lut_param {
+      x_step_method: EXP_STEP
+      exp_x_shifter: -32
+      x_start: 0
+      x_end: 4294967296
+      y_start: 499.17495655301633
+      y_end: 33267.174956553019
+      x_tbl_entry: 65
+      y_tbl_entry: 257
+      sym: NO_SYM
+      lut_convert {
+        to: INT
+        to_coef {
+          scale: 32767
+          shifter: 0
+          post_scale: 1
+          bits: 16
+        }
+        method: STD_RN
+        allow_saturate: false
+        dr_ratio: 0
+      }
+      priority: Y_TBL
+      overflow_priority: X_TBL
+      underflow_priority: X_TBL
+      interp_bits: 16
+      disable_y: false
+      x_overflow_slope: 0
+      x_overflow_shifter: 0
+      x_underflow_slope: 0
+      x_underflow_shifter: 0
+      y_overflow_slope: -2147483648
+      y_overflow_shifter: 67
+      y_underflow_slope: -2147483648
+      y_underflow_shifter: 69
+      pipe: INT
+      shifter: 0
+    }
+  }
+}
+layer {
+  name: "norm2_convert0"
+  type: "Convertor"
+  bottom: "norm2"
+  top: "norm2"
+  convert_param {
+    to: INT
+    to_coef {
+      scale: 20273
+      shifter: 29
+      post_scale: 1
+      bits: 8
+    }
+    method: SIMPLE_RN
+    allow_saturate: true
+    dr_ratio: 0.3
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "pool2"
+  type: "Pooling"
+  bottom: "norm2"
+  top: "pool2"
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 2
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "conv3"
+  type: "Convolution"
+  bottom: "pool2"
+  top: "conv3"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 384
+    pad: 1
+    kernel_size: 3
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+    engine: WINOGRAD
+    bias_convert {
+      to: INT
+      to_coef {
+        scale: 152.1007917802535
+        shifter: 0
+        post_scale: 1
+        bits: 16
+      }
+      method: STD_RN
+      allow_saturate: false
+      dr_ratio: 0.4
+    }
+    pra_feature_truncat {
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 2
+        post_scale: 1
+        bits: 8
+      }
+      method: SIMPLE_RN
+      allow_saturate: true
+      dr_ratio: 0
+    }
+    pra_weight_convert {
+      to: INT
+      to_coef {
+        scale: 492.66706912853437
+        shifter: 0
+        post_scale: 1
+        bits: 8
+      }
+      method: STD_RN
+      allow_saturate: false
+      dr_ratio: 0.98
+    }
+    input_mean: 0
+    output_truncat {
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 0
+        post_scale: 1
+        bits: 32
+      }
+      method: SIMPLE_RN
+      allow_saturate: true
+      dr_ratio: 0
+    }
+  }
+}
+layer {
+  name: "relu3"
+  type: "ReLU"
+  bottom: "conv3"
+  top: "conv3"
+}
+layer {
+  name: "relu3_convert0"
+  type: "Convertor"
+  bottom: "conv3"
+  top: "conv3"
+  convert_param {
+    to: INT
+    to_coef {
+      scale: 26617
+      shifter: 23
+      post_scale: 1
+      bits: 8
+    }
+    method: SIMPLE_RN
+    allow_saturate: true
+    dr_ratio: 0.3
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "conv4"
+  type: "Convolution"
+  bottom: "conv3"
+  top: "conv4"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 384
+    pad: 1
+    kernel_size: 3
+    group: 2
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.1
+    }
+    engine: WINOGRAD
+    bias_convert {
+      to: INT
+      to_coef {
+        scale: 63.354510289363624
+        shifter: 0
+        post_scale: 1
+        bits: 16
+      }
+      method: STD_RN
+      allow_saturate: false
+      dr_ratio: 0.4
+    }
+    pra_feature_truncat {
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 2
+        post_scale: 1
+        bits: 8
+      }
+      method: SIMPLE_RN
+      allow_saturate: true
+      dr_ratio: 0
+    }
+    pra_weight_convert {
+      to: INT
+      to_coef {
+        scale: 525.093751694403
+        shifter: 0
+        post_scale: 1
+        bits: 8
+      }
+      method: STD_RN
+      allow_saturate: false
+      dr_ratio: 0.8
+    }
+    input_mean: 0
+    output_truncat {
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 0
+        post_scale: 1
+        bits: 32
+      }
+      method: SIMPLE_RN
+      allow_saturate: true
+      dr_ratio: 0
+    }
+  }
+}
+layer {
+  name: "relu4"
+  type: "ReLU"
+  bottom: "conv4"
+  top: "conv4"
+}
+layer {
+  name: "relu4_convert0"
+  type: "Convertor"
+  bottom: "conv4"
+  top: "conv4"
+  convert_param {
+    to: INT
+    to_coef {
+      scale: 19044
+      shifter: 21
+      post_scale: 1
+      bits: 8
+    }
+    method: SIMPLE_RN
+    allow_saturate: true
+    dr_ratio: 0.3
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "conv5"
+  type: "Convolution"
+  bottom: "conv4"
+  top: "conv5"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 256
+    pad: 1
+    kernel_size: 3
+    group: 2
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.1
+    }
+    engine: WINOGRAD
+    bias_convert {
+      to: INT
+      to_coef {
+        scale: 48.328920941086956
+        shifter: 0
+        post_scale: 1
+        bits: 16
+      }
+      method: STD_RN
+      allow_saturate: false
+      dr_ratio: 0.4
+    }
+    pra_feature_truncat {
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 2
+        post_scale: 1
+        bits: 8
+      }
+      method: SIMPLE_RN
+      allow_saturate: true
+      dr_ratio: 0
+    }
+    pra_weight_convert {
+      to: INT
+      to_coef {
+        scale: 336.01702915348363
+        shifter: 0
+        post_scale: 1
+        bits: 8
+      }
+      method: STD_RN
+      allow_saturate: false
+      dr_ratio: 0.8
+    }
+    input_mean: 0
+    output_truncat {
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 0
+        post_scale: 1
+        bits: 32
+      }
+      method: SIMPLE_RN
+      allow_saturate: true
+      dr_ratio: 0
+    }
+  }
+}
+layer {
+  name: "relu5"
+  type: "ReLU"
+  bottom: "conv5"
+  top: "conv5"
+}
+layer {
+  name: "relu5_convert0"
+  type: "Convertor"
+  bottom: "conv5"
+  top: "conv5"
+  convert_param {
+    to: INT
+    to_coef {
+      scale: 28910
+      shifter: 21
+      post_scale: 1
+      bits: 8
+    }
+    method: SIMPLE_RN
+    allow_saturate: true
+    dr_ratio: 0.3
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "pool5"
+  type: "Pooling"
+  bottom: "conv5"
+  top: "pool5"
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 2
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "fc6"
+  type: "InnerProduct"
+  bottom: "pool5"
+  top: "fc6"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  inner_product_param {
+    num_output: 4096
+    weight_filler {
+      type: "gaussian"
+      std: 0.005
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.1
+    }
+    weight_convert {
+      to: INT
+      to_coef {
+        scale: 2987.0528528681662
+        shifter: 0
+        post_scale: 1
+        bits: 8
+      }
+      method: STD_RN
+      allow_saturate: false
+      dr_ratio: 0.98
+    }
+    bias_convert {
+      to: INT
+      to_coef {
+        scale: 1990.069246442185
+        shifter: 0
+        post_scale: 1
+        bits: 16
+      }
+      method: STD_RN
+      allow_saturate: false
+      dr_ratio: 0.4
+    }
+    output_truncat {
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 0
+        post_scale: 1
+        bits: 32
+      }
+      method: SIMPLE_RN
+      allow_saturate: true
+      dr_ratio: 0
+    }
+  }
+}
+layer {
+  name: "relu6"
+  type: "ReLU"
+  bottom: "fc6"
+  top: "fc6"
+}
+layer {
+  name: "relu6_convert0"
+  type: "Convertor"
+  bottom: "fc6"
+  top: "fc6"
+  convert_param {
+    to: INT
+    to_coef {
+      scale: 19412
+      shifter: 24
+      post_scale: 1
+      bits: 8
+    }
+    method: SIMPLE_RN
+    allow_saturate: true
+    dr_ratio: 0.3
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "drop6"
+  type: "Dropout"
+  bottom: "fc6"
+  top: "fc6"
+  dropout_param {
+    dropout_ratio: 0.5
+  }
+}
+layer {
+  name: "fc7"
+  type: "InnerProduct"
+  bottom: "fc6"
+  top: "fc7"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  inner_product_param {
+    num_output: 4096
+    weight_filler {
+      type: "gaussian"
+      std: 0.005
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.1
+    }
+    weight_convert {
+      to: INT
+      to_coef {
+        scale: 1754.3125370763823
+        shifter: 0
+        post_scale: 1
+        bits: 8
+      }
+      method: STD_RN
+      allow_saturate: false
+      dr_ratio: 0.98
+    }
+    bias_convert {
+      to: INT
+      to_coef {
+        scale: 4039.4807432655975
+        shifter: 0
+        post_scale: 1
+        bits: 16
+      }
+      method: STD_RN
+      allow_saturate: false
+      dr_ratio: 0.4
+    }
+    output_truncat {
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 0
+        post_scale: 1
+        bits: 32
+      }
+      method: SIMPLE_RN
+      allow_saturate: true
+      dr_ratio: 0
+    }
+  }
+}
+layer {
+  name: "relu7"
+  type: "ReLU"
+  bottom: "fc7"
+  top: "fc7"
+}
+layer {
+  name: "relu7_convert0"
+  type: "Convertor"
+  bottom: "fc7"
+  top: "fc7"
+  convert_param {
+    to: INT
+    to_coef {
+      scale: 29767
+      shifter: 24
+      post_scale: 1
+      bits: 8
+    }
+    method: SIMPLE_RN
+    allow_saturate: true
+    dr_ratio: 0.3
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "drop7"
+  type: "Dropout"
+  bottom: "fc7"
+  top: "fc7"
+  dropout_param {
+    dropout_ratio: 0.5
+  }
+}
+layer {
+  name: "fc8"
+  type: "InnerProduct"
+  bottom: "fc7"
+  top: "fc8"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  inner_product_param {
+    num_output: 1000
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+    weight_convert {
+      to: INT
+      to_coef {
+        scale: 1700.1820762075363
+        shifter: 0
+        post_scale: 1
+        bits: 8
+      }
+      method: STD_RN
+      allow_saturate: false
+      dr_ratio: 0.98
+    }
+    bias_convert {
+      to: INT
+      to_coef {
+        scale: 12185.2977880368
+        shifter: 0
+        post_scale: 1
+        bits: 16
+      }
+      method: STD_RN
+      allow_saturate: false
+      dr_ratio: 0.4
+    }
+    output_truncat {
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 0
+        post_scale: 1
+        bits: 32
+      }
+      method: SIMPLE_RN
+      allow_saturate: true
+      dr_ratio: 0
+    }
+  }
+}
+layer {
+  name: "fc8_convert0"
+  type: "Convertor"
+  bottom: "fc8"
+  top: "fc8"
+  convert_param {
+    to: INT
+    to_coef {
+      scale: 25561
+      shifter: 26
+      post_scale: 1
+      bits: 8
+    }
+    method: SIMPLE_RN
+    allow_saturate: true
+    dr_ratio: 0.3
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "accuracy_1_convert_in0"
+  type: "Convertor"
+  bottom: "fc8"
+  top: "fc8"
+  convert_param {
+    to: DBL
+    to_coef {
+      scale: 0.21545962511152761
+      shifter: 0
+      post_scale: 1
+      bits: 64
+    }
+    method: STD_RN
+    allow_saturate: false
+    dr_ratio: 0.1
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "accuracy_1"
+  type: "Accuracy"
+  bottom: "fc8"
+  bottom: "label"
+  top: "accuracy_1"
+  include {
+    phase: TEST
+  }
+  accuracy_param {
+    top_k: 1
+  }
+}
+layer {
+  name: "accuracy_5"
+  type: "Accuracy"
+  bottom: "fc8"
+  bottom: "label"
+  top: "accuracy_5"
+  include {
+    phase: TEST
+  }
+  accuracy_param {
+    top_k: 5
+  }
+}
+layer {
+  name: "loss"
+  type: "SoftmaxWithLoss"
+  bottom: "fc8"
+  bottom: "label"
+  top: "loss"
+}

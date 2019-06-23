@@ -1,0 +1,1276 @@
+I0327 23:33:06.735368 11117 caffe.cpp:329] Use CPU.
+I0327 23:33:06.754906 11117 net.cpp:2206] initializing net from file:/home/scratch.yilinz_t19x/git/dla_amod/models/bvlc_alexnet/train_val_autogen.prototxt
+I0327 23:33:06.755676 11117 net.cpp:2228] Initializing net from parameters: 
+name: "AlexNet"
+state {
+  phase: TEST
+  stage: ""
+}
+debug_info: true
+layer {
+  name: "data"
+  type: "Data"
+  top: "data"
+  top: "label"
+  include {
+    phase: TEST
+  }
+  transform_param {
+    mirror: false
+    crop_size: 227
+    mean_file: "/home/scratch.yilinz_t19x/git/dla_amod/data/ilsvrc12/imagenet_mean.binaryproto"
+  }
+  data_param {
+    source: "/home/scratch.yilinz_t19x/git/dla_amod/../db/val_db8"
+    batch_size: 1
+    backend: LMDB
+    skip: 44001
+    interval: 2
+  }
+}
+layer {
+  name: "data_convert0"
+  type: "Convertor"
+  bottom: "data"
+  top: "data"
+  convert_param {
+    to: INT
+    to_coef {
+      offset: 0
+      scale: 65
+      shifter: 8
+      post_scale: 1
+      bits: 8
+    }
+    method: SIMPLE_RN
+    allow_saturate: true
+    dr_ratio: 0.3
+    scale_method: PER_ATOM_SCALING
+    is_truncator: true
+    use_offset: false
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "conv1"
+  type: "Convolution"
+  bottom: "data"
+  top: "conv1"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 96
+    kernel_size: 11
+    stride: 4
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+    engine: SPLITC
+    bias_convert {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 143.48488093322885
+        shifter: 0
+        post_scale: 2
+        bits: 8
+      }
+      method: STD_RN
+      allow_saturate: false
+      dr_ratio: 0.4
+      scale_method: GLOBAL_SCALING
+      is_truncator: false
+      use_offset: false
+    }
+    input_mean: 0
+    output_truncat {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 1
+        shifter: 0
+        post_scale: 1
+        bits: 32
+      }
+      method: SIMPLE_RN
+      allow_saturate: true
+      dr_ratio: 0
+      scale_method: GLOBAL_SCALING
+      is_truncator: true
+      use_offset: false
+    }
+    weight_convert {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 286.9697618664577
+        shifter: 0
+        post_scale: 1
+        bits: 8
+      }
+      method: STD_RN
+      allow_saturate: false
+      dr_ratio: 0.98
+      scale_method: GLOBAL_SCALING
+      is_truncator: false
+      use_offset: false
+    }
+  }
+}
+layer {
+  name: "relu1"
+  type: "ReLU"
+  bottom: "conv1"
+  top: "relu1"
+}
+layer {
+  name: "relu1_convert0"
+  type: "Convertor"
+  bottom: "relu1"
+  top: "relu1"
+  convert_param {
+    to: UINT
+    to_coef {
+      offset: 0
+      scale: 82
+      shifter: 19
+      post_scale: 1
+      bits: 8
+    }
+    method: SIMPLE_RN
+    allow_saturate: true
+    dr_ratio: 0.3
+    scale_method: PER_ATOM_SCALING
+    is_truncator: true
+    use_offset: false
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "norm1"
+  type: "LRN"
+  bottom: "relu1"
+  top: "norm1"
+  lrn_param {
+    local_size: 5
+    alpha: 0.0001
+    beta: 0.75
+  }
+}
+layer {
+  name: "norm1_convert0"
+  type: "Convertor"
+  bottom: "norm1"
+  top: "norm1"
+  convert_param {
+    to: INT
+    to_coef {
+      offset: 0
+      scale: 120
+      shifter: 7
+      post_scale: 1
+      bits: 8
+    }
+    method: SIMPLE_RN
+    allow_saturate: true
+    dr_ratio: 0.3
+    scale_method: PER_ATOM_SCALING
+    is_truncator: true
+    use_offset: false
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "pool1"
+  type: "Pooling"
+  bottom: "norm1"
+  top: "pool1"
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 2
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "conv2"
+  type: "Convolution"
+  bottom: "pool1"
+  top: "conv2"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 256
+    pad: 2
+    kernel_size: 5
+    group: 2
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.1
+    }
+    engine: SPLITC
+    bias_convert {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 262.84411998001553
+        shifter: 0
+        post_scale: 1
+        bits: 8
+      }
+      method: STD_RN
+      allow_saturate: false
+      dr_ratio: 0.4
+      scale_method: GLOBAL_SCALING
+      is_truncator: false
+      use_offset: false
+    }
+    input_mean: 0
+    output_truncat {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 1
+        shifter: 0
+        post_scale: 1
+        bits: 32
+      }
+      method: SIMPLE_RN
+      allow_saturate: true
+      dr_ratio: 0
+      scale_method: GLOBAL_SCALING
+      is_truncator: true
+      use_offset: false
+    }
+    weight_convert {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 262.84411998001553
+        shifter: 0
+        post_scale: 1
+        bits: 8
+      }
+      method: STD_RN
+      allow_saturate: false
+      dr_ratio: 0.8
+      scale_method: GLOBAL_SCALING
+      is_truncator: false
+      use_offset: false
+    }
+  }
+}
+layer {
+  name: "relu2"
+  type: "ReLU"
+  bottom: "conv2"
+  top: "conv2"
+}
+layer {
+  name: "relu2_convert0"
+  type: "Convertor"
+  bottom: "conv2"
+  top: "conv2"
+  convert_param {
+    to: UINT
+    to_coef {
+      offset: 0
+      scale: 74
+      shifter: 16
+      post_scale: 1
+      bits: 8
+    }
+    method: SIMPLE_RN
+    allow_saturate: true
+    dr_ratio: 0.3
+    scale_method: PER_ATOM_SCALING
+    is_truncator: true
+    use_offset: false
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "norm2"
+  type: "LRN"
+  bottom: "conv2"
+  top: "norm2"
+  lrn_param {
+    local_size: 5
+    alpha: 0.0001
+    beta: 0.75
+  }
+}
+layer {
+  name: "norm2_convert0"
+  type: "Convertor"
+  bottom: "norm2"
+  top: "norm2"
+  convert_param {
+    to: INT
+    to_coef {
+      offset: 0
+      scale: 78
+      shifter: 6
+      post_scale: 1
+      bits: 8
+    }
+    method: SIMPLE_RN
+    allow_saturate: true
+    dr_ratio: 0.3
+    scale_method: PER_ATOM_SCALING
+    is_truncator: true
+    use_offset: false
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "pool2"
+  type: "Pooling"
+  bottom: "norm2"
+  top: "pool2"
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 2
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "conv3"
+  type: "Convolution"
+  bottom: "pool2"
+  top: "conv3"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 384
+    pad: 1
+    kernel_size: 3
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+    engine: WINOGRAD
+    bias_convert {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 123.16676728213359
+        shifter: 0
+        post_scale: 1
+        bits: 8
+      }
+      method: STD_RN
+      allow_saturate: false
+      dr_ratio: 0.4
+      scale_method: GLOBAL_SCALING
+      is_truncator: false
+      use_offset: false
+    }
+    pra_feature_truncat {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 1
+        shifter: 2
+        post_scale: 1
+        bits: 8
+      }
+      method: SIMPLE_RN
+      allow_saturate: true
+      dr_ratio: 0
+      scale_method: GLOBAL_SCALING
+      is_truncator: true
+      use_offset: false
+    }
+    pra_weight_convert {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 492.66706912853437
+        shifter: 0
+        post_scale: 1
+        bits: 8
+      }
+      method: STD_RN
+      allow_saturate: false
+      dr_ratio: 0.98
+      scale_method: GLOBAL_SCALING
+      is_truncator: false
+      use_offset: false
+    }
+    input_mean: 0
+    output_truncat {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 1
+        shifter: 0
+        post_scale: 1
+        bits: 32
+      }
+      method: SIMPLE_RN
+      allow_saturate: true
+      dr_ratio: 0
+      scale_method: GLOBAL_SCALING
+      is_truncator: true
+      use_offset: false
+    }
+  }
+}
+layer {
+  name: "relu3"
+  type: "ReLU"
+  bottom: "conv3"
+  top: "conv3"
+}
+layer {
+  name: "relu3_convert0"
+  type: "Convertor"
+  bottom: "conv3"
+  top: "conv3"
+  convert_param {
+    to: UINT
+    to_coef {
+      offset: 0
+      scale: 127
+      shifter: 15
+      post_scale: 1
+      bits: 8
+    }
+    method: SIMPLE_RN
+    allow_saturate: true
+    dr_ratio: 0.3
+    scale_method: PER_ATOM_SCALING
+    is_truncator: true
+    use_offset: false
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "conv4"
+  type: "Convolution"
+  bottom: "conv3"
+  top: "conv4"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 384
+    pad: 1
+    kernel_size: 3
+    group: 2
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.1
+    }
+    engine: WINOGRAD
+    bias_convert {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 131.27343792360074
+        shifter: 0
+        post_scale: 1
+        bits: 8
+      }
+      method: STD_RN
+      allow_saturate: false
+      dr_ratio: 0.4
+      scale_method: GLOBAL_SCALING
+      is_truncator: false
+      use_offset: false
+    }
+    pra_feature_truncat {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 1
+        shifter: 2
+        post_scale: 1
+        bits: 8
+      }
+      method: SIMPLE_RN
+      allow_saturate: true
+      dr_ratio: 0
+      scale_method: GLOBAL_SCALING
+      is_truncator: true
+      use_offset: false
+    }
+    pra_weight_convert {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 525.093751694403
+        shifter: 0
+        post_scale: 1
+        bits: 8
+      }
+      method: STD_RN
+      allow_saturate: false
+      dr_ratio: 0.8
+      scale_method: GLOBAL_SCALING
+      is_truncator: false
+      use_offset: false
+    }
+    input_mean: 0
+    output_truncat {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 1
+        shifter: 0
+        post_scale: 1
+        bits: 32
+      }
+      method: SIMPLE_RN
+      allow_saturate: true
+      dr_ratio: 0
+      scale_method: GLOBAL_SCALING
+      is_truncator: true
+      use_offset: false
+    }
+  }
+}
+layer {
+  name: "relu4"
+  type: "ReLU"
+  bottom: "conv4"
+  top: "conv4"
+}
+layer {
+  name: "relu4_convert0"
+  type: "Convertor"
+  bottom: "conv4"
+  top: "conv4"
+  convert_param {
+    to: UINT
+    to_coef {
+      offset: 0
+      scale: 73
+      shifter: 15
+      post_scale: 1
+      bits: 8
+    }
+    method: SIMPLE_RN
+    allow_saturate: true
+    dr_ratio: 0.3
+    scale_method: PER_ATOM_SCALING
+    is_truncator: true
+    use_offset: false
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "conv5"
+  type: "Convolution"
+  bottom: "conv4"
+  top: "conv5"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 256
+    pad: 1
+    kernel_size: 3
+    group: 2
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.1
+    }
+    engine: WINOGRAD
+    bias_convert {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 84.004257288370908
+        shifter: 0
+        post_scale: 1
+        bits: 8
+      }
+      method: STD_RN
+      allow_saturate: false
+      dr_ratio: 0.4
+      scale_method: GLOBAL_SCALING
+      is_truncator: false
+      use_offset: false
+    }
+    pra_feature_truncat {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 1
+        shifter: 2
+        post_scale: 1
+        bits: 8
+      }
+      method: SIMPLE_RN
+      allow_saturate: true
+      dr_ratio: 0
+      scale_method: GLOBAL_SCALING
+      is_truncator: true
+      use_offset: false
+    }
+    pra_weight_convert {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 336.01702915348363
+        shifter: 0
+        post_scale: 1
+        bits: 8
+      }
+      method: STD_RN
+      allow_saturate: false
+      dr_ratio: 0.8
+      scale_method: GLOBAL_SCALING
+      is_truncator: false
+      use_offset: false
+    }
+    input_mean: 0
+    output_truncat {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 1
+        shifter: 0
+        post_scale: 1
+        bits: 32
+      }
+      method: SIMPLE_RN
+      allow_saturate: true
+      dr_ratio: 0
+      scale_method: GLOBAL_SCALING
+      is_truncator: true
+      use_offset: false
+    }
+  }
+}
+layer {
+  name: "relu5"
+  type: "ReLU"
+  bottom: "conv5"
+  top: "conv5"
+}
+layer {
+  name: "relu5_convert0"
+  type: "Convertor"
+  bottom: "conv5"
+  top: "conv5"
+  convert_param {
+    to: UINT
+    to_coef {
+      offset: 0
+      scale: 66
+      shifter: 13
+      post_scale: 1
+      bits: 8
+    }
+    method: SIMPLE_RN
+    allow_saturate: true
+    dr_ratio: 0.3
+    scale_method: PER_ATOM_SCALING
+    is_truncator: true
+    use_offset: false
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "pool5"
+  type: "Pooling"
+  bottom: "conv5"
+  top: "pool5"
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 2
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "fc6"
+  type: "InnerProduct"
+  bottom: "pool5"
+  top: "fc6"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  inner_product_param {
+    num_output: 4096
+    weight_filler {
+      type: "gaussian"
+      std: 0.005
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.1
+    }
+    weight_convert {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 2987.0528528681662
+        shifter: 0
+        post_scale: 1
+        bits: 8
+      }
+      method: STD_RN
+      allow_saturate: false
+      dr_ratio: 0.98
+      scale_method: GLOBAL_SCALING
+      is_truncator: false
+      use_offset: false
+    }
+    bias_convert {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 373.38160660852077
+        shifter: 0
+        post_scale: 8
+        bits: 8
+      }
+      method: STD_RN
+      allow_saturate: false
+      dr_ratio: 0.4
+      scale_method: GLOBAL_SCALING
+      is_truncator: false
+      use_offset: false
+    }
+    output_truncat {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 1
+        shifter: 0
+        post_scale: 1
+        bits: 32
+      }
+      method: SIMPLE_RN
+      allow_saturate: true
+      dr_ratio: 0
+      scale_method: GLOBAL_SCALING
+      is_truncator: true
+      use_offset: false
+    }
+  }
+}
+layer {
+  name: "relu6"
+  type: "ReLU"
+  bottom: "fc6"
+  top: "fc6"
+}
+layer {
+  name: "relu6_convert0"
+  type: "Convertor"
+  bottom: "fc6"
+  top: "fc6"
+  convert_param {
+    to: UINT
+    to_coef {
+      offset: 0
+      scale: 100
+      shifter: 17
+      post_scale: 1
+      bits: 8
+    }
+    method: SIMPLE_RN
+    allow_saturate: true
+    dr_ratio: 0.3
+    scale_method: PER_ATOM_SCALING
+    is_truncator: true
+    use_offset: false
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "drop6"
+  type: "Dropout"
+  bottom: "fc6"
+  top: "fc6"
+  dropout_param {
+    dropout_ratio: 0.5
+  }
+}
+layer {
+  name: "fc7"
+  type: "InnerProduct"
+  bottom: "fc6"
+  top: "fc7"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  inner_product_param {
+    num_output: 4096
+    weight_filler {
+      type: "gaussian"
+      std: 0.005
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.1
+    }
+    weight_convert {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 1754.3125370763823
+        shifter: 0
+        post_scale: 1
+        bits: 8
+      }
+      method: STD_RN
+      allow_saturate: false
+      dr_ratio: 0.98
+      scale_method: GLOBAL_SCALING
+      is_truncator: false
+      use_offset: false
+    }
+    bias_convert {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 109.6445335672739
+        shifter: 0
+        post_scale: 16
+        bits: 8
+      }
+      method: STD_RN
+      allow_saturate: false
+      dr_ratio: 0.4
+      scale_method: GLOBAL_SCALING
+      is_truncator: false
+      use_offset: false
+    }
+    output_truncat {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 1
+        shifter: 0
+        post_scale: 1
+        bits: 32
+      }
+      method: SIMPLE_RN
+      allow_saturate: true
+      dr_ratio: 0
+      scale_method: GLOBAL_SCALING
+      is_truncator: true
+      use_offset: false
+    }
+  }
+}
+layer {
+  name: "relu7"
+  type: "ReLU"
+  bottom: "fc7"
+  top: "fc7"
+}
+layer {
+  name: "relu7_convert0"
+  type: "Convertor"
+  bottom: "fc7"
+  top: "fc7"
+  convert_param {
+    to: UINT
+    to_coef {
+      offset: 0
+      scale: 71
+      shifter: 15
+      post_scale: 1
+      bits: 8
+    }
+    method: SIMPLE_RN
+    allow_saturate: true
+    dr_ratio: 0.3
+    scale_method: PER_ATOM_SCALING
+    is_truncator: true
+    use_offset: false
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "drop7"
+  type: "Dropout"
+  bottom: "fc7"
+  top: "fc7"
+  dropout_param {
+    dropout_ratio: 0.5
+  }
+}
+layer {
+  name: "fc8"
+  type: "InnerProduct"
+  bottom: "fc7"
+  top: "fc8"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  inner_product_param {
+    num_output: 1000
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+    weight_convert {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 1700.1820762075363
+        shifter: 0
+        post_scale: 1
+        bits: 8
+      }
+      method: STD_RN
+      allow_saturate: false
+      dr_ratio: 0.98
+      scale_method: GLOBAL_SCALING
+      is_truncator: false
+      use_offset: false
+    }
+    bias_convert {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 212.52275952594204
+        shifter: 0
+        post_scale: 8
+        bits: 8
+      }
+      method: STD_RN
+      allow_saturate: false
+      dr_ratio: 0.4
+      scale_method: GLOBAL_SCALING
+      is_truncator: false
+      use_offset: false
+    }
+    output_truncat {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 1
+        shifter: 0
+        post_scale: 1
+        bits: 32
+      }
+      method: SIMPLE_RN
+      allow_saturate: true
+      dr_ratio: 0
+      scale_method: GLOBAL_SCALING
+      is_truncator: true
+      use_offset: false
+    }
+  }
+}
+layer {
+  name: "fc8_convert0"
+  type: "Convertor"
+  bottom: "fc8"
+  top: "fc8"
+  convert_param {
+    to: INT
+    to_coef {
+      offset: 0
+      scale: 92
+      shifter: 15
+      post_scale: 1
+      bits: 8
+    }
+    method: SIMPLE_RN
+    allow_saturate: true
+    dr_ratio: 0.3
+    scale_method: PER_ATOM_SCALING
+    is_truncator: true
+    use_offset: false
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "accuracy_1"
+  type: "Accuracy"
+  bottom: "fc8"
+  bottom: "label"
+  top: "accuracy_1"
+  include {
+    phase: TEST
+  }
+  accuracy_param {
+    top_k: 1
+  }
+}
+layer {
+  name: "accuracy_5"
+  type: "Accuracy"
+  bottom: "fc8"
+  bottom: "label"
+  top: "accuracy_5"
+  include {
+    phase: TEST
+  }
+  accuracy_param {
+    top_k: 5
+  }
+}
+layer {
+  name: "loss"
+  type: "SoftmaxWithLoss"
+  bottom: "fc8"
+  bottom: "label"
+  top: "loss"
+}
+I0327 23:33:06.755967 11117 layer_factory.hpp:77] Creating layer data
+I0327 23:33:06.773392 11117 db_lmdb.cpp:35] Opened lmdb /home/scratch.yilinz_t19x/git/dla_amod/../db/val_db8
+I0327 23:33:06.774281 11117 net.cpp:2261] Creating Layer data
+I0327 23:33:06.774300 11117 net.cpp:2571] data -> data
+I0327 23:33:06.774335 11117 net.cpp:2571] data -> label
+I0327 23:33:06.774361 11117 data_transformer.cpp:26] Loading mean file from: /home/scratch.yilinz_t19x/git/dla_amod/data/ilsvrc12/imagenet_mean.binaryproto
+I0327 23:33:06.824899 11117 data_layer.cpp:48] output data size: 1,3,227,227
+I0327 23:33:06.827842 11117 net.cpp:2299] Setting up data
+I0327 23:33:06.827878 11117 net.cpp:2306] Top shape: 1 3 227 227 (154587)
+I0327 23:33:06.827888 11117 net.cpp:2306] Top shape: 1 (1)
+I0327 23:33:06.827894 11117 net.cpp:2314] Memory required for data: 1236704
+I0327 23:33:06.827909 11117 layer_factory.hpp:77] Creating layer label_data_1_split
+I0327 23:33:06.827939 11117 net.cpp:2261] Creating Layer label_data_1_split
+I0327 23:33:06.827949 11117 net.cpp:2597] label_data_1_split <- label
+I0327 23:33:06.827970 11117 net.cpp:2571] label_data_1_split -> label_data_1_split_0
+I0327 23:33:06.827986 11117 net.cpp:2571] label_data_1_split -> label_data_1_split_1
+I0327 23:33:06.827996 11117 net.cpp:2571] label_data_1_split -> label_data_1_split_2
+I0327 23:33:06.828009 11117 net.cpp:2299] Setting up label_data_1_split
+I0327 23:33:06.828017 11117 net.cpp:2306] Top shape: 1 (1)
+I0327 23:33:06.828024 11117 net.cpp:2306] Top shape: 1 (1)
+I0327 23:33:06.828032 11117 net.cpp:2306] Top shape: 1 (1)
+I0327 23:33:06.828079 11117 net.cpp:2314] Memory required for data: 1236728
+I0327 23:33:06.828086 11117 layer_factory.hpp:77] Creating layer data_convert0
+I0327 23:33:06.828106 11117 net.cpp:2261] Creating Layer data_convert0
+I0327 23:33:06.828114 11117 net.cpp:2597] data_convert0 <- data
+I0327 23:33:06.828121 11117 net.cpp:2558] data_convert0 -> data (in-place)
+I0327 23:33:06.828137 11117 net.cpp:2299] Setting up data_convert0
+I0327 23:33:06.828148 11117 net.cpp:2306] Top shape: 1 3 227 227 (154587)
+I0327 23:33:06.828153 11117 net.cpp:2314] Memory required for data: 2473424
+I0327 23:33:06.828161 11117 layer_factory.hpp:77] Creating layer conv1
+I0327 23:33:06.828213 11117 net.cpp:2261] Creating Layer conv1
+I0327 23:33:06.828222 11117 net.cpp:2597] conv1 <- data
+I0327 23:33:06.828233 11117 net.cpp:2571] conv1 -> conv1
+I0327 23:33:06.831044 11117 net.cpp:2299] Setting up conv1
+I0327 23:33:06.831059 11117 net.cpp:2306] Top shape: 1 96 55 55 (290400)
+I0327 23:33:06.831065 11117 net.cpp:2314] Memory required for data: 4796624
+I0327 23:33:06.831084 11117 layer_factory.hpp:77] Creating layer relu1
+I0327 23:33:06.831105 11117 net.cpp:2261] Creating Layer relu1
+I0327 23:33:06.831111 11117 net.cpp:2597] relu1 <- conv1
+I0327 23:33:06.831120 11117 net.cpp:2571] relu1 -> relu1
+I0327 23:33:06.831131 11117 net.cpp:2299] Setting up relu1
+I0327 23:33:06.831140 11117 net.cpp:2306] Top shape: 1 96 55 55 (290400)
+I0327 23:33:06.831145 11117 net.cpp:2314] Memory required for data: 7119824
+I0327 23:33:06.831151 11117 layer_factory.hpp:77] Creating layer relu1_convert0
+I0327 23:33:06.831167 11117 net.cpp:2261] Creating Layer relu1_convert0
+I0327 23:33:06.831173 11117 net.cpp:2597] relu1_convert0 <- relu1
+I0327 23:33:06.831182 11117 net.cpp:2558] relu1_convert0 -> relu1 (in-place)
+I0327 23:33:06.831189 11117 net.cpp:2299] Setting up relu1_convert0
+I0327 23:33:06.831197 11117 net.cpp:2306] Top shape: 1 96 55 55 (290400)
+I0327 23:33:06.831202 11117 net.cpp:2314] Memory required for data: 9443024
+I0327 23:33:06.831208 11117 layer_factory.hpp:77] Creating layer norm1
+I0327 23:33:06.831229 11117 net.cpp:2261] Creating Layer norm1
+I0327 23:33:06.831235 11117 net.cpp:2597] norm1 <- relu1
+I0327 23:33:06.831243 11117 net.cpp:2571] norm1 -> norm1
+I0327 23:33:06.831257 11117 net.cpp:2299] Setting up norm1
+I0327 23:33:06.831265 11117 net.cpp:2306] Top shape: 1 96 55 55 (290400)
+I0327 23:33:06.831271 11117 net.cpp:2314] Memory required for data: 11766224
+I0327 23:33:06.831279 11117 layer_factory.hpp:77] Creating layer norm1_convert0
+I0327 23:33:06.831298 11117 net.cpp:2261] Creating Layer norm1_convert0
+I0327 23:33:06.831305 11117 net.cpp:2597] norm1_convert0 <- norm1
+I0327 23:33:06.831313 11117 net.cpp:2558] norm1_convert0 -> norm1 (in-place)
+I0327 23:33:06.831322 11117 net.cpp:2299] Setting up norm1_convert0
+I0327 23:33:06.831331 11117 net.cpp:2306] Top shape: 1 96 55 55 (290400)
+I0327 23:33:06.831336 11117 net.cpp:2314] Memory required for data: 14089424
+I0327 23:33:06.831341 11117 layer_factory.hpp:77] Creating layer pool1
+I0327 23:33:06.831372 11117 net.cpp:2261] Creating Layer pool1
+I0327 23:33:06.831378 11117 net.cpp:2597] pool1 <- norm1
+I0327 23:33:06.831388 11117 net.cpp:2571] pool1 -> pool1
+I0327 23:33:06.831414 11117 net.cpp:2299] Setting up pool1
+I0327 23:33:06.831424 11117 net.cpp:2306] Top shape: 1 96 27 27 (69984)
+I0327 23:33:06.831430 11117 net.cpp:2314] Memory required for data: 14649296
+I0327 23:33:06.831436 11117 layer_factory.hpp:77] Creating layer conv2
+I0327 23:33:06.831507 11117 net.cpp:2261] Creating Layer conv2
+I0327 23:33:06.831516 11117 net.cpp:2597] conv2 <- pool1
+I0327 23:33:06.831526 11117 net.cpp:2571] conv2 -> conv2
+I0327 23:33:06.857513 11117 net.cpp:2299] Setting up conv2
+I0327 23:33:06.857534 11117 net.cpp:2306] Top shape: 1 256 27 27 (186624)
+I0327 23:33:06.857540 11117 net.cpp:2314] Memory required for data: 16142288
+I0327 23:33:06.857554 11117 layer_factory.hpp:77] Creating layer relu2
+I0327 23:33:06.857576 11117 net.cpp:2261] Creating Layer relu2
+I0327 23:33:06.857583 11117 net.cpp:2597] relu2 <- conv2
+I0327 23:33:06.857595 11117 net.cpp:2558] relu2 -> conv2 (in-place)
+I0327 23:33:06.857630 11117 net.cpp:2299] Setting up relu2
+I0327 23:33:06.857640 11117 net.cpp:2306] Top shape: 1 256 27 27 (186624)
+I0327 23:33:06.857645 11117 net.cpp:2314] Memory required for data: 17635280
+I0327 23:33:06.857651 11117 layer_factory.hpp:77] Creating layer relu2_convert0
+I0327 23:33:06.857669 11117 net.cpp:2261] Creating Layer relu2_convert0
+I0327 23:33:06.857676 11117 net.cpp:2597] relu2_convert0 <- conv2
+I0327 23:33:06.857686 11117 net.cpp:2558] relu2_convert0 -> conv2 (in-place)
+I0327 23:33:06.857694 11117 net.cpp:2299] Setting up relu2_convert0
+I0327 23:33:06.857702 11117 net.cpp:2306] Top shape: 1 256 27 27 (186624)
+I0327 23:33:06.857707 11117 net.cpp:2314] Memory required for data: 19128272
+I0327 23:33:06.857713 11117 layer_factory.hpp:77] Creating layer norm2
+I0327 23:33:06.857729 11117 net.cpp:2261] Creating Layer norm2
+I0327 23:33:06.857736 11117 net.cpp:2597] norm2 <- conv2
+I0327 23:33:06.857754 11117 net.cpp:2571] norm2 -> norm2
+I0327 23:33:06.857766 11117 net.cpp:2299] Setting up norm2
+I0327 23:33:06.857774 11117 net.cpp:2306] Top shape: 1 256 27 27 (186624)
+I0327 23:33:06.857779 11117 net.cpp:2314] Memory required for data: 20621264
+I0327 23:33:06.857785 11117 layer_factory.hpp:77] Creating layer norm2_convert0
+I0327 23:33:06.857802 11117 net.cpp:2261] Creating Layer norm2_convert0
+I0327 23:33:06.857810 11117 net.cpp:2597] norm2_convert0 <- norm2
+I0327 23:33:06.857816 11117 net.cpp:2558] norm2_convert0 -> norm2 (in-place)
+I0327 23:33:06.857825 11117 net.cpp:2299] Setting up norm2_convert0
+I0327 23:33:06.858024 11117 net.cpp:2306] Top shape: 1 256 27 27 (186624)
+I0327 23:33:06.858033 11117 net.cpp:2314] Memory required for data: 22114256
+I0327 23:33:06.858039 11117 layer_factory.hpp:77] Creating layer pool2
+I0327 23:33:06.858070 11117 net.cpp:2261] Creating Layer pool2
+I0327 23:33:06.858078 11117 net.cpp:2597] pool2 <- norm2
+I0327 23:33:06.858088 11117 net.cpp:2571] pool2 -> pool2
+I0327 23:33:06.858101 11117 net.cpp:2299] Setting up pool2
+I0327 23:33:06.858110 11117 net.cpp:2306] Top shape: 1 256 13 13 (43264)
+I0327 23:33:06.858119 11117 net.cpp:2314] Memory required for data: 22460368
+I0327 23:33:06.858129 11117 layer_factory.hpp:77] Creating layer conv3
+I0327 23:33:06.858224 11117 net.cpp:2261] Creating Layer conv3
+I0327 23:33:06.858232 11117 net.cpp:2597] conv3 <- pool2
+I0327 23:33:06.858244 11117 net.cpp:2571] conv3 -> conv3
+I0327 23:33:06.936246 11117 net.cpp:2299] Setting up conv3
+I0327 23:33:06.936285 11117 net.cpp:2306] Top shape: 1 384 13 13 (64896)
+I0327 23:33:06.936291 11117 net.cpp:2314] Memory required for data: 22979536
+I0327 23:33:06.936312 11117 layer_factory.hpp:77] Creating layer relu3
+I0327 23:33:06.936352 11117 net.cpp:2261] Creating Layer relu3
+I0327 23:33:06.936362 11117 net.cpp:2597] relu3 <- conv3
+I0327 23:33:06.936375 11117 net.cpp:2558] relu3 -> conv3 (in-place)
+I0327 23:33:06.936398 11117 net.cpp:2299] Setting up relu3
+I0327 23:33:06.936408 11117 net.cpp:2306] Top shape: 1 384 13 13 (64896)
+I0327 23:33:06.936413 11117 net.cpp:2314] Memory required for data: 23498704
+I0327 23:33:06.936419 11117 layer_factory.hpp:77] Creating layer relu3_convert0
+I0327 23:33:06.936440 11117 net.cpp:2261] Creating Layer relu3_convert0
+I0327 23:33:06.936447 11117 net.cpp:2597] relu3_convert0 <- conv3
+I0327 23:33:06.936458 11117 net.cpp:2558] relu3_convert0 -> conv3 (in-place)
+I0327 23:33:06.936468 11117 net.cpp:2299] Setting up relu3_convert0
+I0327 23:33:06.936476 11117 net.cpp:2306] Top shape: 1 384 13 13 (64896)
+I0327 23:33:06.936482 11117 net.cpp:2314] Memory required for data: 24017872
+I0327 23:33:06.936487 11117 layer_factory.hpp:77] Creating layer conv4
+I0327 23:33:06.936584 11117 net.cpp:2261] Creating Layer conv4
+I0327 23:33:06.936594 11117 net.cpp:2597] conv4 <- conv3
+I0327 23:33:06.936605 11117 net.cpp:2571] conv4 -> conv4
+I0327 23:33:06.997674 11117 net.cpp:2299] Setting up conv4
+I0327 23:33:06.997712 11117 net.cpp:2306] Top shape: 1 384 13 13 (64896)
+I0327 23:33:06.997720 11117 net.cpp:2314] Memory required for data: 24537040
+I0327 23:33:06.997776 11117 layer_factory.hpp:77] Creating layer relu4
+I0327 23:33:06.997813 11117 net.cpp:2261] Creating Layer relu4
+I0327 23:33:06.997823 11117 net.cpp:2597] relu4 <- conv4
+I0327 23:33:06.997849 11117 net.cpp:2558] relu4 -> conv4 (in-place)
+I0327 23:33:06.997866 11117 net.cpp:2299] Setting up relu4
+I0327 23:33:06.997875 11117 net.cpp:2306] Top shape: 1 384 13 13 (64896)
+I0327 23:33:06.997880 11117 net.cpp:2314] Memory required for data: 25056208
+I0327 23:33:06.997887 11117 layer_factory.hpp:77] Creating layer relu4_convert0
+I0327 23:33:06.997910 11117 net.cpp:2261] Creating Layer relu4_convert0
+I0327 23:33:06.997915 11117 net.cpp:2597] relu4_convert0 <- conv4
+I0327 23:33:06.997925 11117 net.cpp:2558] relu4_convert0 -> conv4 (in-place)
+I0327 23:33:06.997934 11117 net.cpp:2299] Setting up relu4_convert0
+I0327 23:33:06.997942 11117 net.cpp:2306] Top shape: 1 384 13 13 (64896)
+I0327 23:33:06.997947 11117 net.cpp:2314] Memory required for data: 25575376
+I0327 23:33:06.997953 11117 layer_factory.hpp:77] Creating layer conv5
+I0327 23:33:06.998045 11117 net.cpp:2261] Creating Layer conv5
+I0327 23:33:06.998054 11117 net.cpp:2597] conv5 <- conv4
+I0327 23:33:06.998065 11117 net.cpp:2571] conv5 -> conv5
+I0327 23:33:07.038434 11117 net.cpp:2299] Setting up conv5
+I0327 23:33:07.038465 11117 net.cpp:2306] Top shape: 1 256 13 13 (43264)
+I0327 23:33:07.038472 11117 net.cpp:2314] Memory required for data: 25921488
+I0327 23:33:07.038494 11117 layer_factory.hpp:77] Creating layer relu5
+I0327 23:33:07.038522 11117 net.cpp:2261] Creating Layer relu5
+I0327 23:33:07.038532 11117 net.cpp:2597] relu5 <- conv5
+I0327 23:33:07.038543 11117 net.cpp:2558] relu5 -> conv5 (in-place)
+I0327 23:33:07.038558 11117 net.cpp:2299] Setting up relu5
+I0327 23:33:07.038565 11117 net.cpp:2306] Top shape: 1 256 13 13 (43264)
+I0327 23:33:07.038570 11117 net.cpp:2314] Memory required for data: 26267600
+I0327 23:33:07.038576 11117 layer_factory.hpp:77] Creating layer relu5_convert0
+I0327 23:33:07.038604 11117 net.cpp:2261] Creating Layer relu5_convert0
+I0327 23:33:07.038611 11117 net.cpp:2597] relu5_convert0 <- conv5
+I0327 23:33:07.038621 11117 net.cpp:2558] relu5_convert0 -> conv5 (in-place)
+I0327 23:33:07.038631 11117 net.cpp:2299] Setting up relu5_convert0
+I0327 23:33:07.038640 11117 net.cpp:2306] Top shape: 1 256 13 13 (43264)
+I0327 23:33:07.038645 11117 net.cpp:2314] Memory required for data: 26613712
+I0327 23:33:07.038651 11117 layer_factory.hpp:77] Creating layer pool5
+I0327 23:33:07.038792 11117 net.cpp:2261] Creating Layer pool5
+I0327 23:33:07.038802 11117 net.cpp:2597] pool5 <- conv5
+I0327 23:33:07.038815 11117 net.cpp:2571] pool5 -> pool5
+I0327 23:33:07.038838 11117 net.cpp:2299] Setting up pool5
+I0327 23:33:07.038848 11117 net.cpp:2306] Top shape: 1 256 6 6 (9216)
+I0327 23:33:07.038853 11117 net.cpp:2314] Memory required for data: 26687440
+I0327 23:33:07.038861 11117 layer_factory.hpp:77] Creating layer fc6
+I0327 23:33:07.039647 11117 net.cpp:2261] Creating Layer fc6
+I0327 23:33:07.039657 11117 net.cpp:2597] fc6 <- pool5
+I0327 23:33:07.039672 11117 net.cpp:2571] fc6 -> fc6

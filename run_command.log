@@ -1,0 +1,2 @@
+/home/abcd/rcnn/sjtu_demo/project/rcnn/pgm_loader/pgm_loader.py --input_file /home/abcd/rcnn/sjtu_demo/project/rcnn/images/cropped_image_412.jpg --dat_file temp.dat --mean_file /home/abcd/rcnn/sjtu_demo/project/rcnn/mean/image_mean.mat
+./dla_amod/build/tools/caffe test -iterations 1 -weights ./dla_amod/models/bvlc_reference_rcnn_ilsvrc13/bvlc_reference_rcnn_ilsvrc13.caffemodel -model ./dla_amod/models/bvlc_reference_rcnn_ilsvrc13/train_val.prototxt
