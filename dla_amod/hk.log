@@ -1,0 +1,1799 @@
+I0227 15:03:40.432142 16873 caffe.cpp:178] Use CPU.
+I0227 15:03:40.441936 16873 net.cpp:2393] initializing net from file:/home/scratch.yilinz_t19x_2/t19x/caffe-master-amodel/../tuning_logs/precision_8b_200/train_val_autogen.prototxt
+I0227 15:03:40.442816 16873 net.cpp:2417] Initializing net from parameters: 
+name: "AlexNet"
+state {
+  phase: TEST
+}
+debug_info: true
+roi_accuracy: NONE
+layer {
+  name: "data"
+  type: "Data"
+  top: "data"
+  top: "label"
+  include {
+    phase: TEST
+  }
+  transform_param {
+    mirror: false
+    crop_size: 227
+    mean_file: "/home/scratch.yilinz_t19x_2/t19x/caffe-master-amodel/data/ilsvrc12/imagenet_mean.binaryproto"
+    shifter: 0
+    bits: 8
+    type: INT
+  }
+  data_param {
+    source: "/home/scratch.yilinz_t19x_2/t19x/caffe-master-amodel/../git/db/val_db0"
+    batch_size: 25
+    backend: LMDB
+    skip: 0
+    interval: 2
+  }
+}
+layer {
+  name: "data_convert0"
+  type: "Convertor"
+  bottom: "data"
+  top: "data"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 16858
+      shifter: 15
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 0
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "conv1"
+  type: "Convolution"
+  bottom: "data"
+  top: "conv1"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 96
+    kernel_size: 11
+    stride: 4
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+    engine: SPLITC
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 32
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 286.9697618664577
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 147.6359938215559
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+    }
+    input_mean: 0
+  }
+}
+layer {
+  name: "relu1"
+  type: "ReLU"
+  bottom: "conv1"
+  top: "relu1"
+}
+layer {
+  name: "relu1_convert0"
+  type: "Convertor"
+  bottom: "relu1"
+  top: "relu1"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 18357
+      shifter: 25
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 0
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "norm1_convert_in0"
+  type: "Convertor"
+  bottom: "relu1"
+  top: "relu1"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 25307
+      shifter: 13
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 9
+      offset: -0
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.1
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "norm1"
+  type: "NVLRN"
+  bottom: "relu1"
+  top: "norm1"
+  nv_lrn_param {
+    local_size: 5
+    alpha: 0.0001
+    beta: 0.75
+    norm_region: ACROSS_CHANNELS
+    k: 1
+    lut_param {
+      density_start: 7094.2377531130414
+      density_win_size: 17
+      raw_tbl_entry: 65
+      density_tbl_entry: 257
+      sym: NO_SYM
+      lut_convert {
+        from: DBL
+        to: INT
+        to_coef {
+          scale: 32767
+          shifter: 0
+          comp_scale: 1
+          comp_shifter: 0
+          bits: 16
+          offset: 0
+        }
+        allow_saturate: false
+        method: STD_RN
+        dr_ratio: 0
+      }
+      raw_step_method: EXP_STEP
+      raw_min: 0
+      raw_max: 4294967296
+      priority: LO_TBL
+      shifter: -4
+      interp_bits: 16
+      disable_density: false
+      exp_raw_shifter: -32
+      overflow_priority: LE_TBL
+      underflow_priority: LE_TBL
+      density_overflow_slope: -2147483648
+      density_overflow_shifter: 72
+      density_underflow_slope: -2147483648
+      density_underflow_shifter: 69
+      raw_overflow_slope: 0
+      raw_overflow_shifter: 0
+      raw_underflow_slope: 0
+      raw_underflow_shifter: 0
+      pipe: INT
+    }
+  }
+}
+layer {
+  name: "norm1_convert0"
+  type: "Convertor"
+  bottom: "norm1"
+  top: "norm1"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 16588
+      shifter: 27
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 0
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "pool1"
+  type: "Pooling"
+  bottom: "norm1"
+  top: "pool1"
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 2
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "conv2"
+  type: "Convolution"
+  bottom: "pool1"
+  top: "conv2"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 256
+    pad: 2
+    kernel_size: 5
+    group: 2
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.1
+    }
+    engine: SPLITC
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 32
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 262.84411998001553
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.8
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 265.59132190752149
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+    }
+    input_mean: 0
+  }
+}
+layer {
+  name: "relu2"
+  type: "ReLU"
+  bottom: "conv2"
+  top: "conv2"
+}
+layer {
+  name: "relu2_convert0"
+  type: "Convertor"
+  bottom: "conv2"
+  top: "conv2"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 17318
+      shifter: 24
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 0
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "norm2_convert_in0"
+  type: "Convertor"
+  bottom: "conv2"
+  top: "conv2"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 29823
+      shifter: 13
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 9
+      offset: -0
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.1
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "norm2"
+  type: "NVLRN"
+  bottom: "conv2"
+  top: "norm2"
+  nv_lrn_param {
+    local_size: 5
+    alpha: 0.0001
+    beta: 0.75
+    norm_region: ACROSS_CHANNELS
+    k: 1
+    lut_param {
+      density_start: 499.17495655301633
+      density_win_size: 15
+      raw_tbl_entry: 65
+      density_tbl_entry: 257
+      sym: NO_SYM
+      lut_convert {
+        from: DBL
+        to: INT
+        to_coef {
+          scale: 32767
+          shifter: 0
+          comp_scale: 1
+          comp_shifter: 0
+          bits: 16
+          offset: 0
+        }
+        allow_saturate: false
+        method: STD_RN
+        dr_ratio: 0
+      }
+      raw_step_method: EXP_STEP
+      raw_min: 0
+      raw_max: 4294967296
+      priority: LO_TBL
+      shifter: 0
+      interp_bits: 16
+      disable_density: false
+      exp_raw_shifter: -32
+      overflow_priority: LE_TBL
+      underflow_priority: LE_TBL
+      density_overflow_slope: -2147483648
+      density_overflow_shifter: 67
+      density_underflow_slope: -2147483648
+      density_underflow_shifter: 69
+      raw_overflow_slope: 0
+      raw_overflow_shifter: 0
+      raw_underflow_slope: 0
+      raw_underflow_shifter: 0
+      pipe: INT
+    }
+  }
+}
+layer {
+  name: "norm2_convert0"
+  type: "Convertor"
+  bottom: "norm2"
+  top: "norm2"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 20273
+      shifter: 29
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 0
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "pool2"
+  type: "Pooling"
+  bottom: "norm2"
+  top: "pool2"
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 2
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "conv3"
+  type: "Convolution"
+  bottom: "pool2"
+  top: "conv3"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 384
+    pad: 1
+    kernel_size: 3
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+    engine: WINOGRAD
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 32
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 152.1007917802535
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+    }
+    pra_feature_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 2
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+    }
+    pra_weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 492.66706912853437
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+    }
+    input_mean: 0
+  }
+}
+layer {
+  name: "relu3"
+  type: "ReLU"
+  bottom: "conv3"
+  top: "conv3"
+}
+layer {
+  name: "relu3_convert0"
+  type: "Convertor"
+  bottom: "conv3"
+  top: "conv3"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 26617
+      shifter: 23
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 0
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "conv4"
+  type: "Convolution"
+  bottom: "conv3"
+  top: "conv4"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 384
+    pad: 1
+    kernel_size: 3
+    group: 2
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.1
+    }
+    engine: WINOGRAD
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 32
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 63.354510289363624
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+    }
+    pra_feature_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 2
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+    }
+    pra_weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 525.093751694403
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.8
+    }
+    input_mean: 0
+  }
+}
+layer {
+  name: "relu4"
+  type: "ReLU"
+  bottom: "conv4"
+  top: "conv4"
+}
+layer {
+  name: "relu4_convert0"
+  type: "Convertor"
+  bottom: "conv4"
+  top: "conv4"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 19044
+      shifter: 21
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 0
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "conv5"
+  type: "Convolution"
+  bottom: "conv4"
+  top: "conv5"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 256
+    pad: 1
+    kernel_size: 3
+    group: 2
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.1
+    }
+    engine: WINOGRAD
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 32
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 48.328920941086956
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+    }
+    pra_feature_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 2
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+    }
+    pra_weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 336.01702915348363
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.8
+    }
+    input_mean: 0
+  }
+}
+layer {
+  name: "relu5"
+  type: "ReLU"
+  bottom: "conv5"
+  top: "conv5"
+}
+layer {
+  name: "relu5_convert0"
+  type: "Convertor"
+  bottom: "conv5"
+  top: "conv5"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 28910
+      shifter: 21
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 0
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "pool5"
+  type: "Pooling"
+  bottom: "conv5"
+  top: "pool5"
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 2
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "fc6"
+  type: "InnerProduct"
+  bottom: "pool5"
+  top: "fc6"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  inner_product_param {
+    num_output: 4096
+    weight_filler {
+      type: "gaussian"
+      std: 0.005
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.1
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 2987.0528528681662
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1990.069246442185
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+    }
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 32
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+    }
+  }
+}
+layer {
+  name: "relu6"
+  type: "ReLU"
+  bottom: "fc6"
+  top: "fc6"
+}
+layer {
+  name: "relu6_convert0"
+  type: "Convertor"
+  bottom: "fc6"
+  top: "fc6"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 19412
+      shifter: 24
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 0
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "drop6"
+  type: "Dropout"
+  bottom: "fc6"
+  top: "fc6"
+  dropout_param {
+    dropout_ratio: 0.5
+  }
+}
+layer {
+  name: "fc7"
+  type: "InnerProduct"
+  bottom: "fc6"
+  top: "fc7"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  inner_product_param {
+    num_output: 4096
+    weight_filler {
+      type: "gaussian"
+      std: 0.005
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.1
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1754.3125370763823
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 4039.4807432655975
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+    }
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 32
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+    }
+  }
+}
+layer {
+  name: "relu7"
+  type: "ReLU"
+  bottom: "fc7"
+  top: "fc7"
+}
+layer {
+  name: "relu7_convert0"
+  type: "Convertor"
+  bottom: "fc7"
+  top: "fc7"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 29767
+      shifter: 24
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 0
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "drop7"
+  type: "Dropout"
+  bottom: "fc7"
+  top: "fc7"
+  dropout_param {
+    dropout_ratio: 0.5
+  }
+}
+layer {
+  name: "fc8"
+  type: "InnerProduct"
+  bottom: "fc7"
+  top: "fc8"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  inner_product_param {
+    num_output: 1000
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1700.1820762075363
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 12185.2977880368
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+    }
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 32
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+    }
+  }
+}
+layer {
+  name: "fc8_convert0"
+  type: "Convertor"
+  bottom: "fc8"
+  top: "fc8"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 25561
+      shifter: 26
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 0
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "accuracy_1_convert_in0"
+  type: "Convertor"
+  bottom: "fc8"
+  top: "fc8"
+  convert_param {
+    from: DBL
+    to: DBL
+    to_coef {
+      scale: 0.21545962511152761
+      shifter: 0
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 64
+      offset: -0
+    }
+    allow_saturate: false
+    method: STD_RN
+    dr_ratio: 0.1
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "accuracy_1"
+  type: "Accuracy"
+  bottom: "fc8"
+  bottom: "label"
+  top: "accuracy_1"
+  include {
+    phase: TEST
+  }
+  accuracy_param {
+    top_k: 1
+  }
+}
+layer {
+  name: "accuracy_5"
+  type: "Accuracy"
+  bottom: "fc8"
+  bottom: "label"
+  top: "accuracy_5"
+  include {
+    phase: TEST
+  }
+  accuracy_param {
+    top_k: 5
+  }
+}
+layer {
+  name: "loss"
+  type: "SoftmaxWithLoss"
+  bottom: "fc8"
+  bottom: "label"
+  top: "loss"
+}
+I0227 15:03:40.446389 16873 layer_factory.hpp:74] Creating layer data
+I0227 15:03:40.446492 16873 net.cpp:2459] Creating Layer data
+I0227 15:03:40.446514 16873 net.cpp:2792] data -> data
+I0227 15:03:40.447324 16873 net.cpp:2792] data -> label
+I0227 15:03:40.447388 16873 data_transformer.cpp:37] Loading mean file from: /home/scratch.yilinz_t19x_2/t19x/caffe-master-amodel/data/ilsvrc12/imagenet_mean.binaryproto
+I0227 15:03:40.462141 16873 data_transformer.cpp:80] Mean dynamic range is: 94~131
+I0227 15:03:40.462224 16873 data_transformer.cpp:81] Mean data ave is: 104.007, 116.67, 122.675
+I0227 15:03:40.493695 16873 db.cpp:37] Opened lmdb /home/scratch.yilinz_t19x_2/t19x/caffe-master-amodel/../git/db/val_db0
+I0227 15:03:40.493751 16873 db.cpp:47] before txn_begin
+I0227 15:03:42.494463 16873 db.cpp:55] before dbi_open
+I0227 15:03:44.494601 16873 db.cpp:64] before cusor_open
+I0227 15:03:46.494740 16873 db.cpp:73] before new cursor
+I0227 15:03:46.508843 16873 data_layer.cpp:63] output data size: 25,3,227,227
+I0227 15:03:46.528486 16873 net.cpp:2509] Setting up data
+I0227 15:03:46.528548 16873 net.cpp:2516] Top shape: 25 3 227 227 (3864675)
+I0227 15:03:46.528558 16873 net.cpp:2516] Top shape: 25 (25)
+I0227 15:03:46.528563 16873 net.cpp:2524] Memory required for data: 30917600
+I0227 15:03:46.528581 16873 layer_factory.hpp:74] Creating layer label_data_1_split
+I0227 15:03:46.528623 16873 net.cpp:2459] Creating Layer label_data_1_split
+I0227 15:03:46.528636 16873 net.cpp:2836] label_data_1_split <- label
+I0227 15:03:46.528666 16873 net.cpp:2792] label_data_1_split -> label_data_1_split_0
+I0227 15:03:46.528688 16873 net.cpp:2792] label_data_1_split -> label_data_1_split_1
+I0227 15:03:46.528697 16873 net.cpp:2792] label_data_1_split -> label_data_1_split_2
+I0227 15:03:46.528712 16873 net.cpp:2509] Setting up label_data_1_split
+I0227 15:03:46.528720 16873 net.cpp:2516] Top shape: 25 (25)
+I0227 15:03:46.528728 16873 net.cpp:2516] Top shape: 25 (25)
+I0227 15:03:46.528734 16873 net.cpp:2516] Top shape: 25 (25)
+I0227 15:03:46.528739 16873 net.cpp:2524] Memory required for data: 30918200
+I0227 15:03:46.528745 16873 layer_factory.hpp:74] Creating layer data_convert0
+I0227 15:03:46.528770 16873 net.cpp:2459] Creating Layer data_convert0
+I0227 15:03:46.528777 16873 net.cpp:2836] data_convert0 <- data
+I0227 15:03:46.528786 16873 net.cpp:2781] data_convert0 -> data (in-place)
+I0227 15:03:46.528801 16873 net.cpp:2509] Setting up data_convert0
+I0227 15:03:46.528810 16873 net.cpp:2516] Top shape: 25 3 227 227 (3864675)
+I0227 15:03:46.528815 16873 net.cpp:2524] Memory required for data: 61835600
+I0227 15:03:46.528820 16873 layer_factory.hpp:74] Creating layer conv1
+I0227 15:03:46.528923 16873 net.cpp:2459] Creating Layer conv1
+I0227 15:03:46.528934 16873 net.cpp:2836] conv1 <- data
+I0227 15:03:46.528945 16873 net.cpp:2792] conv1 -> conv1
+I0227 15:03:46.531870 16873 net.cpp:2509] Setting up conv1
+I0227 15:03:46.531903 16873 net.cpp:2516] Top shape: 25 96 55 55 (7260000)
+I0227 15:03:46.531909 16873 net.cpp:2524] Memory required for data: 119915600
+I0227 15:03:46.531942 16873 layer_factory.hpp:74] Creating layer relu1
+I0227 15:03:46.531973 16873 net.cpp:2459] Creating Layer relu1
+I0227 15:03:46.531982 16873 net.cpp:2836] relu1 <- conv1
+I0227 15:03:46.531994 16873 net.cpp:2792] relu1 -> relu1
+I0227 15:03:46.532013 16873 net.cpp:2509] Setting up relu1
+I0227 15:03:46.532021 16873 net.cpp:2516] Top shape: 25 96 55 55 (7260000)
+I0227 15:03:46.532027 16873 net.cpp:2524] Memory required for data: 177995600
+I0227 15:03:46.532032 16873 layer_factory.hpp:74] Creating layer relu1_convert0
+I0227 15:03:46.532064 16873 net.cpp:2459] Creating Layer relu1_convert0
+I0227 15:03:46.532071 16873 net.cpp:2836] relu1_convert0 <- relu1
+I0227 15:03:46.532083 16873 net.cpp:2781] relu1_convert0 -> relu1 (in-place)
+I0227 15:03:46.532094 16873 net.cpp:2509] Setting up relu1_convert0
+I0227 15:03:46.532100 16873 net.cpp:2516] Top shape: 25 96 55 55 (7260000)
+I0227 15:03:46.532106 16873 net.cpp:2524] Memory required for data: 236075600
+I0227 15:03:46.532171 16873 layer_factory.hpp:74] Creating layer norm1_convert_in0
+I0227 15:03:46.532193 16873 net.cpp:2459] Creating Layer norm1_convert_in0
+I0227 15:03:46.532202 16873 net.cpp:2836] norm1_convert_in0 <- relu1
+I0227 15:03:46.532210 16873 net.cpp:2781] norm1_convert_in0 -> relu1 (in-place)
+I0227 15:03:46.532219 16873 net.cpp:2509] Setting up norm1_convert_in0
+I0227 15:03:46.532227 16873 net.cpp:2516] Top shape: 25 96 55 55 (7260000)
+I0227 15:03:46.532233 16873 net.cpp:2524] Memory required for data: 294155600
+I0227 15:03:46.532238 16873 layer_factory.hpp:74] Creating layer norm1
+I0227 15:03:46.532312 16873 net.cpp:2459] Creating Layer norm1
+I0227 15:03:46.532325 16873 net.cpp:2836] norm1 <- relu1
+I0227 15:03:46.532333 16873 net.cpp:2792] norm1 -> norm1
+I0227 15:03:46.533210 16873 net.cpp:2509] Setting up norm1
+I0227 15:03:46.533228 16873 net.cpp:2516] Top shape: 25 96 55 55 (7260000)
+I0227 15:03:46.533234 16873 net.cpp:2524] Memory required for data: 352235600
+I0227 15:03:46.533241 16873 layer_factory.hpp:74] Creating layer norm1_convert0
+I0227 15:03:46.533265 16873 net.cpp:2459] Creating Layer norm1_convert0
+I0227 15:03:46.533273 16873 net.cpp:2836] norm1_convert0 <- norm1
+I0227 15:03:46.533282 16873 net.cpp:2781] norm1_convert0 -> norm1 (in-place)
+I0227 15:03:46.533293 16873 net.cpp:2509] Setting up norm1_convert0
+I0227 15:03:46.533299 16873 net.cpp:2516] Top shape: 25 96 55 55 (7260000)
+I0227 15:03:46.533305 16873 net.cpp:2524] Memory required for data: 410315600
+I0227 15:03:46.533310 16873 layer_factory.hpp:74] Creating layer pool1
+I0227 15:03:46.533365 16873 net.cpp:2459] Creating Layer pool1
+I0227 15:03:46.533376 16873 net.cpp:2836] pool1 <- norm1
+I0227 15:03:46.533385 16873 net.cpp:2792] pool1 -> pool1
+I0227 15:03:46.533411 16873 net.cpp:2509] Setting up pool1
+I0227 15:03:46.533421 16873 net.cpp:2516] Top shape: 25 96 27 27 (1749600)
+I0227 15:03:46.533427 16873 net.cpp:2524] Memory required for data: 424312400
+I0227 15:03:46.533432 16873 layer_factory.hpp:74] Creating layer conv2
+I0227 15:03:46.533557 16873 net.cpp:2459] Creating Layer conv2
+I0227 15:03:46.533567 16873 net.cpp:2836] conv2 <- pool1
+I0227 15:03:46.533581 16873 net.cpp:2792] conv2 -> conv2
+I0227 15:03:46.573173 16873 net.cpp:2509] Setting up conv2
+I0227 15:03:46.573230 16873 net.cpp:2516] Top shape: 25 256 27 27 (4665600)
+I0227 15:03:46.573236 16873 net.cpp:2524] Memory required for data: 461637200
+I0227 15:03:46.573261 16873 layer_factory.hpp:74] Creating layer relu2
+I0227 15:03:46.573304 16873 net.cpp:2459] Creating Layer relu2
+I0227 15:03:46.573314 16873 net.cpp:2836] relu2 <- conv2
+I0227 15:03:46.573331 16873 net.cpp:2781] relu2 -> conv2 (in-place)
+I0227 15:03:46.578393 16873 net.cpp:2509] Setting up relu2
+I0227 15:03:46.578438 16873 net.cpp:2516] Top shape: 25 256 27 27 (4665600)
+I0227 15:03:46.578444 16873 net.cpp:2524] Memory required for data: 498962000
+I0227 15:03:46.578451 16873 layer_factory.hpp:74] Creating layer relu2_convert0
+I0227 15:03:46.578491 16873 net.cpp:2459] Creating Layer relu2_convert0
+I0227 15:03:46.578500 16873 net.cpp:2836] relu2_convert0 <- conv2
+I0227 15:03:46.578514 16873 net.cpp:2781] relu2_convert0 -> conv2 (in-place)
+I0227 15:03:46.578527 16873 net.cpp:2509] Setting up relu2_convert0
+I0227 15:03:46.578536 16873 net.cpp:2516] Top shape: 25 256 27 27 (4665600)
+I0227 15:03:46.578541 16873 net.cpp:2524] Memory required for data: 536286800
+I0227 15:03:46.578547 16873 layer_factory.hpp:74] Creating layer norm2_convert_in0
+I0227 15:03:46.578579 16873 net.cpp:2459] Creating Layer norm2_convert_in0
+I0227 15:03:46.578588 16873 net.cpp:2836] norm2_convert_in0 <- conv2
+I0227 15:03:46.578596 16873 net.cpp:2781] norm2_convert_in0 -> conv2 (in-place)
+I0227 15:03:46.578606 16873 net.cpp:2509] Setting up norm2_convert_in0
+I0227 15:03:46.578613 16873 net.cpp:2516] Top shape: 25 256 27 27 (4665600)
+I0227 15:03:46.578619 16873 net.cpp:2524] Memory required for data: 573611600
+I0227 15:03:46.578625 16873 layer_factory.hpp:74] Creating layer norm2
+I0227 15:03:46.578685 16873 net.cpp:2459] Creating Layer norm2
+I0227 15:03:46.578699 16873 net.cpp:2836] norm2 <- conv2
+I0227 15:03:46.578763 16873 net.cpp:2792] norm2 -> norm2
+I0227 15:03:46.579617 16873 net.cpp:2509] Setting up norm2
+I0227 15:03:46.579632 16873 net.cpp:2516] Top shape: 25 256 27 27 (4665600)
+I0227 15:03:46.579638 16873 net.cpp:2524] Memory required for data: 610936400
+I0227 15:03:46.579643 16873 layer_factory.hpp:74] Creating layer norm2_convert0
+I0227 15:03:46.579668 16873 net.cpp:2459] Creating Layer norm2_convert0
+I0227 15:03:46.579675 16873 net.cpp:2836] norm2_convert0 <- norm2
+I0227 15:03:46.579686 16873 net.cpp:2781] norm2_convert0 -> norm2 (in-place)
+I0227 15:03:46.579696 16873 net.cpp:2509] Setting up norm2_convert0
+I0227 15:03:46.579704 16873 net.cpp:2516] Top shape: 25 256 27 27 (4665600)
+I0227 15:03:46.579710 16873 net.cpp:2524] Memory required for data: 648261200
+I0227 15:03:46.579715 16873 layer_factory.hpp:74] Creating layer pool2
+I0227 15:03:46.579751 16873 net.cpp:2459] Creating Layer pool2
+I0227 15:03:46.579759 16873 net.cpp:2836] pool2 <- norm2
+I0227 15:03:46.579767 16873 net.cpp:2792] pool2 -> pool2
+I0227 15:03:46.579782 16873 net.cpp:2509] Setting up pool2
+I0227 15:03:46.579790 16873 net.cpp:2516] Top shape: 25 256 13 13 (1081600)
+I0227 15:03:46.579797 16873 net.cpp:2524] Memory required for data: 656914000
+I0227 15:03:46.579802 16873 layer_factory.hpp:74] Creating layer conv3
+I0227 15:03:46.579975 16873 net.cpp:2459] Creating Layer conv3
+I0227 15:03:46.579987 16873 net.cpp:2836] conv3 <- pool2
+I0227 15:03:46.580000 16873 net.cpp:2792] conv3 -> conv3
+I0227 15:03:46.719205 16873 net.cpp:2509] Setting up conv3
+I0227 15:03:46.719262 16873 net.cpp:2516] Top shape: 25 384 13 13 (1622400)
+I0227 15:03:46.719269 16873 net.cpp:2524] Memory required for data: 669893200
+I0227 15:03:46.719291 16873 layer_factory.hpp:74] Creating layer relu3
+I0227 15:03:46.719349 16873 net.cpp:2459] Creating Layer relu3
+I0227 15:03:46.719362 16873 net.cpp:2836] relu3 <- conv3
+I0227 15:03:46.719379 16873 net.cpp:2781] relu3 -> conv3 (in-place)
+I0227 15:03:46.719398 16873 net.cpp:2509] Setting up relu3
+I0227 15:03:46.719404 16873 net.cpp:2516] Top shape: 25 384 13 13 (1622400)
+I0227 15:03:46.719410 16873 net.cpp:2524] Memory required for data: 682872400
+I0227 15:03:46.719415 16873 layer_factory.hpp:74] Creating layer relu3_convert0
+I0227 15:03:46.719437 16873 net.cpp:2459] Creating Layer relu3_convert0
+I0227 15:03:46.719445 16873 net.cpp:2836] relu3_convert0 <- conv3
+I0227 15:03:46.719454 16873 net.cpp:2781] relu3_convert0 -> conv3 (in-place)
+I0227 15:03:46.719463 16873 net.cpp:2509] Setting up relu3_convert0
+I0227 15:03:46.719470 16873 net.cpp:2516] Top shape: 25 384 13 13 (1622400)
+I0227 15:03:46.719476 16873 net.cpp:2524] Memory required for data: 695851600
+I0227 15:03:46.719481 16873 layer_factory.hpp:74] Creating layer conv4
+I0227 15:03:46.719627 16873 net.cpp:2459] Creating Layer conv4
+I0227 15:03:46.719637 16873 net.cpp:2836] conv4 <- conv3
+I0227 15:03:46.719650 16873 net.cpp:2792] conv4 -> conv4
+I0227 15:03:46.819778 16873 net.cpp:2509] Setting up conv4
+I0227 15:03:46.819835 16873 net.cpp:2516] Top shape: 25 384 13 13 (1622400)
+I0227 15:03:46.819841 16873 net.cpp:2524] Memory required for data: 708830800
+I0227 15:03:46.819859 16873 layer_factory.hpp:74] Creating layer relu4
+I0227 15:03:46.819900 16873 net.cpp:2459] Creating Layer relu4
+I0227 15:03:46.819910 16873 net.cpp:2836] relu4 <- conv4
+I0227 15:03:46.819923 16873 net.cpp:2781] relu4 -> conv4 (in-place)
+I0227 15:03:46.819941 16873 net.cpp:2509] Setting up relu4
+I0227 15:03:46.819948 16873 net.cpp:2516] Top shape: 25 384 13 13 (1622400)
+I0227 15:03:46.819953 16873 net.cpp:2524] Memory required for data: 721810000
+I0227 15:03:46.819959 16873 layer_factory.hpp:74] Creating layer relu4_convert0
+I0227 15:03:46.819983 16873 net.cpp:2459] Creating Layer relu4_convert0
+I0227 15:03:46.819990 16873 net.cpp:2836] relu4_convert0 <- conv4
+I0227 15:03:46.820000 16873 net.cpp:2781] relu4_convert0 -> conv4 (in-place)
+I0227 15:03:46.820010 16873 net.cpp:2509] Setting up relu4_convert0
+I0227 15:03:46.820025 16873 net.cpp:2516] Top shape: 25 384 13 13 (1622400)
+I0227 15:03:46.820081 16873 net.cpp:2524] Memory required for data: 734789200
+I0227 15:03:46.820089 16873 layer_factory.hpp:74] Creating layer conv5
+I0227 15:03:46.820247 16873 net.cpp:2459] Creating Layer conv5
+I0227 15:03:46.820258 16873 net.cpp:2836] conv5 <- conv4
+I0227 15:03:46.820272 16873 net.cpp:2792] conv5 -> conv5
+I0227 15:03:46.888911 16873 net.cpp:2509] Setting up conv5
+I0227 15:03:46.888970 16873 net.cpp:2516] Top shape: 25 256 13 13 (1081600)
+I0227 15:03:46.888976 16873 net.cpp:2524] Memory required for data: 743442000
+I0227 15:03:46.889000 16873 layer_factory.hpp:74] Creating layer relu5
+I0227 15:03:46.889041 16873 net.cpp:2459] Creating Layer relu5
+I0227 15:03:46.889055 16873 net.cpp:2836] relu5 <- conv5
+I0227 15:03:46.889068 16873 net.cpp:2781] relu5 -> conv5 (in-place)
+I0227 15:03:46.889086 16873 net.cpp:2509] Setting up relu5
+I0227 15:03:46.889092 16873 net.cpp:2516] Top shape: 25 256 13 13 (1081600)
+I0227 15:03:46.889098 16873 net.cpp:2524] Memory required for data: 752094800
+I0227 15:03:46.889103 16873 layer_factory.hpp:74] Creating layer relu5_convert0
+I0227 15:03:46.889127 16873 net.cpp:2459] Creating Layer relu5_convert0
+I0227 15:03:46.889134 16873 net.cpp:2836] relu5_convert0 <- conv5
+I0227 15:03:46.889144 16873 net.cpp:2781] relu5_convert0 -> conv5 (in-place)
+I0227 15:03:46.889155 16873 net.cpp:2509] Setting up relu5_convert0
+I0227 15:03:46.889163 16873 net.cpp:2516] Top shape: 25 256 13 13 (1081600)
+I0227 15:03:46.889168 16873 net.cpp:2524] Memory required for data: 760747600
+I0227 15:03:46.889174 16873 layer_factory.hpp:74] Creating layer pool5
+I0227 15:03:46.889212 16873 net.cpp:2459] Creating Layer pool5
+I0227 15:03:46.889220 16873 net.cpp:2836] pool5 <- conv5
+I0227 15:03:46.889230 16873 net.cpp:2792] pool5 -> pool5
+I0227 15:03:46.889248 16873 net.cpp:2509] Setting up pool5
+I0227 15:03:46.889256 16873 net.cpp:2516] Top shape: 25 256 6 6 (230400)
+I0227 15:03:46.889261 16873 net.cpp:2524] Memory required for data: 762590800
+I0227 15:03:46.889267 16873 layer_factory.hpp:74] Creating layer fc6
+I0227 15:03:46.889379 16873 net.cpp:2459] Creating Layer fc6
+I0227 15:03:46.889389 16873 net.cpp:2836] fc6 <- pool5
+I0227 15:03:46.889402 16873 net.cpp:2792] fc6 -> fc6
+I0227 15:03:50.818315 16873 net.cpp:2509] Setting up fc6
+I0227 15:03:50.818380 16873 net.cpp:2516] Top shape: 25 4096 (102400)
+I0227 15:03:50.818387 16873 net.cpp:2524] Memory required for data: 763410000
+I0227 15:03:50.818405 16873 layer_factory.hpp:74] Creating layer relu6
+I0227 15:03:50.818447 16873 net.cpp:2459] Creating Layer relu6
+I0227 15:03:50.818459 16873 net.cpp:2836] relu6 <- fc6
+I0227 15:03:50.818475 16873 net.cpp:2781] relu6 -> fc6 (in-place)
+I0227 15:03:50.818493 16873 net.cpp:2509] Setting up relu6
+I0227 15:03:50.818500 16873 net.cpp:2516] Top shape: 25 4096 (102400)
+I0227 15:03:50.818506 16873 net.cpp:2524] Memory required for data: 764229200
+I0227 15:03:50.818511 16873 layer_factory.hpp:74] Creating layer relu6_convert0
+I0227 15:03:50.818538 16873 net.cpp:2459] Creating Layer relu6_convert0
+I0227 15:03:50.818547 16873 net.cpp:2836] relu6_convert0 <- fc6
+I0227 15:03:50.818554 16873 net.cpp:2781] relu6_convert0 -> fc6 (in-place)
+I0227 15:03:50.818567 16873 net.cpp:2509] Setting up relu6_convert0
+I0227 15:03:50.818573 16873 net.cpp:2516] Top shape: 25 4096 (102400)
+I0227 15:03:50.818578 16873 net.cpp:2524] Memory required for data: 765048400
+I0227 15:03:50.818584 16873 layer_factory.hpp:74] Creating layer drop6
+I0227 15:03:50.818605 16873 net.cpp:2459] Creating Layer drop6
+I0227 15:03:50.818614 16873 net.cpp:2836] drop6 <- fc6
+I0227 15:03:50.818624 16873 net.cpp:2781] drop6 -> fc6 (in-place)
+I0227 15:03:50.818644 16873 net.cpp:2509] Setting up drop6
+I0227 15:03:50.818651 16873 net.cpp:2516] Top shape: 25 4096 (102400)
+I0227 15:03:50.818656 16873 net.cpp:2524] Memory required for data: 765867600
+I0227 15:03:50.818662 16873 layer_factory.hpp:74] Creating layer fc7
+I0227 15:03:50.818745 16873 net.cpp:2459] Creating Layer fc7
+I0227 15:03:50.818754 16873 net.cpp:2836] fc7 <- fc6
+I0227 15:03:50.818775 16873 net.cpp:2792] fc7 -> fc7
+I0227 15:03:52.096813 16873 net.cpp:2509] Setting up fc7
+I0227 15:03:52.096870 16873 net.cpp:2516] Top shape: 25 4096 (102400)
+I0227 15:03:52.096876 16873 net.cpp:2524] Memory required for data: 766686800
+I0227 15:03:52.096894 16873 layer_factory.hpp:74] Creating layer relu7
+I0227 15:03:52.096940 16873 net.cpp:2459] Creating Layer relu7
+I0227 15:03:52.096951 16873 net.cpp:2836] relu7 <- fc7
+I0227 15:03:52.096967 16873 net.cpp:2781] relu7 -> fc7 (in-place)
+I0227 15:03:52.096985 16873 net.cpp:2509] Setting up relu7
+I0227 15:03:52.096992 16873 net.cpp:2516] Top shape: 25 4096 (102400)
+I0227 15:03:52.096997 16873 net.cpp:2524] Memory required for data: 767506000
+I0227 15:03:52.097003 16873 layer_factory.hpp:74] Creating layer relu7_convert0
+I0227 15:03:52.097028 16873 net.cpp:2459] Creating Layer relu7_convert0
+I0227 15:03:52.097034 16873 net.cpp:2836] relu7_convert0 <- fc7
+I0227 15:03:52.097043 16873 net.cpp:2781] relu7_convert0 -> fc7 (in-place)
+I0227 15:03:52.097054 16873 net.cpp:2509] Setting up relu7_convert0
+I0227 15:03:52.097061 16873 net.cpp:2516] Top shape: 25 4096 (102400)
+I0227 15:03:52.097066 16873 net.cpp:2524] Memory required for data: 768325200
+I0227 15:03:52.097072 16873 layer_factory.hpp:74] Creating layer drop7
+I0227 15:03:52.097095 16873 net.cpp:2459] Creating Layer drop7
+I0227 15:03:52.097103 16873 net.cpp:2836] drop7 <- fc7
+I0227 15:03:52.097113 16873 net.cpp:2781] drop7 -> fc7 (in-place)
+I0227 15:03:52.097126 16873 net.cpp:2509] Setting up drop7
+I0227 15:03:52.097134 16873 net.cpp:2516] Top shape: 25 4096 (102400)
+I0227 15:03:52.097139 16873 net.cpp:2524] Memory required for data: 769144400
+I0227 15:03:52.097144 16873 layer_factory.hpp:74] Creating layer fc8
+I0227 15:03:52.097230 16873 net.cpp:2459] Creating Layer fc8
+I0227 15:03:52.097239 16873 net.cpp:2836] fc8 <- fc7
+I0227 15:03:52.097251 16873 net.cpp:2792] fc8 -> fc8
+I0227 15:03:52.409297 16873 net.cpp:2509] Setting up fc8
+I0227 15:03:52.409363 16873 net.cpp:2516] Top shape: 25 1000 (25000)
+I0227 15:03:52.409369 16873 net.cpp:2524] Memory required for data: 769344400
+I0227 15:03:52.409387 16873 layer_factory.hpp:74] Creating layer fc8_convert0
+I0227 15:03:52.409427 16873 net.cpp:2459] Creating Layer fc8_convert0
+I0227 15:03:52.409437 16873 net.cpp:2836] fc8_convert0 <- fc8
+I0227 15:03:52.409454 16873 net.cpp:2781] fc8_convert0 -> fc8 (in-place)
+I0227 15:03:52.409473 16873 net.cpp:2509] Setting up fc8_convert0
+I0227 15:03:52.409482 16873 net.cpp:2516] Top shape: 25 1000 (25000)
+I0227 15:03:52.409487 16873 net.cpp:2524] Memory required for data: 769544400
+I0227 15:03:52.409492 16873 layer_factory.hpp:74] Creating layer accuracy_1_convert_in0
+I0227 15:03:52.409512 16873 net.cpp:2459] Creating Layer accuracy_1_convert_in0
+I0227 15:03:52.409518 16873 net.cpp:2836] accuracy_1_convert_in0 <- fc8
+I0227 15:03:52.409526 16873 net.cpp:2781] accuracy_1_convert_in0 -> fc8 (in-place)
+I0227 15:03:52.409536 16873 net.cpp:2509] Setting up accuracy_1_convert_in0
+I0227 15:03:52.409543 16873 net.cpp:2516] Top shape: 25 1000 (25000)
+I0227 15:03:52.409548 16873 net.cpp:2524] Memory required for data: 769744400
+I0227 15:03:52.409554 16873 layer_factory.hpp:74] Creating layer fc8_accuracy_1_convert_in0_0_split
+I0227 15:03:52.409576 16873 net.cpp:2459] Creating Layer fc8_accuracy_1_convert_in0_0_split
+I0227 15:03:52.409584 16873 net.cpp:2836] fc8_accuracy_1_convert_in0_0_split <- fc8
+I0227 15:03:52.409595 16873 net.cpp:2792] fc8_accuracy_1_convert_in0_0_split -> fc8_accuracy_1_convert_in0_0_split_0
+I0227 15:03:52.409608 16873 net.cpp:2792] fc8_accuracy_1_convert_in0_0_split -> fc8_accuracy_1_convert_in0_0_split_1
+I0227 15:03:52.409617 16873 net.cpp:2792] fc8_accuracy_1_convert_in0_0_split -> fc8_accuracy_1_convert_in0_0_split_2
+I0227 15:03:52.409641 16873 net.cpp:2509] Setting up fc8_accuracy_1_convert_in0_0_split
+I0227 15:03:52.409648 16873 net.cpp:2516] Top shape: 25 1000 (25000)
+I0227 15:03:52.409656 16873 net.cpp:2516] Top shape: 25 1000 (25000)
+I0227 15:03:52.409662 16873 net.cpp:2516] Top shape: 25 1000 (25000)
+I0227 15:03:52.409674 16873 net.cpp:2524] Memory required for data: 770344400
+I0227 15:03:52.409730 16873 layer_factory.hpp:74] Creating layer accuracy_1
+I0227 15:03:52.409759 16873 net.cpp:2459] Creating Layer accuracy_1
+I0227 15:03:52.409767 16873 net.cpp:2836] accuracy_1 <- fc8_accuracy_1_convert_in0_0_split_0
+I0227 15:03:52.409775 16873 net.cpp:2836] accuracy_1 <- label_data_1_split_0
+I0227 15:03:52.409783 16873 net.cpp:2792] accuracy_1 -> accuracy_1
+I0227 15:03:52.409801 16873 net.cpp:2509] Setting up accuracy_1
+I0227 15:03:52.409809 16873 net.cpp:2516] Top shape: 2 (2)
+I0227 15:03:52.409814 16873 net.cpp:2524] Memory required for data: 770344416
+I0227 15:03:52.409819 16873 layer_factory.hpp:74] Creating layer accuracy_5
+I0227 15:03:52.409844 16873 net.cpp:2459] Creating Layer accuracy_5
+I0227 15:03:52.409852 16873 net.cpp:2836] accuracy_5 <- fc8_accuracy_1_convert_in0_0_split_1
+I0227 15:03:52.409859 16873 net.cpp:2836] accuracy_5 <- label_data_1_split_1
+I0227 15:03:52.409868 16873 net.cpp:2792] accuracy_5 -> accuracy_5
+I0227 15:03:52.409878 16873 net.cpp:2509] Setting up accuracy_5
+I0227 15:03:52.409885 16873 net.cpp:2516] Top shape: 2 (2)
+I0227 15:03:52.409890 16873 net.cpp:2524] Memory required for data: 770344432
+I0227 15:03:52.409895 16873 layer_factory.hpp:74] Creating layer loss
+I0227 15:03:52.409917 16873 net.cpp:2459] Creating Layer loss
+I0227 15:03:52.409924 16873 net.cpp:2836] loss <- fc8_accuracy_1_convert_in0_0_split_2
+I0227 15:03:52.409931 16873 net.cpp:2836] loss <- label_data_1_split_2
+I0227 15:03:52.409940 16873 net.cpp:2792] loss -> loss
+I0227 15:03:52.409952 16873 layer_factory.hpp:74] Creating layer loss
+I0227 15:03:52.410085 16873 net.cpp:2509] Setting up loss
+I0227 15:03:52.410099 16873 net.cpp:2516] Top shape: (1)
+I0227 15:03:52.410104 16873 net.cpp:2519]     with loss weight 1
+I0227 15:03:52.410120 16873 net.cpp:2524] Memory required for data: 770344440
+I0227 15:03:52.410125 16873 net.cpp:2585] loss needs backward computation.
+I0227 15:03:52.410132 16873 net.cpp:2587] accuracy_5 does not need backward computation.
+I0227 15:03:52.410140 16873 net.cpp:2587] accuracy_1 does not need backward computation.
+I0227 15:03:52.410147 16873 net.cpp:2585] fc8_accuracy_1_convert_in0_0_split needs backward computation.
+I0227 15:03:52.410152 16873 net.cpp:2585] accuracy_1_convert_in0 needs backward computation.
+I0227 15:03:52.410158 16873 net.cpp:2585] fc8_convert0 needs backward computation.
+I0227 15:03:52.410163 16873 net.cpp:2585] fc8 needs backward computation.
+I0227 15:03:52.410168 16873 net.cpp:2585] drop7 needs backward computation.
+I0227 15:03:52.410174 16873 net.cpp:2585] relu7_convert0 needs backward computation.
+I0227 15:03:52.410181 16873 net.cpp:2585] relu7 needs backward computation.
+I0227 15:03:52.410185 16873 net.cpp:2585] fc7 needs backward computation.
+I0227 15:03:52.410192 16873 net.cpp:2585] drop6 needs backward computation.
+I0227 15:03:52.410197 16873 net.cpp:2585] relu6_convert0 needs backward computation.
+I0227 15:03:52.410202 16873 net.cpp:2585] relu6 needs backward computation.
+I0227 15:03:52.410208 16873 net.cpp:2585] fc6 needs backward computation.
+I0227 15:03:52.410214 16873 net.cpp:2585] pool5 needs backward computation.
+I0227 15:03:52.410219 16873 net.cpp:2585] relu5_convert0 needs backward computation.
+I0227 15:03:52.410225 16873 net.cpp:2585] relu5 needs backward computation.
+I0227 15:03:52.410231 16873 net.cpp:2585] conv5 needs backward computation.
+I0227 15:03:52.410238 16873 net.cpp:2585] relu4_convert0 needs backward computation.
+I0227 15:03:52.410243 16873 net.cpp:2585] relu4 needs backward computation.
+I0227 15:03:52.410248 16873 net.cpp:2585] conv4 needs backward computation.
+I0227 15:03:52.410254 16873 net.cpp:2585] relu3_convert0 needs backward computation.
+I0227 15:03:52.410259 16873 net.cpp:2585] relu3 needs backward computation.
+I0227 15:03:52.410265 16873 net.cpp:2585] conv3 needs backward computation.
+I0227 15:03:52.410271 16873 net.cpp:2585] pool2 needs backward computation.
+I0227 15:03:52.410277 16873 net.cpp:2585] norm2_convert0 needs backward computation.
+I0227 15:03:52.410286 16873 net.cpp:2585] norm2 needs backward computation.
+I0227 15:03:52.410310 16873 net.cpp:2585] norm2_convert_in0 needs backward computation.
+I0227 15:03:52.410317 16873 net.cpp:2585] relu2_convert0 needs backward computation.
+I0227 15:03:52.410322 16873 net.cpp:2585] relu2 needs backward computation.
+I0227 15:03:52.410327 16873 net.cpp:2585] conv2 needs backward computation.
+I0227 15:03:52.410334 16873 net.cpp:2585] pool1 needs backward computation.
+I0227 15:03:52.410347 16873 net.cpp:2585] norm1_convert0 needs backward computation.
+I0227 15:03:52.410353 16873 net.cpp:2585] norm1 needs backward computation.
+I0227 15:03:52.410358 16873 net.cpp:2585] norm1_convert_in0 needs backward computation.
+I0227 15:03:52.410364 16873 net.cpp:2585] relu1_convert0 needs backward computation.
+I0227 15:03:52.410370 16873 net.cpp:2585] relu1 needs backward computation.
+I0227 15:03:52.410375 16873 net.cpp:2585] conv1 needs backward computation.
+I0227 15:03:52.410382 16873 net.cpp:2587] data_convert0 does not need backward computation.
+I0227 15:03:52.410388 16873 net.cpp:2587] label_data_1_split does not need backward computation.
+I0227 15:03:52.410394 16873 net.cpp:2587] data does not need backward computation.
+I0227 15:03:52.410399 16873 net.cpp:2629] This network produces output accuracy_1
+I0227 15:03:52.410405 16873 net.cpp:2629] This network produces output accuracy_5
+I0227 15:03:52.410411 16873 net.cpp:2629] This network produces output loss
+I0227 15:03:52.410444 16873 net.cpp:2672] Network initialization done.
+I0227 15:03:54.766819 16873 upgrade_proto.cpp:43] Attempting to upgrade input file specified using deprecated transformation parameters: /home/scratch.yilinz_t19x_2/t19x/caffe-master-amodel/models/bvlc_alexnet/bvlc_alexnet.caffemodel
+I0227 15:03:54.766868 16873 upgrade_proto.cpp:46] Successfully upgraded file specified using deprecated data transformation parameters.
+W0227 15:03:54.766887 16873 upgrade_proto.cpp:48] Note that future Caffe releases will only support transform_param messages for transformation fields.
+I0227 15:03:54.767104 16873 upgrade_proto.cpp:52] Attempting to upgrade input file specified using deprecated V1LayerParameter: /home/scratch.yilinz_t19x_2/t19x/caffe-master-amodel/models/bvlc_alexnet/bvlc_alexnet.caffemodel
+I0227 15:03:55.181265 16873 upgrade_proto.cpp:60] Successfully upgraded file specified using deprecated V1LayerParameter
+I0227 15:03:55.355334 16873 caffe.cpp:200] Running for 1 iterations.
+I0227 15:03:55.355399 16873 net.cpp:3010] Forward bottom size:0
+I0227 15:03:55.390532 16873 net.cpp:3067]     [Forward] Layer data, top blob data data: -6.95793 dimension: 25 3 227 227 (3864675)
+I0227 15:03:55.390588 16873 net.cpp:3067]     [Forward] Layer data, top blob label data: 541.68 dimension: 25 (25)
+I0227 15:03:55.390619 16873 net.cpp:3067]     [Forward] Layer label_data_1_split, top blob label_data_1_split_0 data: 541.68 dimension: 25 (25)
+I0227 15:03:55.390628 16873 net.cpp:3067]     [Forward] Layer label_data_1_split, top blob label_data_1_split_1 data: 541.68 dimension: 25 (25)
+I0227 15:03:55.390636 16873 net.cpp:3067]     [Forward] Layer label_data_1_split, top blob label_data_1_split_2 data: 541.68 dimension: 25 (25)
+I0227 15:03:55.542886 16873 net.cpp:3067]     [Forward] Layer data_convert0, top blob data data: -3.58067 dimension: 25 3 227 227 (3864675)
+I0227 15:03:55.548907 16873 blob.cpp:1776] Error: Saturate happend 1 times on layer: conv1 range: -128~127
+I0227 15:03:55.553093 16873 blob.cpp:1782] max_int: 32767 used_range: 118
+I0227 15:03:55.553113 16873 blob.cpp:1784] Error: actual dynamic range: 0.00360118 expecting: 0.4, a larger scaling factor should be used to fullfill dynamic range
+I0227 15:03:55.553130 16873 splitc_conv_layer.cpp:972] Warning: split_channel_width hasn't specified, disable split in C direction
+I0227 15:03:56.378525 16873 net.cpp:3067]     [Forward] Layer conv1, top blob conv1 data: 6.09597 dimension: 25 96 55 55 (7260000)
+I0227 15:03:56.378639 16873 net.cpp:3078]     [Forward] Layer conv1, param blob 0 data: 0.0115932 dimension: 96 3 11 11 (34848)
+I0227 15:03:56.378665 16873 net.cpp:3078]     [Forward] Layer conv1, param blob 1 data: -67.1042 dimension: 96 (96)
+I0227 15:03:56.526554 16873 net.cpp:3067]     [Forward] Layer relu1, top blob relu1 data: 3186.32 dimension: 25 96 55 55 (7260000)
+I0227 15:03:56.844951 16873 net.cpp:3067]     [Forward] Layer relu1_convert0, top blob relu1 data: 1.7267 dimension: 25 96 55 55 (7260000)
+I0227 15:03:57.130264 16873 net.cpp:3067]     [Forward] Layer norm1_convert_in0, top blob relu1 data: 5.28034 dimension: 25 96 55 55 (7260000)
+I0227 15:04:03.227669 16873 lut_layer.cpp:913] Warning: underflow count:1009662
+I0227 15:04:03.260385 16873 net.cpp:3067]     [Forward] Layer norm1, top blob norm1 data: 112625 dimension: 25 96 55 55 (7260000)
+I0227 15:04:03.409447 16873 net.cpp:3067]     [Forward] Layer norm1_convert0, top blob norm1 data: 13.8547 dimension: 25 96 55 55 (7260000)
+I0227 15:04:03.500509 16873 net.cpp:3067]     [Forward] Layer pool1, top blob pool1 data: 37.495 dimension: 25 96 27 27 (1749600)
+I0227 15:04:03.546036 16873 blob.cpp:1782] max_int: 32767 used_range: 36
+I0227 15:04:03.546089 16873 blob.cpp:1784] Error: actual dynamic range: 0.00109867 expecting: 0.4, a larger scaling factor should be used to fullfill dynamic range
+I0227 15:04:03.546106 16873 splitc_conv_layer.cpp:972] Warning: split_channel_width hasn't specified, disable split in C direction
+I0227 15:04:04.134191 16873 net.cpp:3067]     [Forward] Layer conv2, top blob conv2 data: -14188.4 dimension: 25 256 27 27 (4665600)
+I0227 15:04:04.134754 16873 net.cpp:3078]     [Forward] Layer conv2, param blob 0 data: -0.31234 dimension: 256 48 5 5 (307200)
+I0227 15:04:04.134773 16873 net.cpp:3078]     [Forward] Layer conv2, param blob 1 data: 24.6914 dimension: 256 (256)
+I0227 15:04:04.157507 16873 net.cpp:3067]     [Forward] Layer relu2, top blob conv2 data: 2093.27 dimension: 25 256 27 27 (4665600)
+I0227 15:04:04.249637 16873 net.cpp:3067]     [Forward] Layer relu2_convert0, top blob conv2 data: 2.15965 dimension: 25 256 27 27 (4665600)
+I0227 15:04:04.340837 16873 net.cpp:3067]     [Forward] Layer norm2_convert_in0, top blob conv2 data: 7.82383 dimension: 25 256 27 27 (4665600)
+I0227 15:04:07.560968 16873 lut_layer.cpp:913] Warning: underflow count:1774031
+I0227 15:04:07.586625 16873 net.cpp:3067]     [Forward] Layer norm2, top blob norm2 data: 218122 dimension: 25 256 27 27 (4665600)
+I0227 15:04:07.677347 16873 net.cpp:3067]     [Forward] Layer norm2_convert0, top blob norm2 data: 8.08639 dimension: 25 256 27 27 (4665600)
+I0227 15:04:07.725714 16873 net.cpp:3067]     [Forward] Layer pool2, top blob pool2 data: 22.7726 dimension: 25 256 13 13 (1081600)
+I0227 15:04:07.725831 16873 blob.cpp:1782] max_int: 32767 used_range: 13
+I0227 15:04:07.725845 16873 blob.cpp:1784] Error: actual dynamic range: 0.000396741 expecting: 0.4, a larger scaling factor should be used to fullfill dynamic range
+I0227 15:04:08.005673 16873 winograd_conv_layer.cpp:2028] Warning: split_channel_width hasn't specified, disable split in C direction
+I0227 15:04:08.418624 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 9241, total count: 200704
+I0227 15:04:08.554457 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 15868, total count: 401408
+I0227 15:04:08.683749 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 26242, total count: 602112
+I0227 15:04:08.808276 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 37955, total count: 802816
+I0227 15:04:08.946825 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 49496, total count: 1003520
+I0227 15:04:09.077437 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 60922, total count: 1204224
+I0227 15:04:09.308894 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 73035, total count: 1404928
+I0227 15:04:09.483023 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 83148, total count: 1605632
+I0227 15:04:09.614778 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 94199, total count: 1806336
+I0227 15:04:09.739295 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 108974, total count: 2007040
+I0227 15:04:09.863679 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 121428, total count: 2207744
+I0227 15:04:09.989223 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 128740, total count: 2408448
+I0227 15:04:10.119910 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 137591, total count: 2609152
+I0227 15:04:10.250610 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 147086, total count: 2809856
+I0227 15:04:10.381291 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 155369, total count: 3010560
+I0227 15:04:10.512799 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 163871, total count: 3211264
+I0227 15:04:10.643527 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 175937, total count: 3411968
+I0227 15:04:10.774142 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 186294, total count: 3612672
+I0227 15:04:10.905567 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 194708, total count: 3813376
+I0227 15:04:11.036638 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 203010, total count: 4014080
+I0227 15:04:11.168644 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 209501, total count: 4214784
+I0227 15:04:11.299950 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 219201, total count: 4415488
+I0227 15:04:11.431509 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 225882, total count: 4616192
+I0227 15:04:11.562202 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 231678, total count: 4816896
+I0227 15:04:11.693044 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 239558, total count: 5017600
+I0227 15:04:11.774058 16873 net.cpp:3067]     [Forward] Layer conv3, top blob conv3 data: -4222.11 dimension: 25 384 13 13 (1622400)
+I0227 15:04:11.775485 16873 net.cpp:3078]     [Forward] Layer conv3, param blob 0 data: -0.000823256 dimension: 384 256 3 3 (884736)
+I0227 15:04:11.775516 16873 net.cpp:3078]     [Forward] Layer conv3, param blob 1 data: -0.356771 dimension: 384 (384)
+I0227 15:04:11.784096 16873 net.cpp:3067]     [Forward] Layer relu3, top blob conv3 data: 1455.86 dimension: 25 384 13 13 (1622400)
+I0227 15:04:11.817452 16873 net.cpp:3067]     [Forward] Layer relu3_convert0, top blob conv3 data: 4.6188 dimension: 25 384 13 13 (1622400)
+I0227 15:04:11.817545 16873 blob.cpp:1782] max_int: 32767 used_range: 20
+I0227 15:04:11.817558 16873 blob.cpp:1784] Error: actual dynamic range: 0.00061037 expecting: 0.4, a larger scaling factor should be used to fullfill dynamic range
+I0227 15:04:12.236660 16873 winograd_conv_layer.cpp:2028] Warning: split_channel_width hasn't specified, disable split in C direction
+I0227 15:04:12.536139 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 239805, total count: 5168128
+I0227 15:04:12.615408 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 239941, total count: 5318656
+I0227 15:04:12.694103 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 240053, total count: 5469184
+I0227 15:04:12.774066 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 240198, total count: 5619712
+I0227 15:04:12.854480 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 240471, total count: 5770240
+I0227 15:04:12.986199 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 240727, total count: 5920768
+I0227 15:04:13.073395 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 241072, total count: 6071296
+I0227 15:04:13.153384 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 241325, total count: 6221824
+I0227 15:04:13.233736 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 241549, total count: 6372352
+I0227 15:04:13.313663 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 241778, total count: 6522880
+I0227 15:04:13.393072 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 242023, total count: 6673408
+I0227 15:04:13.473259 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 242215, total count: 6823936
+I0227 15:04:13.554296 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 242448, total count: 6974464
+I0227 15:04:13.635444 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 242635, total count: 7124992
+I0227 15:04:13.716621 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 242871, total count: 7275520
+I0227 15:04:13.797575 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 243093, total count: 7426048
+I0227 15:04:13.877988 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 243247, total count: 7576576
+I0227 15:04:13.959023 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 243500, total count: 7727104
+I0227 15:04:14.040033 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 243810, total count: 7877632
+I0227 15:04:14.121914 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 244108, total count: 8028160
+I0227 15:04:14.202384 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 244312, total count: 8178688
+I0227 15:04:14.284513 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 244517, total count: 8329216
+I0227 15:04:14.366878 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 244705, total count: 8479744
+I0227 15:04:14.449007 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 244867, total count: 8630272
+I0227 15:04:14.529916 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 245119, total count: 8780800
+I0227 15:04:14.611043 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 245319, total count: 8931328
+I0227 15:04:14.692524 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 245527, total count: 9081856
+I0227 15:04:14.774644 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 245684, total count: 9232384
+I0227 15:04:14.855316 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 245843, total count: 9382912
+I0227 15:04:14.935698 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 245975, total count: 9533440
+I0227 15:04:15.017009 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 246169, total count: 9683968
+I0227 15:04:15.098744 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 246323, total count: 9834496
+I0227 15:04:15.180208 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 246633, total count: 9985024
+I0227 15:04:15.262239 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 246857, total count: 10135552
+I0227 15:04:15.344096 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 247084, total count: 10286080
+I0227 15:04:15.426059 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 247269, total count: 10436608
+I0227 15:04:15.507665 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 247474, total count: 10587136
+I0227 15:04:15.589298 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 247647, total count: 10737664
+I0227 15:04:15.670730 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 247846, total count: 10888192
+I0227 15:04:15.752487 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 248013, total count: 11038720
+I0227 15:04:15.833267 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 248184, total count: 11189248
+I0227 15:04:15.914158 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 248284, total count: 11339776
+I0227 15:04:15.994839 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 248563, total count: 11490304
+I0227 15:04:16.075675 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 248839, total count: 11640832
+I0227 15:04:16.156977 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 248940, total count: 11791360
+I0227 15:04:16.238919 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 249040, total count: 11941888
+I0227 15:04:16.319638 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 249089, total count: 12092416
+I0227 15:04:16.400511 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 249168, total count: 12242944
+I0227 15:04:16.481101 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 249333, total count: 12393472
+I0227 15:04:16.562228 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 249524, total count: 12544000
+I0227 15:04:16.604560 16873 net.cpp:3067]     [Forward] Layer conv4, top blob conv4 data: -807.973 dimension: 25 384 13 13 (1622400)
+I0227 15:04:16.605641 16873 net.cpp:3078]     [Forward] Layer conv4, param blob 0 data: -0.00118967 dimension: 384 192 3 3 (663552)
+I0227 15:04:16.605664 16873 net.cpp:3078]     [Forward] Layer conv4, param blob 1 data: 7.67969 dimension: 384 (384)
+I0227 15:04:16.615094 16873 net.cpp:3067]     [Forward] Layer relu4, top blob conv4 data: 414.309 dimension: 25 384 13 13 (1622400)
+I0227 15:04:16.650064 16873 net.cpp:3067]     [Forward] Layer relu4_convert0, top blob conv4 data: 3.76103 dimension: 25 384 13 13 (1622400)
+I0227 15:04:16.650218 16873 blob.cpp:1782] max_int: 32767 used_range: 63
+I0227 15:04:16.650233 16873 blob.cpp:1784] Error: actual dynamic range: 0.00192267 expecting: 0.4, a larger scaling factor should be used to fullfill dynamic range
+I0227 15:04:17.070137 16873 winograd_conv_layer.cpp:2028] Warning: split_channel_width hasn't specified, disable split in C direction
+I0227 15:04:17.283777 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 249559, total count: 12694528
+I0227 15:04:17.350153 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 249572, total count: 12845056
+I0227 15:04:17.415910 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 249592, total count: 12995584
+I0227 15:04:17.481292 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 249611, total count: 13146112
+I0227 15:04:17.546643 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 249678, total count: 13296640
+I0227 15:04:17.611846 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 249698, total count: 13447168
+I0227 15:04:17.677430 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 249731, total count: 13597696
+I0227 15:04:17.743463 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 249774, total count: 13748224
+I0227 15:04:17.809316 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 249821, total count: 13898752
+I0227 15:04:17.874372 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 249861, total count: 14049280
+I0227 15:04:17.940412 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 249912, total count: 14199808
+I0227 15:04:18.006521 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 249955, total count: 14350336
+I0227 15:04:18.072466 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 249992, total count: 14500864
+I0227 15:04:18.138433 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 250048, total count: 14651392
+I0227 15:04:18.204403 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 250089, total count: 14801920
+I0227 15:04:18.270429 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 250158, total count: 14952448
+I0227 15:04:18.336035 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 250181, total count: 15102976
+I0227 15:04:18.401923 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 250223, total count: 15253504
+I0227 15:04:18.467489 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 250300, total count: 15404032
+I0227 15:04:18.532495 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 250365, total count: 15554560
+I0227 15:04:18.596837 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 250393, total count: 15705088
+I0227 15:04:18.661280 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 250426, total count: 15855616
+I0227 15:04:18.725611 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 250491, total count: 16006144
+I0227 15:04:18.789819 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 250521, total count: 16156672
+I0227 15:04:18.854249 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 250565, total count: 16307200
+I0227 15:04:18.918620 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 250599, total count: 16457728
+I0227 15:04:18.983134 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 250615, total count: 16608256
+I0227 15:04:19.047754 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 250632, total count: 16758784
+I0227 15:04:19.112174 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 250647, total count: 16909312
+I0227 15:04:19.176903 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 250660, total count: 17059840
+I0227 15:04:19.241281 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 250686, total count: 17210368
+I0227 15:04:19.305794 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 250714, total count: 17360896
+I0227 15:04:19.370599 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 250753, total count: 17511424
+I0227 15:04:19.435536 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 250769, total count: 17661952
+I0227 15:04:19.504194 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 250806, total count: 17812480
+I0227 15:04:19.570353 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 250853, total count: 17963008
+I0227 15:04:19.636739 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 250948, total count: 18113536
+I0227 15:04:19.702917 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 250990, total count: 18264064
+I0227 15:04:19.769443 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 251016, total count: 18414592
+I0227 15:04:19.835439 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 251058, total count: 18565120
+I0227 15:04:19.901706 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 251080, total count: 18715648
+I0227 15:04:19.967188 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 251102, total count: 18866176
+I0227 15:04:20.031466 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 251126, total count: 19016704
+I0227 15:04:20.096051 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 251181, total count: 19167232
+I0227 15:04:20.160475 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 251186, total count: 19317760
+I0227 15:04:20.225648 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 251193, total count: 19468288
+I0227 15:04:20.290310 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 251200, total count: 19618816
+I0227 15:04:20.354820 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 251219, total count: 19769344
+I0227 15:04:20.419199 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 251271, total count: 19919872
+I0227 15:04:20.483983 16873 winograd_conv_layer.cpp:1573] Feature overflow count: 251348, total count: 20070400
+I0227 15:04:20.511420 16873 net.cpp:3067]     [Forward] Layer conv5, top blob conv5 data: -1306.92 dimension: 25 256 13 13 (1081600)
+I0227 15:04:20.512147 16873 net.cpp:3078]     [Forward] Layer conv5, param blob 0 data: -0.00254853 dimension: 256 192 3 3 (442368)
+I0227 15:04:20.512166 16873 net.cpp:3078]     [Forward] Layer conv5, param blob 1 data: 10.7734 dimension: 256 (256)
+I0227 15:04:20.516496 16873 net.cpp:3067]     [Forward] Layer relu5, top blob conv5 data: 59.1007 dimension: 25 256 13 13 (1081600)
+I0227 15:04:20.536430 16873 net.cpp:3067]     [Forward] Layer relu5_convert0, top blob conv5 data: 0.814276 dimension: 25 256 13 13 (1081600)
+I0227 15:04:20.546854 16873 net.cpp:3067]     [Forward] Layer pool5, top blob pool5 data: 3.02788 dimension: 25 256 6 6 (230400)
+I0227 15:04:21.509083 16873 blob.cpp:1782] max_int: 32767 used_range: 480
+I0227 15:04:21.509147 16873 blob.cpp:1784] Error: actual dynamic range: 0.0146489 expecting: 0.4, a larger scaling factor should be used to fullfill dynamic range
+I0227 15:04:21.653385 16873 net.cpp:3067]     [Forward] Layer fc6, top blob fc6 data: -25490.6 dimension: 25 4096 (102400)
+I0227 15:04:21.709955 16873 net.cpp:3078]     [Forward] Layer fc6, param blob 0 data: -0.914374 dimension: 4096 9216 (37748736)
+I0227 15:04:21.710021 16873 net.cpp:3078]     [Forward] Layer fc6, param blob 1 data: 206.594 dimension: 4096 (4096)
+I0227 15:04:21.710522 16873 net.cpp:3067]     [Forward] Layer relu6, top blob fc6 data: 2167.66 dimension: 25 4096 (102400)
+I0227 15:04:21.712497 16873 net.cpp:3067]     [Forward] Layer relu6_convert0, top blob fc6 data: 2.5077 dimension: 25 4096 (102400)
+I0227 15:04:21.712680 16873 net.cpp:3067]     [Forward] Layer drop6, top blob fc6 data: 2.5077 dimension: 25 4096 (102400)
+I0227 15:04:22.144556 16873 blob.cpp:1782] max_int: 32767 used_range: 2470
+I0227 15:04:22.144615 16873 blob.cpp:1784] Error: actual dynamic range: 0.0753807 expecting: 0.4, a larger scaling factor should be used to fullfill dynamic range
+I0227 15:04:22.213567 16873 net.cpp:3067]     [Forward] Layer fc7, top blob fc7 data: -10186.8 dimension: 25 4096 (102400)
+I0227 15:04:22.238457 16873 net.cpp:3078]     [Forward] Layer fc7, param blob 0 data: -1.29323 dimension: 4096 4096 (16777216)
+I0227 15:04:22.238577 16873 net.cpp:3078]     [Forward] Layer fc7, param blob 1 data: 1140.39 dimension: 4096 (4096)
+I0227 15:04:22.239086 16873 net.cpp:3067]     [Forward] Layer relu7, top blob fc7 data: 1486.86 dimension: 25 4096 (102400)
+I0227 15:04:22.241080 16873 net.cpp:3067]     [Forward] Layer relu7_convert0, top blob fc7 data: 2.63813 dimension: 25 4096 (102400)
+I0227 15:04:22.241255 16873 net.cpp:3067]     [Forward] Layer drop7, top blob fc7 data: 2.63813 dimension: 25 4096 (102400)
+I0227 15:04:22.344692 16873 blob.cpp:1782] max_int: 32767 used_range: 5249
+I0227 15:04:22.344753 16873 blob.cpp:1784] Error: actual dynamic range: 0.160192 expecting: 0.4, a larger scaling factor should be used to fullfill dynamic range
+I0227 15:04:22.358748 16873 net.cpp:3067]     [Forward] Layer fc8, top blob fc8 data: -2.23276 dimension: 25 1000 (25000)
+I0227 15:04:22.364816 16873 net.cpp:3078]     [Forward] Layer fc8, param blob 0 data: -0.00023584 dimension: 1000 4096 (4096000)
+I0227 15:04:22.364874 16873 net.cpp:3078]     [Forward] Layer fc8, param blob 1 data: 0.008 dimension: 1000 (1000)
+I0227 15:04:22.365422 16873 net.cpp:3067]     [Forward] Layer fc8_convert0, top blob fc8 data: -0.00032 dimension: 25 1000 (25000)
+I0227 15:04:22.365526 16873 net.cpp:3067]     [Forward] Layer accuracy_1_convert_in0, top blob fc8 data: -6.89471e-05 dimension: 25 1000 (25000)
+I0227 15:04:22.365571 16873 net.cpp:3067]     [Forward] Layer fc8_accuracy_1_convert_in0_0_split, top blob fc8_accuracy_1_convert_in0_0_split_0 data: -6.89471e-05 dimension: 25 1000 (25000)
+I0227 15:04:22.365608 16873 net.cpp:3067]     [Forward] Layer fc8_accuracy_1_convert_in0_0_split, top blob fc8_accuracy_1_convert_in0_0_split_1 data: -6.89471e-05 dimension: 25 1000 (25000)
+I0227 15:04:22.365646 16873 net.cpp:3067]     [Forward] Layer fc8_accuracy_1_convert_in0_0_split, top blob fc8_accuracy_1_convert_in0_0_split_2 data: -6.89471e-05 dimension: 25 1000 (25000)
+I0227 15:04:22.365916 16873 net.cpp:3067]     [Forward] Layer accuracy_1, top blob accuracy_1 data: 0.16 dimension: 2 (2)
+I0227 15:04:22.366189 16873 net.cpp:3067]     [Forward] Layer accuracy_5, top blob accuracy_5 data: 0.42 dimension: 2 (2)
+I0227 15:04:22.367521 16873 net.cpp:3067]     [Forward] Layer loss, top blob loss data: 2.20877 dimension: (1)
+I0227 15:04:22.367575 16873 caffe.cpp:239] Batch 0, accuracy_1 = 0.32
+I0227 15:04:22.367596 16873 caffe.cpp:237] Batch 0, accuracy_1_class = 0
+I0227 15:04:22.367604 16873 caffe.cpp:239] Batch 0, accuracy_5 = 0.84
+I0227 15:04:22.367610 16873 caffe.cpp:237] Batch 0, accuracy_5_class = 0
+I0227 15:04:22.367617 16873 caffe.cpp:239] Batch 0, loss = 2.20877
+I0227 15:04:22.367624 16873 caffe.cpp:250] Loss: 2.20877
+I0227 15:04:22.367645 16873 caffe.cpp:267] accuracy_1 = 0.32
+I0227 15:04:22.367661 16873 caffe.cpp:265] accuracy_1_class = 0
+I0227 15:04:22.367668 16873 caffe.cpp:267] accuracy_5 = 0.84
+I0227 15:04:22.367674 16873 caffe.cpp:265] accuracy_5_class = 0
+I0227 15:04:22.367691 16873 caffe.cpp:267] loss = 2.20877 (* 1 = 2.20877 loss)

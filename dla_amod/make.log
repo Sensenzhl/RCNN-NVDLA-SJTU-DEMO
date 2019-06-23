@@ -1,0 +1,803 @@
+CXX .build_release/src/caffe/proto/caffe.pb.cc
+CXX src/caffe/layers/data_layer.cpp
+CXX src/caffe/layers/hdf5_output_layer.cpp
+CXX src/caffe/layers/hdf5_data_layer.cpp
+CXX src/caffe/layers/softmax_layer.cpp
+CXX src/caffe/layers/inner_product_layer.cpp
+CXX src/caffe/layers/loader_layer.cpp
+CXX src/caffe/layers/cudnn_tanh_layer.cpp
+CXX src/caffe/layers/rnn_layer.cpp
+CXX src/caffe/layers/batch_reindex_layer.cpp
+CXX src/caffe/layers/mvn_layer.cpp
+CXX src/caffe/layers/accuracy_layer.cpp
+CXX src/caffe/layers/bnll_layer.cpp
+CXX src/caffe/layers/sdp_x_layer.cpp
+CXX src/caffe/layers/euclidean_loss_layer.cpp
+CXX src/caffe/layers/datadistribute_layer.cpp
+CXX src/caffe/layers/deconv_layer.cpp
+CXX src/caffe/layers/split_layer.cpp
+CXX src/caffe/layers/memory_data_layer.cpp
+CXX src/caffe/layers/sigmoid_layer.cpp
+CXX src/caffe/layers/dropout_layer.cpp
+CXX src/caffe/layers/rubik_layer.cpp
+CXX src/caffe/layers/image_data_layer.cpp
+CXX src/caffe/layers/silence_layer.cpp
+CXX src/caffe/layers/lut_layer.cpp
+src/caffe/layers/loader_layer.cpp: In instantiation of ‘void caffe::LoaderLayer<Dtype>::LayerSetUp(const std::vector<caffe::Blob<Dtype>*>&, const std::vector<caffe::Blob<Dtype>*>&) [with Dtype = float]’:
+src/caffe/layers/loader_layer.cpp:100:1:   required from here
+src/caffe/layers/loader_layer.cpp:36:10: warning: unused variable ‘linebuf’ [-Wunused-variable]
+     char linebuf[180];
+          ^
+src/caffe/layers/loader_layer.cpp:37:9: warning: unused variable ‘width’ [-Wunused-variable]
+     int width, height, channels;
+         ^
+src/caffe/layers/loader_layer.cpp:37:16: warning: unused variable ‘height’ [-Wunused-variable]
+     int width, height, channels;
+                ^
+src/caffe/layers/loader_layer.cpp:37:24: warning: unused variable ‘channels’ [-Wunused-variable]
+     int width, height, channels;
+                        ^
+src/caffe/layers/loader_layer.cpp:38:10: warning: unused variable ‘width_is_set’ [-Wunused-variable]
+     bool width_is_set       = false;
+          ^
+src/caffe/layers/loader_layer.cpp:39:10: warning: unused variable ‘height_is_set’ [-Wunused-variable]
+     bool height_is_set      = false;
+          ^
+src/caffe/layers/loader_layer.cpp:40:10: warning: unused variable ‘channels_is_set’ [-Wunused-variable]
+     bool channels_is_set    = false;
+          ^
+src/caffe/layers/loader_layer.cpp: In instantiation of ‘void caffe::LoaderLayer<Dtype>::LayerSetUp(const std::vector<caffe::Blob<Dtype>*>&, const std::vector<caffe::Blob<Dtype>*>&) [with Dtype = double]’:
+src/caffe/layers/loader_layer.cpp:100:1:   required from here
+src/caffe/layers/loader_layer.cpp:36:10: warning: unused variable ‘linebuf’ [-Wunused-variable]
+     char linebuf[180];
+          ^
+src/caffe/layers/loader_layer.cpp:37:9: warning: unused variable ‘width’ [-Wunused-variable]
+     int width, height, channels;
+         ^
+src/caffe/layers/loader_layer.cpp:37:16: warning: unused variable ‘height’ [-Wunused-variable]
+     int width, height, channels;
+                ^
+src/caffe/layers/loader_layer.cpp:37:24: warning: unused variable ‘channels’ [-Wunused-variable]
+     int width, height, channels;
+                        ^
+src/caffe/layers/loader_layer.cpp:38:10: warning: unused variable ‘width_is_set’ [-Wunused-variable]
+     bool width_is_set       = false;
+          ^
+src/caffe/layers/loader_layer.cpp:39:10: warning: unused variable ‘height_is_set’ [-Wunused-variable]
+     bool height_is_set      = false;
+          ^
+src/caffe/layers/loader_layer.cpp:40:10: warning: unused variable ‘channels_is_set’ [-Wunused-variable]
+     bool channels_is_set    = false;
+          ^
+CXX src/caffe/layers/reduction_layer.cpp
+In file included from ./include/caffe/layers/deconv_layer.hpp:10:0,
+                 from src/caffe/layers/deconv_layer.cpp:3:
+./include/caffe/layers/base_conv_layer.hpp: In instantiation of ‘caffe::BaseConvolutionLayer<Dtype>::BaseConvolutionLayer(const caffe::LayerParameter&) [with Dtype = float]’:
+./include/caffe/layers/deconv_layer.hpp:35:42:   required from ‘caffe::DeconvolutionLayer<Dtype>::DeconvolutionLayer(const caffe::LayerParameter&) [with Dtype = float]’
+src/caffe/layers/deconv_layer.cpp:133:1:   required from here
+./include/caffe/layers/base_conv_layer.hpp:167:43: warning: ‘caffe::BaseConvolutionLayer<float>::output_truncat_’ will be initialized after [-Wreorder]
+   ConvertorLayer<Dtype>                   output_truncat_;
+                                           ^
+./include/caffe/layers/base_conv_layer.hpp:161:45: warning:   ‘caffe::ConvertorLayer<float> caffe::BaseConvolutionLayer<float>::weight_convert_’ [-Wreorder]
+   ConvertorLayer<Dtype>                     weight_convert_;
+                                             ^
+./include/caffe/layers/base_conv_layer.hpp:25:12: warning:   when initialized here [-Wreorder]
+   explicit BaseConvolutionLayer(const LayerParameter& param)
+            ^
+./include/caffe/layers/base_conv_layer.hpp:162:45: warning: ‘caffe::BaseConvolutionLayer<float>::bias_convert_’ will be initialized after [-Wreorder]
+   ConvertorLayer<Dtype>                     bias_convert_;
+                                             ^
+./include/caffe/layers/base_conv_layer.hpp:153:43: warning:   ‘caffe::ComparisonLayer<float> caffe::BaseConvolutionLayer<float>::debug_comp_’ [-Wreorder]
+   ComparisonLayer<Dtype>                  debug_comp_;
+                                           ^
+./include/caffe/layers/base_conv_layer.hpp:25:12: warning:   when initialized here [-Wreorder]
+   explicit BaseConvolutionLayer(const LayerParameter& param)
+            ^
+./include/caffe/layers/base_conv_layer.hpp: In instantiation of ‘caffe::BaseConvolutionLayer<Dtype>::BaseConvolutionLayer(const caffe::LayerParameter&) [with Dtype = double]’:
+./include/caffe/layers/deconv_layer.hpp:35:42:   required from ‘caffe::DeconvolutionLayer<Dtype>::DeconvolutionLayer(const caffe::LayerParameter&) [with Dtype = double]’
+src/caffe/layers/deconv_layer.cpp:133:1:   required from here
+./include/caffe/layers/base_conv_layer.hpp:167:43: warning: ‘caffe::BaseConvolutionLayer<double>::output_truncat_’ will be initialized after [-Wreorder]
+   ConvertorLayer<Dtype>                   output_truncat_;
+                                           ^
+./include/caffe/layers/base_conv_layer.hpp:161:45: warning:   ‘caffe::ConvertorLayer<double> caffe::BaseConvolutionLayer<double>::weight_convert_’ [-Wreorder]
+   ConvertorLayer<Dtype>                     weight_convert_;
+                                             ^
+./include/caffe/layers/base_conv_layer.hpp:25:12: warning:   when initialized here [-Wreorder]
+   explicit BaseConvolutionLayer(const LayerParameter& param)
+            ^
+./include/caffe/layers/base_conv_layer.hpp:162:45: warning: ‘caffe::BaseConvolutionLayer<double>::bias_convert_’ will be initialized after [-Wreorder]
+   ConvertorLayer<Dtype>                     bias_convert_;
+                                             ^
+./include/caffe/layers/base_conv_layer.hpp:153:43: warning:   ‘caffe::ComparisonLayer<double> caffe::BaseConvolutionLayer<double>::debug_comp_’ [-Wreorder]
+   ComparisonLayer<Dtype>                  debug_comp_;
+                                           ^
+./include/caffe/layers/base_conv_layer.hpp:25:12: warning:   when initialized here [-Wreorder]
+   explicit BaseConvolutionLayer(const LayerParameter& param)
+            ^
+CXX src/caffe/layers/base_data_layer.cpp
+CXX src/caffe/layers/infogain_loss_layer.cpp
+src/caffe/layers/sdp_x_layer.cpp: In member function ‘virtual void caffe::SDPXLayer<Dtype>::Forward_cpu(const std::vector<caffe::Blob<Dtype>*>&, const std::vector<caffe::Blob<Dtype>*>&)’:
+src/caffe/layers/sdp_x_layer.cpp:527:56: warning: comparison between ‘enum caffe::SDPXParameter_PipelineType’ and ‘enum caffe::ConvertDataType’ [-Wenum-compare]
+         if (param.has_alu_shifter() && param.pipe() == INT && param.alu_shifter() > 0) {
+                                                        ^
+src/caffe/layers/sdp_x_layer.cpp: In instantiation of ‘void caffe::SDPXLayer<Dtype>::Forward_cpu(const std::vector<caffe::Blob<Dtype>*>&, const std::vector<caffe::Blob<Dtype>*>&) [with Dtype = float]’:
+src/caffe/layers/sdp_x_layer.cpp:580:1:   required from here
+src/caffe/layers/sdp_x_layer.cpp:527:53: warning: comparison between ‘enum caffe::SDPXParameter_PipelineType’ and ‘enum caffe::ConvertDataType’ [-Wenum-compare]
+         if (param.has_alu_shifter() && param.pipe() == INT && param.alu_shifter() > 0) {
+                                                     ^
+src/caffe/layers/sdp_x_layer.cpp:488:8: warning: unused variable ‘is_prelu’ [-Wunused-variable]
+   bool is_prelu = param.has_mul_type() && param.mul_op() == SDPXParameter_MULOps_PRELU;
+        ^
+src/caffe/layers/sdp_x_layer.cpp:489:8: warning: unused variable ‘is_per_layer’ [-Wunused-variable]
+   bool is_per_layer = param.has_mul_type() && param.mul_type() == SDPXParameter_OperandType_PER_CUBE;
+        ^
+src/caffe/layers/sdp_x_layer.cpp: In instantiation of ‘void caffe::SDPXLayer<Dtype>::ALUOp(const std::vector<caffe::Blob<Dtype>*>&, const std::vector<caffe::Blob<Dtype>*>&) [with Dtype = float]’:
+src/caffe/layers/sdp_x_layer.cpp:580:1:   required from here
+src/caffe/layers/sdp_x_layer.cpp:444:29: warning: unused variable ‘fabs_top’ [-Wunused-variable]
+                       float fabs_top = fabs(top_f);
+                             ^
+src/caffe/layers/sdp_x_layer.cpp:465:29: warning: unused variable ‘fabs_top’ [-Wunused-variable]
+                       float fabs_top = fabs(top_f);
+                             ^
+src/caffe/layers/sdp_x_layer.cpp: In instantiation of ‘void caffe::SDPXLayer<Dtype>::Forward_cpu(const std::vector<caffe::Blob<Dtype>*>&, const std::vector<caffe::Blob<Dtype>*>&) [with Dtype = double]’:
+src/caffe/layers/sdp_x_layer.cpp:580:1:   required from here
+src/caffe/layers/sdp_x_layer.cpp:527:53: warning: comparison between ‘enum caffe::SDPXParameter_PipelineType’ and ‘enum caffe::ConvertDataType’ [-Wenum-compare]
+         if (param.has_alu_shifter() && param.pipe() == INT && param.alu_shifter() > 0) {
+                                                     ^
+src/caffe/layers/sdp_x_layer.cpp:488:8: warning: unused variable ‘is_prelu’ [-Wunused-variable]
+   bool is_prelu = param.has_mul_type() && param.mul_op() == SDPXParameter_MULOps_PRELU;
+        ^
+src/caffe/layers/sdp_x_layer.cpp:489:8: warning: unused variable ‘is_per_layer’ [-Wunused-variable]
+   bool is_per_layer = param.has_mul_type() && param.mul_type() == SDPXParameter_OperandType_PER_CUBE;
+        ^
+src/caffe/layers/sdp_x_layer.cpp: In instantiation of ‘void caffe::SDPXLayer<Dtype>::ALUOp(const std::vector<caffe::Blob<Dtype>*>&, const std::vector<caffe::Blob<Dtype>*>&) [with Dtype = double]’:
+src/caffe/layers/sdp_x_layer.cpp:580:1:   required from here
+src/caffe/layers/sdp_x_layer.cpp:444:29: warning: unused variable ‘fabs_top’ [-Wunused-variable]
+                       float fabs_top = fabs(top_f);
+                             ^
+src/caffe/layers/sdp_x_layer.cpp:465:29: warning: unused variable ‘fabs_top’ [-Wunused-variable]
+                       float fabs_top = fabs(top_f);
+                             ^
+CXX src/caffe/layers/cudnn_conv_layer.cpp
+CXX src/caffe/layers/nv_sigmoid_layer.cpp
+CXX src/caffe/layers/cudnn_lcn_layer.cpp
+CXX src/caffe/layers/relu_layer.cpp
+CXX src/caffe/layers/spp_layer.cpp
+CXX src/caffe/layers/neuron_layer.cpp
+CXX src/caffe/layers/base_conv_layer.cpp
+src/caffe/layers/rubik_layer.cpp: In instantiation of ‘void caffe::RubikLayer<Dtype>::Forward_cpu(const std::vector<caffe::Blob<Dtype>*>&, const std::vector<caffe::Blob<Dtype>*>&) [with Dtype = float]’:
+src/caffe/layers/rubik_layer.cpp:75:1:   required from here
+src/caffe/layers/rubik_layer.cpp:35:9: warning: unused variable ‘src_width’ [-Wunused-variable]
+     int src_width = bottom[0]->width();
+         ^
+src/caffe/layers/rubik_layer.cpp:36:9: warning: unused variable ‘src_height’ [-Wunused-variable]
+     int src_height= bottom[0]->height();
+         ^
+src/caffe/layers/rubik_layer.cpp:38:9: warning: unused variable ‘dst_height’ [-Wunused-variable]
+     int dst_height= top[0]->height();
+         ^
+src/caffe/layers/rubik_layer.cpp: In instantiation of ‘void caffe::RubikLayer<Dtype>::Forward_cpu(const std::vector<caffe::Blob<Dtype>*>&, const std::vector<caffe::Blob<Dtype>*>&) [with Dtype = double]’:
+src/caffe/layers/rubik_layer.cpp:75:1:   required from here
+src/caffe/layers/rubik_layer.cpp:35:9: warning: unused variable ‘src_width’ [-Wunused-variable]
+     int src_width = bottom[0]->width();
+         ^
+src/caffe/layers/rubik_layer.cpp:36:9: warning: unused variable ‘src_height’ [-Wunused-variable]
+     int src_height= bottom[0]->height();
+         ^
+src/caffe/layers/rubik_layer.cpp:38:9: warning: unused variable ‘dst_height’ [-Wunused-variable]
+     int dst_height= top[0]->height();
+         ^
+CXX src/caffe/layers/pooling_layer.cpp
+CXX src/caffe/layers/lrn_layer.cpp
+src/caffe/layers/inner_product_layer.cpp: In instantiation of ‘void caffe::InnerProductLayer<Dtype>::TruncatAccmulateInnerProduct(const std::vector<caffe::Blob<Dtype>*>&, const std::vector<caffe::Blob<Dtype>*>&) [with Dtype = float]’:
+src/caffe/layers/inner_product_layer.cpp:835:1:   required from here
+src/caffe/layers/inner_product_layer.cpp:237:31: warning: variable ‘max_sum’ set but not used [-Wunused-but-set-variable]
+           Dtype max_bias = 0, max_sum;
+                               ^
+src/caffe/layers/inner_product_layer.cpp: In instantiation of ‘void caffe::InnerProductLayer<Dtype>::OptimizedInnerProduct(const std::vector<caffe::Blob<Dtype>*>&, const std::vector<caffe::Blob<Dtype>*>&) [with Dtype = float]’:
+src/caffe/layers/inner_product_layer.cpp:835:1:   required from here
+src/caffe/layers/inner_product_layer.cpp:595:31: warning: variable ‘max_sum’ set but not used [-Wunused-but-set-variable]
+           Dtype max_bias = 0, max_sum;
+                               ^
+src/caffe/layers/inner_product_layer.cpp: In instantiation of ‘void caffe::InnerProductLayer<Dtype>::TruncatAccmulateInnerProduct(const std::vector<caffe::Blob<Dtype>*>&, const std::vector<caffe::Blob<Dtype>*>&) [with Dtype = double]’:
+src/caffe/layers/inner_product_layer.cpp:835:1:   required from here
+src/caffe/layers/inner_product_layer.cpp:237:31: warning: variable ‘max_sum’ set but not used [-Wunused-but-set-variable]
+           Dtype max_bias = 0, max_sum;
+                               ^
+src/caffe/layers/inner_product_layer.cpp: In instantiation of ‘void caffe::InnerProductLayer<Dtype>::OptimizedInnerProduct(const std::vector<caffe::Blob<Dtype>*>&, const std::vector<caffe::Blob<Dtype>*>&) [with Dtype = double]’:
+src/caffe/layers/inner_product_layer.cpp:835:1:   required from here
+src/caffe/layers/inner_product_layer.cpp:595:31: warning: variable ‘max_sum’ set but not used [-Wunused-but-set-variable]
+           Dtype max_bias = 0, max_sum;
+                               ^
+CXX src/caffe/layers/validator_layer.cpp
+CXX src/caffe/layers/scale_layer.cpp
+CXX src/caffe/layers/softmax_loss_layer.cpp
+CXX src/caffe/layers/nv_tanh_layer.cpp
+src/caffe/layers/lut_layer.cpp: In instantiation of ‘void caffe::LUTLayer<Dtype>::_build_table() [with Dtype = float]’:
+src/caffe/layers/lut_layer.cpp:887:1:   required from here
+src/caffe/layers/lut_layer.cpp:32:9: warning: unused variable ‘exp_x_shifter’ [-Wunused-variable]
+     int exp_x_shifter= lut_param_.exp_x_shifter();
+         ^
+src/caffe/layers/lut_layer.cpp: In instantiation of ‘Dtype caffe::LUTLayer<Dtype>::_lookup_y_int(Dtype, int8_t*) [with Dtype = float; int8_t = signed char]’:
+src/caffe/layers/lut_layer.cpp:887:1:   required from here
+src/caffe/layers/lut_layer.cpp:245:10: warning: unused variable ‘is_oflow’ [-Wunused-variable]
+     bool is_oflow, is_uflow;
+          ^
+src/caffe/layers/lut_layer.cpp:245:20: warning: unused variable ‘is_uflow’ [-Wunused-variable]
+     bool is_oflow, is_uflow;
+                    ^
+src/caffe/layers/lut_layer.cpp: In instantiation of ‘Dtype caffe::LUTLayer<Dtype>::_lookup_x_int(Dtype, int8_t*) [with Dtype = float; int8_t = signed char]’:
+src/caffe/layers/lut_layer.cpp:887:1:   required from here
+src/caffe/layers/lut_layer.cpp:304:10: warning: unused variable ‘is_uflow’ [-Wunused-variable]
+     bool is_uflow, is_oflow;
+          ^
+src/caffe/layers/lut_layer.cpp:304:20: warning: unused variable ‘is_oflow’ [-Wunused-variable]
+     bool is_uflow, is_oflow;
+                    ^
+src/caffe/layers/lut_layer.cpp: In instantiation of ‘void caffe::LUTLayer<Dtype>::_build_table() [with Dtype = double]’:
+src/caffe/layers/lut_layer.cpp:887:1:   required from here
+src/caffe/layers/lut_layer.cpp:32:9: warning: unused variable ‘exp_x_shifter’ [-Wunused-variable]
+     int exp_x_shifter= lut_param_.exp_x_shifter();
+         ^
+src/caffe/layers/lut_layer.cpp: In instantiation of ‘Dtype caffe::LUTLayer<Dtype>::_lookup_y_int(Dtype, int8_t*) [with Dtype = double; int8_t = signed char]’:
+src/caffe/layers/lut_layer.cpp:887:1:   required from here
+src/caffe/layers/lut_layer.cpp:245:10: warning: unused variable ‘is_oflow’ [-Wunused-variable]
+     bool is_oflow, is_uflow;
+          ^
+src/caffe/layers/lut_layer.cpp:245:20: warning: unused variable ‘is_uflow’ [-Wunused-variable]
+     bool is_oflow, is_uflow;
+                    ^
+src/caffe/layers/lut_layer.cpp: In instantiation of ‘Dtype caffe::LUTLayer<Dtype>::_lookup_x_int(Dtype, int8_t*) [with Dtype = double; int8_t = signed char]’:
+src/caffe/layers/lut_layer.cpp:887:1:   required from here
+src/caffe/layers/lut_layer.cpp:304:10: warning: unused variable ‘is_uflow’ [-Wunused-variable]
+     bool is_uflow, is_oflow;
+          ^
+src/caffe/layers/lut_layer.cpp:304:20: warning: unused variable ‘is_oflow’ [-Wunused-variable]
+     bool is_uflow, is_oflow;
+                    ^
+CXX src/caffe/layers/hinge_loss_layer.cpp
+CXX src/caffe/layers/contrastive_loss_layer.cpp
+CXX src/caffe/layers/batch_norm_layer.cpp
+CXX src/caffe/layers/datadistr_wrapper_layer.cpp
+CXX src/caffe/layers/conv_layer.cpp
+CXX src/caffe/layers/cudnn_softmax_layer.cpp
+CXX src/caffe/layers/lstm_layer.cpp
+CXX src/caffe/layers/cudnn_relu_layer.cpp
+CXX src/caffe/layers/lstm_unit_layer.cpp
+CXX src/caffe/layers/nv_lrn_layer.cpp
+CXX src/caffe/layers/parameter_layer.cpp
+CXX src/caffe/layers/reshape_layer.cpp
+CXX src/caffe/layers/proposal_layer.cpp
+CXX src/caffe/layers/tile_layer.cpp
+CXX src/caffe/layers/winograd_conv_layer.cpp
+CXX src/caffe/layers/splitc_conv_layer.cpp
+CXX src/caffe/layers/convertor_layer.cpp
+CXX src/caffe/layers/roi_pooling_layer.cpp
+CXX src/caffe/layers/window_data_layer.cpp
+src/caffe/layers/base_conv_layer.cpp: In member function ‘void caffe::BaseConvolutionLayer<Dtype>::dump_data(const std::vector<caffe::Blob<Dtype>*>&, const std::vector<caffe::Blob<Dtype>*>&)’:
+src/caffe/layers/base_conv_layer.cpp:326:36: warning: comparison between ‘enum caffe::DumpMethod’ and ‘enum caffe::LoadMethod’ [-Wenum-compare]
+       if (!(dump_param.method() == LoadMethod_PROTO_BIN || dump_param.method() == LoadMethod_PROTO_TXT)) {
+                                    ^
+src/caffe/layers/base_conv_layer.cpp:326:83: warning: comparison between ‘enum caffe::DumpMethod’ and ‘enum caffe::LoadMethod’ [-Wenum-compare]
+       if (!(dump_param.method() == LoadMethod_PROTO_BIN || dump_param.method() == LoadMethod_PROTO_TXT)) {
+                                                                                   ^
+In file included from src/caffe/layers/base_conv_layer.cpp:5:0:
+./include/caffe/layers/base_conv_layer.hpp: In instantiation of ‘caffe::BaseConvolutionLayer<Dtype>::BaseConvolutionLayer(const caffe::LayerParameter&) [with Dtype = float]’:
+src/caffe/layers/base_conv_layer.cpp:923:1:   required from here
+./include/caffe/layers/base_conv_layer.hpp:167:43: warning: ‘caffe::BaseConvolutionLayer<float>::output_truncat_’ will be initialized after [-Wreorder]
+   ConvertorLayer<Dtype>                   output_truncat_;
+                                           ^
+./include/caffe/layers/base_conv_layer.hpp:161:45: warning:   ‘caffe::ConvertorLayer<float> caffe::BaseConvolutionLayer<float>::weight_convert_’ [-Wreorder]
+   ConvertorLayer<Dtype>                     weight_convert_;
+                                             ^
+./include/caffe/layers/base_conv_layer.hpp:25:12: warning:   when initialized here [-Wreorder]
+   explicit BaseConvolutionLayer(const LayerParameter& param)
+            ^
+./include/caffe/layers/base_conv_layer.hpp:162:45: warning: ‘caffe::BaseConvolutionLayer<float>::bias_convert_’ will be initialized after [-Wreorder]
+   ConvertorLayer<Dtype>                     bias_convert_;
+                                             ^
+./include/caffe/layers/base_conv_layer.hpp:153:43: warning:   ‘caffe::ComparisonLayer<float> caffe::BaseConvolutionLayer<float>::debug_comp_’ [-Wreorder]
+   ComparisonLayer<Dtype>                  debug_comp_;
+                                           ^
+./include/caffe/layers/base_conv_layer.hpp:25:12: warning:   when initialized here [-Wreorder]
+   explicit BaseConvolutionLayer(const LayerParameter& param)
+            ^
+src/caffe/layers/base_conv_layer.cpp: In instantiation of ‘void caffe::BaseConvolutionLayer<Dtype>::dump_data(const std::vector<caffe::Blob<Dtype>*>&, const std::vector<caffe::Blob<Dtype>*>&) [with Dtype = float]’:
+src/caffe/layers/base_conv_layer.cpp:923:1:   required from here
+src/caffe/layers/base_conv_layer.cpp:326:33: warning: comparison between ‘enum caffe::DumpMethod’ and ‘enum caffe::LoadMethod’ [-Wenum-compare]
+       if (!(dump_param.method() == LoadMethod_PROTO_BIN || dump_param.method() == LoadMethod_PROTO_TXT)) {
+                                 ^
+src/caffe/layers/base_conv_layer.cpp:326:80: warning: comparison between ‘enum caffe::DumpMethod’ and ‘enum caffe::LoadMethod’ [-Wenum-compare]
+       if (!(dump_param.method() == LoadMethod_PROTO_BIN || dump_param.method() == LoadMethod_PROTO_TXT)) {
+                                                                                ^
+src/caffe/layers/base_conv_layer.cpp: In instantiation of ‘void caffe::BaseConvolutionLayer<Dtype>::pre_process_converts(const std::vector<caffe::Blob<Dtype>*>&, const std::vector<caffe::Blob<Dtype>*>&) [with Dtype = float]’:
+src/caffe/layers/base_conv_layer.cpp:923:1:   required from here
+src/caffe/layers/base_conv_layer.cpp:474:12: warning: variable ‘output_scale’ set but not used [-Wunused-but-set-variable]
+     double output_scale = 1;
+            ^
+In file included from src/caffe/layers/base_conv_layer.cpp:5:0:
+./include/caffe/layers/base_conv_layer.hpp: In instantiation of ‘caffe::BaseConvolutionLayer<Dtype>::BaseConvolutionLayer(const caffe::LayerParameter&) [with Dtype = double]’:
+src/caffe/layers/base_conv_layer.cpp:923:1:   required from here
+./include/caffe/layers/base_conv_layer.hpp:167:43: warning: ‘caffe::BaseConvolutionLayer<double>::output_truncat_’ will be initialized after [-Wreorder]
+   ConvertorLayer<Dtype>                   output_truncat_;
+                                           ^
+./include/caffe/layers/base_conv_layer.hpp:161:45: warning:   ‘caffe::ConvertorLayer<double> caffe::BaseConvolutionLayer<double>::weight_convert_’ [-Wreorder]
+   ConvertorLayer<Dtype>                     weight_convert_;
+                                             ^
+./include/caffe/layers/base_conv_layer.hpp:25:12: warning:   when initialized here [-Wreorder]
+   explicit BaseConvolutionLayer(const LayerParameter& param)
+            ^
+./include/caffe/layers/base_conv_layer.hpp:162:45: warning: ‘caffe::BaseConvolutionLayer<double>::bias_convert_’ will be initialized after [-Wreorder]
+   ConvertorLayer<Dtype>                     bias_convert_;
+                                             ^
+./include/caffe/layers/base_conv_layer.hpp:153:43: warning:   ‘caffe::ComparisonLayer<double> caffe::BaseConvolutionLayer<double>::debug_comp_’ [-Wreorder]
+   ComparisonLayer<Dtype>                  debug_comp_;
+                                           ^
+./include/caffe/layers/base_conv_layer.hpp:25:12: warning:   when initialized here [-Wreorder]
+   explicit BaseConvolutionLayer(const LayerParameter& param)
+            ^
+src/caffe/layers/base_conv_layer.cpp: In instantiation of ‘void caffe::BaseConvolutionLayer<Dtype>::dump_data(const std::vector<caffe::Blob<Dtype>*>&, const std::vector<caffe::Blob<Dtype>*>&) [with Dtype = double]’:
+src/caffe/layers/base_conv_layer.cpp:923:1:   required from here
+src/caffe/layers/base_conv_layer.cpp:326:33: warning: comparison between ‘enum caffe::DumpMethod’ and ‘enum caffe::LoadMethod’ [-Wenum-compare]
+       if (!(dump_param.method() == LoadMethod_PROTO_BIN || dump_param.method() == LoadMethod_PROTO_TXT)) {
+                                 ^
+src/caffe/layers/base_conv_layer.cpp:326:80: warning: comparison between ‘enum caffe::DumpMethod’ and ‘enum caffe::LoadMethod’ [-Wenum-compare]
+       if (!(dump_param.method() == LoadMethod_PROTO_BIN || dump_param.method() == LoadMethod_PROTO_TXT)) {
+                                                                                ^
+src/caffe/layers/base_conv_layer.cpp: In instantiation of ‘void caffe::BaseConvolutionLayer<Dtype>::pre_process_converts(const std::vector<caffe::Blob<Dtype>*>&, const std::vector<caffe::Blob<Dtype>*>&) [with Dtype = double]’:
+src/caffe/layers/base_conv_layer.cpp:923:1:   required from here
+src/caffe/layers/base_conv_layer.cpp:474:12: warning: variable ‘output_scale’ set but not used [-Wunused-but-set-variable]
+     double output_scale = 1;
+            ^
+CXX src/caffe/layers/prelu_layer.cpp
+CXX src/caffe/layers/filter_layer.cpp
+In file included from ./include/caffe/layers/conv_layer.hpp:15:0,
+                 from src/caffe/layers/conv_layer.cpp:3:
+./include/caffe/layers/base_conv_layer.hpp: In instantiation of ‘caffe::BaseConvolutionLayer<Dtype>::BaseConvolutionLayer(const caffe::LayerParameter&) [with Dtype = float]’:
+./include/caffe/layers/conv_layer.hpp:69:42:   required from ‘caffe::ConvolutionLayer<Dtype>::ConvolutionLayer(const caffe::LayerParameter&) [with Dtype = float]’
+src/caffe/layers/conv_layer.cpp:116:1:   required from here
+./include/caffe/layers/base_conv_layer.hpp:167:43: warning: ‘caffe::BaseConvolutionLayer<float>::output_truncat_’ will be initialized after [-Wreorder]
+   ConvertorLayer<Dtype>                   output_truncat_;
+                                           ^
+./include/caffe/layers/base_conv_layer.hpp:161:45: warning:   ‘caffe::ConvertorLayer<float> caffe::BaseConvolutionLayer<float>::weight_convert_’ [-Wreorder]
+   ConvertorLayer<Dtype>                     weight_convert_;
+                                             ^
+./include/caffe/layers/base_conv_layer.hpp:25:12: warning:   when initialized here [-Wreorder]
+   explicit BaseConvolutionLayer(const LayerParameter& param)
+            ^
+./include/caffe/layers/base_conv_layer.hpp:162:45: warning: ‘caffe::BaseConvolutionLayer<float>::bias_convert_’ will be initialized after [-Wreorder]
+   ConvertorLayer<Dtype>                     bias_convert_;
+                                             ^
+./include/caffe/layers/base_conv_layer.hpp:153:43: warning:   ‘caffe::ComparisonLayer<float> caffe::BaseConvolutionLayer<float>::debug_comp_’ [-Wreorder]
+   ComparisonLayer<Dtype>                  debug_comp_;
+                                           ^
+./include/caffe/layers/base_conv_layer.hpp:25:12: warning:   when initialized here [-Wreorder]
+   explicit BaseConvolutionLayer(const LayerParameter& param)
+            ^
+./include/caffe/layers/base_conv_layer.hpp: In instantiation of ‘caffe::BaseConvolutionLayer<Dtype>::BaseConvolutionLayer(const caffe::LayerParameter&) [with Dtype = double]’:
+./include/caffe/layers/conv_layer.hpp:69:42:   required from ‘caffe::ConvolutionLayer<Dtype>::ConvolutionLayer(const caffe::LayerParameter&) [with Dtype = double]’
+src/caffe/layers/conv_layer.cpp:116:1:   required from here
+./include/caffe/layers/base_conv_layer.hpp:167:43: warning: ‘caffe::BaseConvolutionLayer<double>::output_truncat_’ will be initialized after [-Wreorder]
+   ConvertorLayer<Dtype>                   output_truncat_;
+                                           ^
+./include/caffe/layers/base_conv_layer.hpp:161:45: warning:   ‘caffe::ConvertorLayer<double> caffe::BaseConvolutionLayer<double>::weight_convert_’ [-Wreorder]
+   ConvertorLayer<Dtype>                     weight_convert_;
+                                             ^
+./include/caffe/layers/base_conv_layer.hpp:25:12: warning:   when initialized here [-Wreorder]
+   explicit BaseConvolutionLayer(const LayerParameter& param)
+            ^
+./include/caffe/layers/base_conv_layer.hpp:162:45: warning: ‘caffe::BaseConvolutionLayer<double>::bias_convert_’ will be initialized after [-Wreorder]
+   ConvertorLayer<Dtype>                     bias_convert_;
+                                             ^
+./include/caffe/layers/base_conv_layer.hpp:153:43: warning:   ‘caffe::ComparisonLayer<double> caffe::BaseConvolutionLayer<double>::debug_comp_’ [-Wreorder]
+   ComparisonLayer<Dtype>                  debug_comp_;
+                                           ^
+./include/caffe/layers/base_conv_layer.hpp:25:12: warning:   when initialized here [-Wreorder]
+   explicit BaseConvolutionLayer(const LayerParameter& param)
+            ^
+CXX src/caffe/layers/smooth_L1_loss_layer.cpp
+CXX src/caffe/layers/dump_layer.cpp
+CXX src/caffe/layers/cudnn_lrn_layer.cpp
+CXX src/caffe/layers/threshold_layer.cpp
+CXX src/caffe/layers/tanh_layer.cpp
+CXX src/caffe/layers/embed_layer.cpp
+CXX src/caffe/layers/flatten_layer.cpp
+CXX src/caffe/layers/recurrent_layer.cpp
+CXX src/caffe/layers/exp_layer.cpp
+CXX src/caffe/layers/input_layer.cpp
+CXX src/caffe/solver.cpp
+CXX src/caffe/parallel.cpp
+src/caffe/layers/splitc_conv_layer.cpp: In instantiation of ‘void caffe::SplitCConvolutionLayer<Dtype>::TruncatAccumulateConvolution(const std::vector<caffe::Blob<Dtype>*>&, const std::vector<caffe::Blob<Dtype>*>&) [with Dtype = float]’:
+src/caffe/layers/splitc_conv_layer.cpp:506:1:   required from here
+src/caffe/layers/splitc_conv_layer.cpp:87:7: warning: unused variable ‘frac_pos’ [-Wunused-variable]
+   int frac_pos;
+       ^
+src/caffe/layers/splitc_conv_layer.cpp: In instantiation of ‘void caffe::SplitCConvolutionLayer<Dtype>::TruncatAccumulateConvolution(const std::vector<caffe::Blob<Dtype>*>&, const std::vector<caffe::Blob<Dtype>*>&) [with Dtype = double]’:
+src/caffe/layers/splitc_conv_layer.cpp:506:1:   required from here
+src/caffe/layers/splitc_conv_layer.cpp:87:7: warning: unused variable ‘frac_pos’ [-Wunused-variable]
+In file included from ./include/caffe/layers/splitc_conv_layer.hpp:10:0,
+                 from src/caffe/layers/splitc_conv_layer.cpp:7:
+./include/caffe/layers/base_conv_layer.hpp: In instantiation of ‘caffe::BaseConvolutionLayer<Dtype>::BaseConvolutionLayer(const caffe::LayerParameter&) [with Dtype = float]’:
+./include/caffe/layers/splitc_conv_layer.hpp:55:42:   required from ‘caffe::SplitCConvolutionLayer<Dtype>::SplitCConvolutionLayer(const caffe::LayerParameter&) [with Dtype = float]’
+src/caffe/layers/splitc_conv_layer.cpp:506:1:   required from here
+./include/caffe/layers/base_conv_layer.hpp:167:43: warning: ‘caffe::BaseConvolutionLayer<float>::output_truncat_’ will be initialized after [-Wreorder]
+   ConvertorLayer<Dtype>                   output_truncat_;
+                                           ^
+./include/caffe/layers/base_conv_layer.hpp:161:45: warning:   ‘caffe::ConvertorLayer<float> caffe::BaseConvolutionLayer<float>::weight_convert_’ [-Wreorder]
+   ConvertorLayer<Dtype>                     weight_convert_;
+                                             ^
+./include/caffe/layers/base_conv_layer.hpp:25:12: warning:   when initialized here [-Wreorder]
+   explicit BaseConvolutionLayer(const LayerParameter& param)
+            ^
+./include/caffe/layers/base_conv_layer.hpp:162:45: warning: ‘caffe::BaseConvolutionLayer<float>::bias_convert_’ will be initialized after [-Wreorder]
+   ConvertorLayer<Dtype>                     bias_convert_;
+                                             ^
+./include/caffe/layers/base_conv_layer.hpp:153:43: warning:   ‘caffe::ComparisonLayer<float> caffe::BaseConvolutionLayer<float>::debug_comp_’ [-Wreorder]
+   ComparisonLayer<Dtype>                  debug_comp_;
+                                           ^
+./include/caffe/layers/base_conv_layer.hpp:25:12: warning:   when initialized here [-Wreorder]
+   explicit BaseConvolutionLayer(const LayerParameter& param)
+            ^
+./include/caffe/layers/base_conv_layer.hpp: In instantiation of ‘caffe::BaseConvolutionLayer<Dtype>::BaseConvolutionLayer(const caffe::LayerParameter&) [with Dtype = double]’:
+./include/caffe/layers/splitc_conv_layer.hpp:55:42:   required from ‘caffe::SplitCConvolutionLayer<Dtype>::SplitCConvolutionLayer(const caffe::LayerParameter&) [with Dtype = double]’
+src/caffe/layers/splitc_conv_layer.cpp:506:1:   required from here
+./include/caffe/layers/base_conv_layer.hpp:167:43: warning: ‘caffe::BaseConvolutionLayer<double>::output_truncat_’ will be initialized after [-Wreorder]
+   ConvertorLayer<Dtype>                   output_truncat_;
+                                           ^
+./include/caffe/layers/base_conv_layer.hpp:161:45: warning:   ‘caffe::ConvertorLayer<double> caffe::BaseConvolutionLayer<double>::weight_convert_’ [-Wreorder]
+   ConvertorLayer<Dtype>                     weight_convert_;
+                                             ^
+./include/caffe/layers/base_conv_layer.hpp:25:12: warning:   when initialized here [-Wreorder]
+   explicit BaseConvolutionLayer(const LayerParameter& param)
+            ^
+./include/caffe/layers/base_conv_layer.hpp:162:45: warning: ‘caffe::BaseConvolutionLayer<double>::bias_convert_’ will be initialized after [-Wreorder]
+   ConvertorLayer<Dtype>                     bias_convert_;
+                                             ^
+./include/caffe/layers/base_conv_layer.hpp:153:43: warning:   ‘caffe::ComparisonLayer<double> caffe::BaseConvolutionLayer<double>::debug_comp_’ [-Wreorder]
+   ComparisonLayer<Dtype>                  debug_comp_;
+                                           ^
+./include/caffe/layers/base_conv_layer.hpp:25:12: warning:   when initialized here [-Wreorder]
+   explicit BaseConvolutionLayer(const LayerParameter& param)
+            ^
+src/caffe/layers/splitc_conv_layer.cpp: In member function ‘void caffe::SplitCConvolutionLayer<Dtype>::TruncatAccumulateConvolution(const std::vector<caffe::Blob<Dtype>*>&, const std::vector<caffe::Blob<Dtype>*>&) [with Dtype = float]’:
+src/caffe/layers/splitc_conv_layer.cpp:228:43: warning: ‘max_exp’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+                                           if (max_exp < exp && !isnan(product) && !din_is_zero && !win_is_zero) {
+                                           ^
+src/caffe/layers/splitc_conv_layer.cpp: In member function ‘void caffe::SplitCConvolutionLayer<Dtype>::TruncatAccumulateConvolution(const std::vector<caffe::Blob<Dtype>*>&, const std::vector<caffe::Blob<Dtype>*>&) [with Dtype = double]’:
+src/caffe/layers/splitc_conv_layer.cpp:228:43: warning: ‘max_exp’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+CXX src/caffe/internal_thread.cpp
+CXX src/caffe/common.cpp
+CXX src/caffe/util/db_leveldb.cpp
+CXX src/caffe/util/cudnn.cpp
+CXX src/caffe/util/im2col.cpp
+CXX src/caffe/util/insert_splits.cpp
+CXX src/caffe/util/db_lmdb.cpp
+CXX src/caffe/util/io.cpp
+CXX src/caffe/util/blocking_queue.cpp
+CXX src/caffe/util/db.cpp
+CXX src/caffe/util/upgrade_proto.cpp
+CXX src/caffe/util/benchmark.cpp
+CXX src/caffe/util/math_functions.cpp
+CXX src/caffe/util/signal_handler.cpp
+src/caffe/layers/winograd_conv_layer.cpp: In instantiation of ‘void caffe::WinogradConvolutionLayer<Dtype>::ChannelExtension(const std::vector<caffe::Blob<Dtype>*>&, const std::vector<caffe::Blob<Dtype>*>&, bool) [with Dtype = float]’:
+src/caffe/layers/winograd_conv_layer.cpp:1446:1:   required from here
+src/caffe/layers/winograd_conv_layer.cpp:70:9: warning: unused variable ‘stride’ [-Wunused-variable]
+     int stride = stride_data[0]*stride_data[1];
+         ^
+src/caffe/layers/winograd_conv_layer.cpp: In instantiation of ‘void caffe::WinogradConvolutionLayer<Dtype>::TruncatAccumulateConvolution(const std::vector<caffe::Blob<Dtype>*>&, const std::vector<caffe::Blob<Dtype>*>&) [with Dtype = float]’:
+src/caffe/layers/winograd_conv_layer.cpp:1446:1:   required from here
+src/caffe/layers/winograd_conv_layer.cpp:598:7: warning: unused variable ‘kernel_h’ [-Wunused-variable]
+   int kernel_h = 3;
+       ^
+src/caffe/layers/winograd_conv_layer.cpp:599:7: warning: unused variable ‘kernel_w’ [-Wunused-variable]
+   int kernel_w = 3;
+       ^
+src/caffe/layers/winograd_conv_layer.cpp: In instantiation of ‘void caffe::WinogradConvolutionLayer<Dtype>::ChannelExtension(const std::vector<caffe::Blob<Dtype>*>&, const std::vector<caffe::Blob<Dtype>*>&, bool) [with Dtype = double]’:
+src/caffe/layers/winograd_conv_layer.cpp:1446:1:   required from here
+src/caffe/layers/winograd_conv_layer.cpp:70:9: warning: unused variable ‘stride’ [-Wunused-variable]
+     int stride = stride_data[0]*stride_data[1];
+         ^
+src/caffe/layers/winograd_conv_layer.cpp: In instantiation of ‘void caffe::WinogradConvolutionLayer<Dtype>::TruncatAccumulateConvolution(const std::vector<caffe::Blob<Dtype>*>&, const std::vector<caffe::Blob<Dtype>*>&) [with Dtype = double]’:
+src/caffe/layers/winograd_conv_layer.cpp:1446:1:   required from here
+src/caffe/layers/winograd_conv_layer.cpp:598:7: warning: unused variable ‘kernel_h’ [-Wunused-variable]
+   int kernel_h = 3;
+       ^
+src/caffe/layers/winograd_conv_layer.cpp:599:7: warning: unused variable ‘kernel_w’ [-Wunused-variable]
+   int kernel_w = 3;
+       ^
+In file included from ./include/caffe/layers/winograd_conv_layer.hpp:10:0,
+                 from src/caffe/layers/winograd_conv_layer.cpp:7:
+./include/caffe/layers/base_conv_layer.hpp: In instantiation of ‘caffe::BaseConvolutionLayer<Dtype>::BaseConvolutionLayer(const caffe::LayerParameter&) [with Dtype = float]’:
+./include/caffe/layers/winograd_conv_layer.hpp:54:42:   required from ‘caffe::WinogradConvolutionLayer<Dtype>::WinogradConvolutionLayer(const caffe::LayerParameter&) [with Dtype = float]’
+src/caffe/layers/winograd_conv_layer.cpp:1446:1:   required from here
+./include/caffe/layers/base_conv_layer.hpp:167:43: warning: ‘caffe::BaseConvolutionLayer<float>::output_truncat_’ will be initialized after [-Wreorder]
+   ConvertorLayer<Dtype>                   output_truncat_;
+                                           ^
+./include/caffe/layers/base_conv_layer.hpp:161:45: warning:   ‘caffe::ConvertorLayer<float> caffe::BaseConvolutionLayer<float>::weight_convert_’ [-Wreorder]
+   ConvertorLayer<Dtype>                     weight_convert_;
+                                             ^
+./include/caffe/layers/base_conv_layer.hpp:25:12: warning:   when initialized here [-Wreorder]
+   explicit BaseConvolutionLayer(const LayerParameter& param)
+            ^
+./include/caffe/layers/base_conv_layer.hpp:162:45: warning: ‘caffe::BaseConvolutionLayer<float>::bias_convert_’ will be initialized after [-Wreorder]
+   ConvertorLayer<Dtype>                     bias_convert_;
+                                             ^
+./include/caffe/layers/base_conv_layer.hpp:153:43: warning:   ‘caffe::ComparisonLayer<float> caffe::BaseConvolutionLayer<float>::debug_comp_’ [-Wreorder]
+   ComparisonLayer<Dtype>                  debug_comp_;
+                                           ^
+./include/caffe/layers/base_conv_layer.hpp:25:12: warning:   when initialized here [-Wreorder]
+   explicit BaseConvolutionLayer(const LayerParameter& param)
+            ^
+./include/caffe/layers/base_conv_layer.hpp: In instantiation of ‘caffe::BaseConvolutionLayer<Dtype>::BaseConvolutionLayer(const caffe::LayerParameter&) [with Dtype = double]’:
+./include/caffe/layers/winograd_conv_layer.hpp:54:42:   required from ‘caffe::WinogradConvolutionLayer<Dtype>::WinogradConvolutionLayer(const caffe::LayerParameter&) [with Dtype = double]’
+src/caffe/layers/winograd_conv_layer.cpp:1446:1:   required from here
+./include/caffe/layers/base_conv_layer.hpp:167:43: warning: ‘caffe::BaseConvolutionLayer<double>::output_truncat_’ will be initialized after [-Wreorder]
+   ConvertorLayer<Dtype>                   output_truncat_;
+                                           ^
+./include/caffe/layers/base_conv_layer.hpp:161:45: warning:   ‘caffe::ConvertorLayer<double> caffe::BaseConvolutionLayer<double>::weight_convert_’ [-Wreorder]
+   ConvertorLayer<Dtype>                     weight_convert_;
+                                             ^
+./include/caffe/layers/base_conv_layer.hpp:25:12: warning:   when initialized here [-Wreorder]
+   explicit BaseConvolutionLayer(const LayerParameter& param)
+            ^
+./include/caffe/layers/base_conv_layer.hpp:162:45: warning: ‘caffe::BaseConvolutionLayer<double>::bias_convert_’ will be initialized after [-Wreorder]
+   ConvertorLayer<Dtype>                     bias_convert_;
+                                             ^
+./include/caffe/layers/base_conv_layer.hpp:153:43: warning:   ‘caffe::ComparisonLayer<double> caffe::BaseConvolutionLayer<double>::debug_comp_’ [-Wreorder]
+   ComparisonLayer<Dtype>                  debug_comp_;
+                                           ^
+./include/caffe/layers/base_conv_layer.hpp:25:12: warning:   when initialized here [-Wreorder]
+   explicit BaseConvolutionLayer(const LayerParameter& param)
+            ^
+src/caffe/layers/winograd_conv_layer.cpp: In member function ‘void caffe::WinogradConvolutionLayer<Dtype>::TruncatAccumulateConvolution(const std::vector<caffe::Blob<Dtype>*>&, const std::vector<caffe::Blob<Dtype>*>&) [with Dtype = float]’:
+src/caffe/layers/winograd_conv_layer.cpp:831:73: warning: ‘max_exp’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+                                       int max_exp_no_bias = max_exp - 2*bias;
+                                                                         ^
+src/caffe/layers/winograd_conv_layer.cpp: In member function ‘void caffe::WinogradConvolutionLayer<Dtype>::TruncatAccumulateConvolution(const std::vector<caffe::Blob<Dtype>*>&, const std::vector<caffe::Blob<Dtype>*>&) [with Dtype = double]’:
+src/caffe/layers/winograd_conv_layer.cpp:831:73: warning: ‘max_exp’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+CXX src/caffe/util/hdf5.cpp
+CXX src/caffe/layer_factory.cpp
+CXX src/caffe/syncedmem.cpp
+CXX src/caffe/data_transformer.cpp
+CXX src/caffe/blob.cpp
+CXX src/caffe/solvers/adagrad_solver.cpp
+CXX src/caffe/solvers/adadelta_solver.cpp
+CXX src/caffe/solvers/sgd_solver.cpp
+CXX src/caffe/solvers/adam_solver.cpp
+CXX src/caffe/solvers/nesterov_solver.cpp
+CXX src/caffe/solvers/rmsprop_solver.cpp
+CXX src/caffe/net.cpp
+CXX src/caffe/layer.cpp
+CXX tools/net_speed_benchmark.cpp
+CXX tools/upgrade_solver_proto_text.cpp
+CXX tools/caffe.cpp
+CXX tools/upgrade_net_proto_binary.cpp
+CXX tools/device_query.cpp
+CXX tools/test_net.cpp
+CXX tools/train_net.cpp
+CXX tools/compute_image_mean.cpp
+CXX tools/finetune_net.cpp
+CXX tools/convert_imageset.cpp
+CXX tools/extract_features.cpp
+CXX tools/upgrade_net_proto_text.cpp
+CXX examples/mnist/convert_mnist_data.cpp
+CXX examples/cifar10/convert_cifar_data.cpp
+CXX examples/siamese/convert_mnist_siamese_data.cpp
+CXX examples/cpp_classification/classification.cpp
+src/caffe/blob.cpp: In member function ‘void caffe::Blob<Dtype>::Load(const caffe::LoaderParameter&, bool) [with Dtype = float]’:
+src/caffe/blob.cpp:1126:9: warning: ‘pad_bottom’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+         new_height = old_height + pad_top + pad_bottom;
+         ^
+src/caffe/blob.cpp:1111:33: warning: ‘pad_top’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+        int pad_left, pad_right, pad_top, pad_bottom;
+                                 ^
+src/caffe/blob.cpp:1125:9: warning: ‘pad_right’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+         new_width = old_width + pad_left + pad_right;
+         ^
+src/caffe/blob.cpp:1136:62: warning: ‘pad_left’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+                     Dtype *dst = ext_blob.mutable_cpu_data() + ext_blob.offset(n, c, h+pad_top, pad_left);
+                                                              ^
+src/caffe/blob.cpp:838:16: warning: ‘data_vec’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+         Dtype* data_vec;
+                ^
+src/caffe/blob.cpp: In member function ‘void caffe::Blob<Dtype>::Load(const caffe::LoaderParameter&, bool) [with Dtype = double]’:
+src/caffe/blob.cpp:1126:9: warning: ‘pad_bottom’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+         new_height = old_height + pad_top + pad_bottom;
+         ^
+src/caffe/blob.cpp:1111:33: warning: ‘pad_top’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+        int pad_left, pad_right, pad_top, pad_bottom;
+                                 ^
+src/caffe/blob.cpp:1125:9: warning: ‘pad_right’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+         new_width = old_width + pad_left + pad_right;
+         ^
+src/caffe/blob.cpp:1136:62: warning: ‘pad_left’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+                     Dtype *dst = ext_blob.mutable_cpu_data() + ext_blob.offset(n, c, h+pad_top, pad_left);
+                                                              ^
+src/caffe/blob.cpp:838:16: warning: ‘data_vec’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+         Dtype* data_vec;
+                ^
+src/caffe/blob.cpp: In member function ‘void caffe::Blob<Dtype>::Load(const caffe::LoaderParameter&, bool) [with Dtype = int]’:
+src/caffe/blob.cpp:1126:9: warning: ‘pad_bottom’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+         new_height = old_height + pad_top + pad_bottom;
+         ^
+src/caffe/blob.cpp:1111:33: warning: ‘pad_top’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+        int pad_left, pad_right, pad_top, pad_bottom;
+                                 ^
+src/caffe/blob.cpp:1125:9: warning: ‘pad_right’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+         new_width = old_width + pad_left + pad_right;
+         ^
+src/caffe/blob.cpp:1136:62: warning: ‘pad_left’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+                     Dtype *dst = ext_blob.mutable_cpu_data() + ext_blob.offset(n, c, h+pad_top, pad_left);
+                                                              ^
+src/caffe/blob.cpp:838:16: warning: ‘data_vec’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+         Dtype* data_vec;
+                ^
+src/caffe/blob.cpp: In member function ‘void caffe::Blob<Dtype>::Load(const caffe::LoaderParameter&, bool) [with Dtype = unsigned int]’:
+src/caffe/blob.cpp:1126:9: warning: ‘pad_bottom’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+         new_height = old_height + pad_top + pad_bottom;
+         ^
+src/caffe/blob.cpp:1111:33: warning: ‘pad_top’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+        int pad_left, pad_right, pad_top, pad_bottom;
+                                 ^
+src/caffe/blob.cpp:1125:9: warning: ‘pad_right’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+         new_width = old_width + pad_left + pad_right;
+         ^
+src/caffe/blob.cpp:1136:62: warning: ‘pad_left’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+                     Dtype *dst = ext_blob.mutable_cpu_data() + ext_blob.offset(n, c, h+pad_top, pad_left);
+                                                              ^
+src/caffe/blob.cpp:838:16: warning: ‘data_vec’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+         Dtype* data_vec;
+                ^
+In file included from ./include/caffe/layers/conv_layer.hpp:15:0,
+                 from src/caffe/layer_factory.cpp:10:
+./include/caffe/layers/base_conv_layer.hpp: In instantiation of ‘caffe::BaseConvolutionLayer<Dtype>::BaseConvolutionLayer(const caffe::LayerParameter&) [with Dtype = float]’:
+./include/caffe/layers/conv_layer.hpp:69:42:   required from ‘caffe::ConvolutionLayer<Dtype>::ConvolutionLayer(const caffe::LayerParameter&) [with Dtype = float]’
+src/caffe/layer_factory.cpp:64:72:   required from ‘boost::shared_ptr<caffe::Layer<Dtype> > caffe::GetConvolutionLayer(const caffe::LayerParameter&) [with Dtype = float]’
+src/caffe/layer_factory.cpp:85:1:   required from here
+./include/caffe/layers/base_conv_layer.hpp:167:43: warning: ‘caffe::BaseConvolutionLayer<float>::output_truncat_’ will be initialized after [-Wreorder]
+   ConvertorLayer<Dtype>                   output_truncat_;
+                                           ^
+./include/caffe/layers/base_conv_layer.hpp:161:45: warning:   ‘caffe::ConvertorLayer<float> caffe::BaseConvolutionLayer<float>::weight_convert_’ [-Wreorder]
+   ConvertorLayer<Dtype>                     weight_convert_;
+                                             ^
+./include/caffe/layers/base_conv_layer.hpp:25:12: warning:   when initialized here [-Wreorder]
+   explicit BaseConvolutionLayer(const LayerParameter& param)
+            ^
+./include/caffe/layers/base_conv_layer.hpp:162:45: warning: ‘caffe::BaseConvolutionLayer<float>::bias_convert_’ will be initialized after [-Wreorder]
+   ConvertorLayer<Dtype>                     bias_convert_;
+                                             ^
+./include/caffe/layers/base_conv_layer.hpp:153:43: warning:   ‘caffe::ComparisonLayer<float> caffe::BaseConvolutionLayer<float>::debug_comp_’ [-Wreorder]
+   ComparisonLayer<Dtype>                  debug_comp_;
+                                           ^
+./include/caffe/layers/base_conv_layer.hpp:25:12: warning:   when initialized here [-Wreorder]
+   explicit BaseConvolutionLayer(const LayerParameter& param)
+            ^
+./include/caffe/layers/base_conv_layer.hpp: In instantiation of ‘caffe::BaseConvolutionLayer<Dtype>::BaseConvolutionLayer(const caffe::LayerParameter&) [with Dtype = double]’:
+./include/caffe/layers/conv_layer.hpp:69:42:   required from ‘caffe::ConvolutionLayer<Dtype>::ConvolutionLayer(const caffe::LayerParameter&) [with Dtype = double]’
+src/caffe/layer_factory.cpp:64:72:   required from ‘boost::shared_ptr<caffe::Layer<Dtype> > caffe::GetConvolutionLayer(const caffe::LayerParameter&) [with Dtype = double]’
+src/caffe/layer_factory.cpp:85:1:   required from here
+./include/caffe/layers/base_conv_layer.hpp:167:43: warning: ‘caffe::BaseConvolutionLayer<double>::output_truncat_’ will be initialized after [-Wreorder]
+   ConvertorLayer<Dtype>                   output_truncat_;
+                                           ^
+./include/caffe/layers/base_conv_layer.hpp:161:45: warning:   ‘caffe::ConvertorLayer<double> caffe::BaseConvolutionLayer<double>::weight_convert_’ [-Wreorder]
+   ConvertorLayer<Dtype>                     weight_convert_;
+                                             ^
+./include/caffe/layers/base_conv_layer.hpp:25:12: warning:   when initialized here [-Wreorder]
+   explicit BaseConvolutionLayer(const LayerParameter& param)
+            ^
+./include/caffe/layers/base_conv_layer.hpp:162:45: warning: ‘caffe::BaseConvolutionLayer<double>::bias_convert_’ will be initialized after [-Wreorder]
+   ConvertorLayer<Dtype>                     bias_convert_;
+                                             ^
+./include/caffe/layers/base_conv_layer.hpp:153:43: warning:   ‘caffe::ComparisonLayer<double> caffe::BaseConvolutionLayer<double>::debug_comp_’ [-Wreorder]
+   ComparisonLayer<Dtype>                  debug_comp_;
+                                           ^
+./include/caffe/layers/base_conv_layer.hpp:25:12: warning:   when initialized here [-Wreorder]
+   explicit BaseConvolutionLayer(const LayerParameter& param)
+            ^
+src/caffe/net.cpp: In function ‘double caffe::set_convertor(caffe::ConvertorParameter*, caffe::ConvertDataType, double, double, double, int, caffe::RoundMethod, bool, double, bool, caffe::ScalingMethod, bool, int)’:
+src/caffe/net.cpp:129:9: warning: unused variable ‘scaling’ [-Wunused-variable]
+     int scaling = 1, shifter = 1;
+         ^
+src/caffe/net.cpp:129:22: warning: unused variable ‘shifter’ [-Wunused-variable]
+     int scaling = 1, shifter = 1;
+                      ^
+src/caffe/net.cpp: In function ‘int caffe::build_table(caffe::lut_info_t*, double, double, caffe::lut_func, int, double, double, caffe::lut_func_t, uint8_t, uint8_t, caffe::lut_sym_type, double, caffe::te_op_type, caffe::lut_hist_info_t*)’:
+src/caffe/net.cpp:555:16: warning: unused variable ‘lut_min’ [-Wunused-variable]
+         double lut_min = le_min < lo_min ? le_min : lo_min;
+                ^
+src/caffe/net.cpp: In function ‘void caffe::convert_lut_layer(caffe::LayerParameter*, std::__cxx11::string, caffe::te_op_type, int, caffe::NetParameter&, caffe::ScalingMethod)’:
+src/caffe/net.cpp:825:12: warning: unused variable ‘error’ [-Wunused-variable]
+     double error = std::numeric_limits<double>::max();
+            ^
+src/caffe/net.cpp:898:12: warning: unused variable ‘cost’ [-Wunused-variable]
+     double cost = compute_lut_cost(&hist_info, &opt_lut, step_method, sym, func, op_type );
+            ^
+src/caffe/net.cpp: In function ‘void caffe::compute_conv_convertor(bool, caffe::ConvertorParameter*, caffe::ConvertorParameter*, caffe::ConvertorParameter*, caffe::ConvertorParameter*, std::__cxx11::string, int, caffe::te_op_type, int, caffe::ts_cvt_param&, std::__cxx11::string, caffe::ScalingMethod)’:
+src/caffe/net.cpp:1069:20: warning: unused variable ‘ratio’ [-Wunused-variable]
+             double ratio = pra_feature_range/actual_max_pra_feature;
+                    ^
+src/caffe/net.cpp: In function ‘bool caffe::is_winograd(std::__cxx11::string, caffe::ConvolutionParameter*)’:
+src/caffe/net.cpp:1420:9: warning: variable ‘kernel_h_ext’ set but not used [-Wunused-but-set-variable]
+     int kernel_h_ext, kernel_w_ext;
+         ^
+src/caffe/net.cpp:1420:23: warning: variable ‘kernel_w_ext’ set but not used [-Wunused-but-set-variable]
+     int kernel_h_ext, kernel_w_ext;
+                       ^
+src/caffe/net.cpp: In function ‘int caffe::set_activation_parameter(caffe::LayerParameter*, bool)’:
+src/caffe/net.cpp:1721:1: warning: no return statement in function returning non-void [-Wreturn-type]
+ }
+ ^
+src/caffe/net.cpp: In function ‘int caffe::merge_conv_layers(caffe::LayerParameter*, caffe::NetParameter&, std::vector<int>&, caffe::NetParameter&, caffe::NetParameter&, std::map<std::__cxx11::basic_string<char>, caffe::LayerParameter*>&)’:
+src/caffe/net.cpp:2824:1: warning: no return statement in function returning non-void [-Wreturn-type]
+ }
+ ^
+src/caffe/net.cpp: In instantiation of ‘void caffe::Calibration(caffe::NetParameter&, caffe::NetParameter&, caffe::NetParameter*, caffe::Phase, int, caffe::te_op_type, int) [with Dtype = float]’:
+src/caffe/net.cpp:3504:21:   required from ‘void caffe::Net<Dtype>::Calibrate(const string&, const string&, caffe::Phase, int32_t, int, int, std::__cxx11::string) [with Dtype = float; std::__cxx11::string = std::__cxx11::basic_string<char>; int32_t = int]’
+src/caffe/net.cpp:4821:1:   required from here
+src/caffe/net.cpp:2856:31: warning: unused variable ‘next_loss_layer’ [-Wunused-variable]
+         const LayerParameter& next_loss_layer = filtered_param.layer(
+                               ^
+src/caffe/net.cpp: In instantiation of ‘void caffe::Calibration(caffe::NetParameter&, caffe::NetParameter&, caffe::NetParameter*, caffe::Phase, int, caffe::te_op_type, int) [with Dtype = double]’:
+src/caffe/net.cpp:3504:21:   required from ‘void caffe::Net<Dtype>::Calibrate(const string&, const string&, caffe::Phase, int32_t, int, int, std::__cxx11::string) [with Dtype = double; std::__cxx11::string = std::__cxx11::basic_string<char>; int32_t = int]’
+src/caffe/net.cpp:4821:1:   required from here
+src/caffe/net.cpp:2856:31: warning: unused variable ‘next_loss_layer’ [-Wunused-variable]
+src/caffe/net.cpp: In function ‘bool caffe::has_bias(const caffe::LayerParameter&)’:
+src/caffe/net.cpp:1679:1: warning: control reaches end of non-void function [-Wreturn-type]
+ }
+ ^
+src/caffe/net.cpp: In function ‘int caffe::create_sdp_layer(caffe::LayerParameter*, const caffe::LayerParameter&, const string&)’:
+src/caffe/net.cpp:1695:1: warning: control reaches end of non-void function [-Wreturn-type]
+ }
+ ^
+src/caffe/net.cpp: In function ‘caffe::te_param_type caffe::get_param_type(std::__cxx11::string)’:
+src/caffe/net.cpp:1716:1: warning: control reaches end of non-void function [-Wreturn-type]
+ }
+ ^
+src/caffe/net.cpp: In function ‘bool caffe::compute_input_convert(caffe::ConvertorParameter*, caffe::LayerParameter, bool, caffe::DataDistributeProto&, caffe::ScalingMethod)’:
+src/caffe/net.cpp:1264:25: warning: ‘max’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+         opt_offset= (min+max)/2;
+                         ^
+src/caffe/net.cpp:1264:25: warning: ‘min’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+src/caffe/net.cpp: In function ‘void caffe::compute_output_convert(caffe::ConvertorParameter*, int*, caffe::DataDistributeProto&, caffe::te_op_type, int, bool, bool, std::__cxx11::string, caffe::ts_cvt_param, std::__cxx11::string, bool, caffe::ScalingMethod, bool)’:
+src/caffe/net.cpp:1343:25: warning: ‘max’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+         opt_offset= (min+max)/2;
+                         ^
+src/caffe/net.cpp:1343:25: warning: ‘min’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+src/caffe/net.cpp: In function ‘void caffe::compute_conv_convertor(bool, caffe::ConvertorParameter*, caffe::ConvertorParameter*, caffe::ConvertorParameter*, caffe::ConvertorParameter*, std::__cxx11::string, int, caffe::te_op_type, int, caffe::ts_cvt_param&, std::__cxx11::string, caffe::ScalingMethod)’:
+src/caffe/net.cpp:1129:9: warning: ‘int_bits’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+         if (int_bits >= cc_out_bits ) {
+         ^
+src/caffe/net.cpp: In function ‘void caffe::convert_lut_layer(caffe::LayerParameter*, std::__cxx11::string, caffe::te_op_type, int, caffe::NetParameter&, caffe::ScalingMethod)’:
+src/caffe/net.cpp:898:90: warning: ‘step_method’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+     double cost = compute_lut_cost(&hist_info, &opt_lut, step_method, sym, func, op_type );
+                                                                                          ^
+src/caffe/net.cpp:898:90: warning: ‘func’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+AR -o .build_release/lib/libcaffe.a
+LD -o .build_release/lib/libcaffe.so
+CXX/LD -o .build_release/tools/net_speed_benchmark.bin
+CXX/LD -o .build_release/tools/caffe.bin
+CXX/LD -o .build_release/tools/upgrade_solver_proto_text.bin
+CXX/LD -o .build_release/tools/upgrade_net_proto_binary.bin
+CXX/LD -o .build_release/tools/device_query.bin
+CXX/LD -o .build_release/tools/test_net.bin
+CXX/LD -o .build_release/tools/train_net.bin
+CXX/LD -o .build_release/tools/convert_imageset.bin
+CXX/LD -o .build_release/tools/compute_image_mean.bin
+CXX/LD -o .build_release/tools/finetune_net.bin
+CXX/LD -o .build_release/examples/mnist/convert_mnist_data.bin
+CXX/LD -o .build_release/tools/upgrade_net_proto_text.bin
+CXX/LD -o .build_release/tools/extract_features.bin
+CXX/LD -o .build_release/examples/cpp_classification/classification.bin
+CXX/LD -o .build_release/examples/cifar10/convert_cifar_data.bin
+CXX/LD -o .build_release/examples/siamese/convert_mnist_siamese_data.bin
+Makefile:571: recipe for target '.build_release/tools/caffe.bin' failed
+Makefile:571: recipe for target '.build_release/tools/convert_imageset.bin' failed
+Makefile:571: recipe for target '.build_release/tools/compute_image_mean.bin' failed
+Makefile:576: recipe for target '.build_release/examples/siamese/convert_mnist_siamese_data.bin' failed
+Makefile:571: recipe for target '.build_release/tools/upgrade_net_proto_binary.bin' failed
+Makefile:571: recipe for target '.build_release/tools/upgrade_solver_proto_text.bin' failed
+Makefile:576: recipe for target '.build_release/examples/cifar10/convert_cifar_data.bin' failed
+Makefile:571: recipe for target '.build_release/tools/upgrade_net_proto_text.bin' failed
+Makefile:571: recipe for target '.build_release/tools/extract_features.bin' failed
+Makefile:576: recipe for target '.build_release/examples/mnist/convert_mnist_data.bin' failed
+Makefile:576: recipe for target '.build_release/examples/cpp_classification/classification.bin' failed
