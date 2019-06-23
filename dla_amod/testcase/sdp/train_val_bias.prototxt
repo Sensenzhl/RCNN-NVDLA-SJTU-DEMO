@@ -1,0 +1,152 @@
+name: "AlexNet"
+debug_info: true
+
+layer {
+  name: "data"
+  type: "Data"
+  top: "data"
+  top: "label"
+  include {
+    phase: TRAIN
+  }
+  transform_param {
+    mirror: true
+    crop_size: 227
+    mean_file: "/home/scratch.yilinz_t19x_2/t19x/caffe-master-amodel/data/ilsvrc12/imagenet_mean.binaryproto"
+  }
+  data_param {
+    source: "/home/scratch.yilinz_t19x_2/t19x/caffe-master-amodel/examples/imagenet/ilsvrc12_train_lmdb"
+    batch_size: 256
+    backend: LMDB
+  }
+}
+layer {
+  name: "data"
+  type: "Data"
+  top: "data"
+  top: "label"
+  include {
+    phase: TEST
+  }
+  transform_param {
+    mirror: false
+    crop_size: 227
+    mean_file: "/home/scratch.yilinz_t19x_2/t19x/caffe-master-amodel/data/ilsvrc12/imagenet_mean.binaryproto"
+  }
+  data_param {
+    source: "/home/scratch.yilinz_t19x_2/t19x/caffe-master-amodel/../val_db0"
+    batch_size: 50
+    backend: LMDB
+  }
+}
+
+layer {
+  name: "conv1"
+  type: "Convolution"
+  bottom: "data"
+  top: "conv1"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 96
+    kernel_size: 11
+    stride: 4
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+    dump_data_type: 6
+    debug_dump {
+        filename: "./testcase/sdp/bias_test.dat"
+        method: DumpMethod_PROTO_TXT
+    }
+  }
+}
+
+layer {
+  name: "conv1_sdp"
+  type: "Convolution"
+  bottom: "data"
+  top: "conv1_sdp_test"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 96
+    kernel_size: 11
+    stride: 4
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+    has_bias: false
+    load_data_type: 6
+    debug_loader {
+        filename: "./testcase/sdp/bias_test.dat"
+        format: Format_FP32
+        method: LoadMethod_PROTO_TXT
+    }
+  }
+}
+
+layer {
+  name: "sdp_x1"
+  type: "SDPX"
+  bottom: "conv1_sdp_test"
+  top: "conv1_sdp_test"
+  sdp_x_param {
+    alu_op:     SUM
+    alu_type:   PER_CHANNEL
+    alu_loader {
+        filename: "./testcase/sdp/bias_test_bias.dat"
+        method: LoadMethod_PROTO_TXT
+        format: Format_FP32
+    }
+    alu_cvt {
+        to:     DBL
+        to_coef {
+            offset: 0
+            scale:  1
+            shifter:    0    
+            post_scale: 1
+            bits: 64
+        }
+    }
+  }
+}
+
+layer {
+  name: "comp_sdp_bias"
+  type: "Comparison"
+  bottom: "conv1"
+  bottom: "conv1_sdp_test"
+  comp_param {
+    method: ABS 
+    thresh: 0
+  }
+}
+
+layer {
+    name: "Silience"
+    type: "Silence"
+    bottom: "label"
+}

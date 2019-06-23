@@ -1,0 +1,1299 @@
+name: "AlexNet"
+debug_info: true
+layer {
+  name: "data"
+  type: "Data"
+  top: "data"
+  top: "label"
+  include {
+    phase: TRAIN
+  }
+  transform_param {
+    mirror: true
+    crop_size: 227
+    mean_file: "data/ilsvrc12/imagenet_mean.binaryproto"
+  }
+  data_param {
+    source: "examples/imagenet/ilsvrc12_train_lmdb"
+    batch_size: 256
+    backend: LMDB
+  }
+}
+layer {
+  name: "data"
+  type: "Data"
+  top: "data"
+  top: "label"
+  include {
+    phase: TEST
+  }
+  transform_param {
+    mirror: false
+    crop_size: 227
+    mean_file: "data/ilsvrc12/imagenet_mean.binaryproto"
+  }
+  data_param {
+    source: "../val_db"
+    batch_size: 50
+    backend: LMDB
+  }
+}
+
+layer {
+  name: "din_convert1"
+  type: "Convertor"
+  bottom: "data"
+  top: "din_conv_data1"
+
+  convert_param {
+    from: DBL
+    to:   INT
+    to_coef {
+        val_num: 4
+        val_den: 5
+        offset_num: 1
+        offset_den: 1
+        bits: 8
+    }
+  }
+}
+
+
+layer {
+  name: "conv1"
+  type: "Convolution"
+  bottom: "din_conv_data1"
+  top: "conv1"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 96
+    kernel_size: 11
+    stride: 4
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+    weight_convert {
+        from: DBL
+        to: INT
+
+        to_coef {
+            val_num: 300
+            val_den: 1
+            offset_num: 256
+            offset_den: 1
+            bits: 8
+        }
+    }
+    bias_convert {
+        from: DBL
+        to: INT
+
+        to_coef {
+            val_num: 61440
+            val_den: 1
+            offset_num: 1
+            offset_den: 1
+            bits: 16
+        }
+    }
+  }
+}
+
+#layer {
+#  name: "conv1"
+#  type: "Convolution"
+#  bottom: "din_conv_data1"
+#  top: "conv1"
+#  param {
+#    lr_mult: 1
+#    decay_mult: 1
+#  }
+#  param {
+#    lr_mult: 2
+#    decay_mult: 0
+#  }
+#  convolution_param {
+#    engine: SPLITC
+#    num_output: 96
+#    kernel_size: 11
+#    stride: 4
+#    split_channel_width: 1
+#    weight_filler {
+#      type: "gaussian"
+#      std: 0.01
+#    }
+#    bias_filler {
+#      type: "constant"
+#      value: 0
+#    }
+#    weight_convert {
+#        from: DBL
+#        to: INT
+#
+#        to_coef {
+#            val_num: 300
+#            val_den: 1
+#            offset_num: 256
+#            offset_den: 1
+#            bits: 8
+#        }
+#    }
+#    bias_convert {
+#        from: DBL
+#        to: INT
+#
+#        to_coef {
+#            val_num: 61440
+#            val_den: 1
+#            offset_num: 1
+#            offset_den: 1
+#            bits: 16
+#        }
+#    }
+#    output_convert {
+#        from: DBL
+#        to: DBL
+#    }
+#   compr_param {
+#        eType: DBL
+#        stride: 8
+#    }
+#  }
+#}
+
+layer {
+  name: "dout_convert1"
+  type: "Convertor"
+  bottom: "conv1"
+  top: "conv1"
+
+  convert_param {
+    from: DBL
+    to:   INT
+
+    to_coef {
+        val_num: 8
+        val_den: 61440
+        offset_num: 1
+        offset_den: 8
+        bits: 16
+    }
+  }
+}
+
+#layer {
+#  name: "loader1"
+#  type: "Loader"
+#  top: "loader1"
+#  loader_param {
+#    filename: "log/hybrid8_output1_double.bin"
+#    eType: DBL
+#  }
+#}
+#
+#layer {
+#  name: "comp1"
+#  type: "Comparision"
+#  bottom: "loader1"
+#  bottom: "conv1"
+#  comp_param {
+#    method: ABS
+#  }
+#}
+
+
+
+################# My Change Start ###########
+#layer {
+#  name: "my_mac_compaction"
+#  type: "StatsCompaction"
+#  bottom: "data"
+#
+#  compaction_param {
+#    from_layer: "conv1"
+#  }
+#
+#}
+#layer {
+#  name: "my_split"
+#  type: "Split"
+#  bottom: "conv1"
+#  top: "my_split0"
+#  top: "my_split1"
+#}
+#
+#layer {
+#  name: "splitc_conv"
+#  type: "Convolution"
+#  bottom: "my_split0"
+#  top: "splitc_conv1"
+#  param {
+#    lr_mult: 1
+#    decay_mult: 1
+#  }
+#  param {
+#    lr_mult: 2
+#    decay_mult: 0
+#  }
+#  convolution_param {
+#    num_output: 96
+#    kernel_size: 11
+#    stride: 4
+#    engine: SPLITC
+#    weight_filler {
+#      type: "gaussian"
+#      std: 0.01
+#    }
+#    bias_filler {
+#      type: "constant"
+#      value: 0
+#    }
+#
+#    output_convert {
+#        from: DBL
+#        to: INT
+#
+#        to_coef {
+#            val_num: 1
+#            val_den: 1
+#            offset_num: 1
+#            offset_den: 1
+#            bits: 16
+#        }
+#    }
+#
+#    input_convert {
+#        from: INT
+#        to: DBL
+#
+#        from_coef {
+#            val_num: 1
+#            val_den: 1
+#            offset_num: 1
+#            offset_den: 1
+#            bits: 16
+#        }
+#    }
+#  }
+#}
+#layer {
+#  name: "my_compr"
+#  type: "StatsCompress"
+#  bottom: "splitc_conv1"
+#
+#  compress_param {
+#    eType: FP16
+#    stride:4
+#    is_mc_enabled:false
+#  }
+#}
+#layer {
+#  name: "winograd_conv"
+#  type: "Convolution"
+#  bottom: "splitc_conv1"
+#  top: "winograd_conv1"
+#  param {
+#    lr_mult: 1
+#    decay_mult: 1
+#  }
+#  param {
+#    lr_mult: 2
+#    decay_mult: 0
+#  }
+#  convolution_param {
+#    num_output: 96
+#    kernel_size: 11
+#    stride: 4
+#    engine: WINOGRAD
+#    weight_filler {
+#      type: "gaussian"
+#      std: 0.01
+#    }
+#    bias_filler {
+#      type: "constant"
+#      value: 0
+#    }
+#  }
+#}
+#layer {
+#  name: "relu1"
+#  type: "ReLU"
+#  bottom: "winograd_conv1"
+#  top: "winograd_conv1"
+#}
+#layer {
+#  name: "my_norm1"
+#  type: "NVLRN"
+#  bottom: "winograd_conv1"
+#  top: "my_norm1"
+#  nv_lrn_param {
+#    local_size: 5
+#    alpha: 0.0001
+#    beta: 0.75
+#  }
+#}
+#layer {
+#  name: "my_silience"
+#  type: "Silence"
+#  bottom: "my_norm1"
+#}
+################# My Change End ###########
+#layer {
+#  name: "relu1"
+#  type: "ReLU"
+#  bottom: "conv1"
+#  top: "activ1"
+#}
+
+#layer {
+#  name: "datadist1"
+#  type: "DataDistribute"
+#  bottom: "conv1"
+#  distr_param {
+#    num_marker: 33
+#    limit: 65536
+#  }
+#}
+#
+#layer {
+#  name: "Tanh1"
+#  type: "TanH"
+#  bottom: "conv1"
+#  top: "activ1"
+#}
+#
+#layer {
+#  name: "dump2"
+#  type: "Dump"
+#  bottom: "activ1"
+#  dump_param {
+#    filename: "log/golden_tanh1.bin"
+#  }
+#}
+
+layer {
+  name: "tan1"
+  type: "TanH"
+  bottom: "conv1"
+  top: "activ1"
+
+  tanh_param {
+    engine: NVTANH
+    lut_param {
+        density_start: 10
+        density_win_size:4
+        raw_tbl_entry: 257
+        density_tbl_entry: 65
+        is_symmetric: false
+        lut_convert {
+          from: DBL
+          to:   INT
+
+          to_coef {
+             val_num: 8
+             val_den: 1
+             offset_num: 1
+             offset_den: 8
+             bits: 16
+          }
+        }
+        raw_min: -2364
+        raw_max: 2625
+        is_shift_factor: true
+        total_index_bits: 16
+    }
+  }
+}
+
+layer {
+  name: "loader2"
+  type: "Loader"
+  top: "loader2"
+  loader_param {
+    filename: "log/golden_tanh1.bin"
+    eType: DBL
+  }
+}
+
+layer {
+  name: "comp1"
+  type: "Comparision"
+  bottom: "loader2"
+  bottom: "activ1"
+  comp_param {
+    method: ABS
+  }
+}
+
+layer {
+  name: "norm1"
+  type: "LRN"
+  bottom: "activ1"
+  top: "norm1"
+  lrn_param {
+    local_size: 5
+    alpha: 0.0001
+    beta: 0.75
+  }
+}
+
+
+#layer {
+#  name: "norm1"
+#  type: "NVLRN"
+#  bottom: "activ1"
+#  top: "norm1"
+#  nv_lrn_param {
+#    local_size: 5
+#    alpha: 0.0001
+#    beta: 0.75
+#
+#    distr_param {
+#        num_marker: 33
+#        limit: 1000
+#    }
+#    lut_param {
+#        density_start: 10
+#        density_win_size:4
+#        raw_tbl_entry: 257
+#        density_tbl_entry: 65
+#        is_symmetric: true
+#        lut_convert {
+#          from: DBL
+#          to:   INT
+#
+#          to_coef {
+#             val_num: 8
+#             val_den: 1
+#             offset_num: 1
+#             offset_den: 8
+#             bits: 16
+#          }
+#        }
+#        raw_min: 3125
+#        raw_max: 5000000
+#    }
+#  }
+#}
+
+layer {
+  name: "pool1"
+  type: "Pooling"
+  bottom: "norm1"
+  top: "pool1"
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 2
+  }
+}
+
+layer {
+  name: "din_convert2"
+  type: "Convertor"
+  bottom: "pool1"
+  top: "din_conv_data2"
+
+  convert_param {
+    from: DBL
+    to:   INT
+    to_coef {
+        val_num: 4
+        val_den: 5
+        offset_num: 1
+        offset_den: 1
+        bits: 8
+    }
+  }
+}
+
+layer {
+  name: "conv2"
+  type: "Convolution"
+  bottom: "din_conv_data2"
+  top: "conv2"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 256
+    pad: 2
+    kernel_size: 5
+    group: 2
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.1
+    }
+    weight_convert {
+        from: DBL
+        to: INT
+
+        to_coef {
+            val_num: 300
+            val_den: 1
+            offset_num: 256
+            offset_den: 1
+            bits: 8
+        }
+    }
+    bias_convert {
+        from: DBL
+        to: INT
+
+        to_coef {
+            val_num: 61440
+            val_den: 1
+            offset_num: 1
+            offset_den: 1
+            bits: 16
+        }
+    }
+
+  }
+}
+layer {
+  name: "dout_convert2"
+  type: "Convertor"
+  bottom: "conv2"
+  top: "conv2"
+
+  convert_param {
+    from: DBL
+    to:   INT
+
+    to_coef {
+        val_num: 32
+        val_den: 61440
+        offset_num: 1
+        offset_den: 32
+        bits: 16
+    }
+  }
+}
+
+layer {
+  name: "relu2"
+  type: "ReLU"
+  bottom: "conv2"
+  top: "conv2"
+}
+layer {
+  name: "norm2"
+  type: "LRN"
+  bottom: "conv2"
+  top: "norm2"
+  lrn_param {
+    local_size: 5
+    alpha: 0.0001
+    beta: 0.75
+  }
+}
+layer {
+  name: "pool2"
+  type: "Pooling"
+  bottom: "norm2"
+  top: "pool2"
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 2
+  }
+}
+
+layer {
+  name: "din_convert3"
+  type: "Convertor"
+  bottom: "pool2"
+  top: "din_conv_data3"
+
+  convert_param {
+    from: DBL
+    to:   INT
+    to_coef {
+        val_num: 4
+        val_den: 5
+        offset_num: 1
+        offset_den: 1
+        bits: 8
+    }
+  }
+}
+layer {
+  name: "conv3"
+  type: "Convolution"
+  bottom: "din_conv_data3"
+  top: "conv3"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 384
+    pad: 1
+    kernel_size: 3
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+    weight_convert {
+        from: DBL
+        to: INT
+
+        to_coef {
+            val_num: 300
+            val_den: 1
+            offset_num: 256
+            offset_den: 1
+            bits: 8
+        }
+    }
+    bias_convert {
+        from: DBL
+        to: INT
+
+        to_coef {
+            val_num: 61440
+            val_den: 1
+            offset_num: 1
+            offset_den: 1
+            bits: 16
+        }
+    }
+
+    data_type:3
+    debug_dump {
+        filename: "log/amod_golden_conv3_double.bin"
+    }
+  }
+}
+
+#layer {
+#  name: "conv3"
+#  type: "Convolution"
+#  bottom: "din_conv_data3"
+#  top: "conv3"
+#  param {
+#    lr_mult: 1
+#    decay_mult: 1
+#  }
+#  param {
+#    lr_mult: 2
+#    decay_mult: 0
+#  }
+#  convolution_param {
+#    engine: WINOGRAD
+#    num_output: 384
+#    pad: 1
+#    kernel_size: 3
+#    weight_filler {
+#      type: "gaussian"
+#      std: 0.01
+#    }
+#    bias_filler {
+#      type: "constant"
+#      value: 0
+#    }
+#    weight_convert {
+#        from: DBL
+#        to: INT
+#
+#        to_coef {
+#            val_num: 300
+#            val_den: 1
+#            offset_num: 256
+#            offset_den: 1
+#            bits: 8
+#        }
+#    }
+#    bias_convert {
+#        from: DBL
+#        to: INT
+#
+#        to_coef {
+#            val_num: 61440
+#            val_den: 1
+#            offset_num: 1
+#            offset_den: 1
+#            bits: 16
+#        }
+#    }
+#    output_convert {
+#        from: DBL
+#        to: DBL
+#    }
+#    compr_param {
+#        eType: DBL
+#        stride: 8
+#    }
+#
+#    split_channel_width: 64
+#    data_type:3
+#    debug_loader {
+#        filename: "log/amod_golden_conv3_double.bin"
+#        eType: DBL
+#    }
+#    debug_comp {
+#        method: ABS
+#    }
+#
+#  }
+#}
+
+layer {
+  name: "dout_convert3"
+  type: "Convertor"
+  bottom: "conv3"
+  top: "conv3"
+
+  convert_param {
+    from: DBL
+    to:   INT
+
+    to_coef {
+        val_num: 4
+        val_den: 614400
+        offset_num: 10
+        offset_den: 4
+        bits: 8
+    }
+  }
+}
+
+layer {
+  name: "relu3"
+  type: "ReLU"
+  bottom: "conv3"
+  top: "conv3"
+}
+
+layer {
+  name: "din_convert4"
+  type: "Convertor"
+  bottom: "conv3"
+  top: "din_conv_data4"
+
+  convert_param {
+    from: DBL
+    to:   INT
+    to_coef {
+        val_num: 4
+        val_den: 10
+        offset_num: 1
+        offset_den: 1
+        bits: 8
+    }
+  }
+}
+
+layer {
+  name: "conv4"
+  type: "Convolution"
+  bottom: "din_conv_data4"
+  top: "conv4"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 384
+    pad: 1
+    kernel_size: 3
+    group: 2
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.1
+    }
+    weight_convert {
+        from: DBL
+        to: INT
+
+        to_coef {
+            val_num: 300
+            val_den: 1
+            offset_num: 256
+            offset_den: 1
+            bits: 8
+        }
+    }
+    bias_convert {
+        from: DBL
+        to: INT
+
+        to_coef {
+            val_num: 30720
+            val_den: 1
+            offset_num: 1
+            offset_den: 1
+            bits: 16
+        }
+    }
+
+  }
+}
+layer {
+  name: "dout_convert4"
+  type: "Convertor"
+  bottom: "conv4"
+  top: "conv4"
+
+  convert_param {
+    from: DBL
+    to:   INT
+
+    to_coef {
+        val_num: 4
+        val_den: 307200
+        offset_num: 10
+        offset_den: 4
+        bits: 8
+    }
+  }
+}
+
+layer {
+  name: "relu4"
+  type: "ReLU"
+  bottom: "conv4"
+  top: "conv4"
+}
+layer {
+  name: "din_convert5"
+  type: "Convertor"
+  bottom: "conv4"
+  top: "din_conv_data5"
+
+  convert_param {
+    from: DBL
+    to:   INT
+    to_coef {
+        val_num: 4
+        val_den: 10
+        offset_num: 1
+        offset_den: 1
+        bits: 8
+    }
+  }
+}
+
+layer {
+  name: "conv5"
+  type: "Convolution"
+  bottom: "din_conv_data5"
+  top: "conv5"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 256
+    pad: 1
+    kernel_size: 3
+    group: 2
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.1
+    }
+    weight_convert {
+        from: DBL
+        to: INT
+
+        to_coef {
+            val_num: 300
+            val_den: 1
+            offset_num: 256
+            offset_den: 1
+            bits: 8
+        }
+    }
+    bias_convert {
+        from: DBL
+        to: INT
+
+        to_coef {
+            val_num: 30720
+            val_den: 1
+            offset_num: 1
+            offset_den: 1
+            bits: 16
+        }
+    }
+  }
+}
+layer {
+  name: "dout_convert5"
+  type: "Convertor"
+  bottom: "conv5"
+  top: "conv5"
+
+  convert_param {
+    from: DBL
+    to:   INT
+
+    to_coef {
+        val_num: 4
+        val_den: 307200
+        offset_num: 10
+        offset_den: 4
+        bits: 8
+    }
+  }
+}
+
+layer {
+  name: "relu5"
+  type: "ReLU"
+  bottom: "conv5"
+  top: "conv5"
+}
+
+layer {
+  name: "pool5"
+  type: "Pooling"
+  bottom: "conv5"
+  top: "pool5"
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 2
+  }
+}
+
+layer {
+  name: "din_convert6"
+  type: "Convertor"
+  bottom: "pool5"
+  top: "din_conv_data6"
+
+  convert_param {
+    from: DBL
+    to:   INT
+    to_coef {
+        val_num: 4
+        val_den: 10
+        offset_num: 1
+        offset_den: 1
+        bits: 8
+    }
+  }
+}
+
+layer {
+  name: "fc6"
+  type: "InnerProduct"
+  bottom: "din_conv_data6"
+  top: "fc6"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  inner_product_param {
+    num_output: 4096
+    weight_filler {
+      type: "gaussian"
+      std: 0.005
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.1
+    }
+    weight_convert {
+        from: DBL
+        to: INT
+
+        to_coef {
+            val_num: 3000
+            val_den: 1
+            offset_num: 1
+            offset_den: 1
+            bits: 8
+        }
+    }
+  }
+}
+layer {
+  name: "dout_convert6"
+  type: "Convertor"
+  bottom: "fc6"
+  top: "fc6"
+
+  convert_param {
+    from: DBL
+    to:   INT
+
+    to_coef {
+        val_num: 2
+        val_den: 1200
+        offset_num: 1
+        offset_den: 2
+        bits: 8
+    }
+  }
+}
+
+layer {
+  name: "relu6"
+  type: "ReLU"
+  bottom: "fc6"
+  top: "fc6"
+}
+layer {
+  name: "drop6"
+  type: "Dropout"
+  bottom: "fc6"
+  top: "fc6"
+  dropout_param {
+    dropout_ratio: 0.5
+  }
+}
+layer {
+  name: "din_convert7"
+  type: "Convertor"
+  bottom: "fc6"
+  top: "din_conv_data7"
+
+  convert_param {
+    from: DBL
+    to:   INT
+    to_coef {
+        val_num: 2
+        val_den: 1
+        offset_num: 1
+        offset_den: 1
+        bits: 8
+    }
+  }
+}
+
+layer {
+  name: "fc7"
+  type: "InnerProduct"
+  bottom: "din_conv_data7"
+  top: "fc7"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  inner_product_param {
+    num_output: 4096
+    weight_filler {
+      type: "gaussian"
+      std: 0.005
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.1
+    }
+    weight_convert {
+        from: DBL
+        to: INT
+
+        to_coef {
+            val_num: 1800
+            val_den: 1
+            offset_num: 1
+            offset_den: 1
+            bits: 8
+        }
+    }
+  }
+}
+layer {
+  name: "dout_convert7"
+  type: "Convertor"
+  bottom: "fc7"
+  top: "fc7"
+
+  convert_param {
+    from: DBL
+    to:   INT
+
+    to_coef {
+        val_num: 6
+        val_den: 3600
+        offset_num: 1
+        offset_den: 6
+        bits: 8
+    }
+  }
+}
+
+layer {
+  name: "relu7"
+  type: "ReLU"
+  bottom: "fc7"
+  top: "fc7"
+}
+layer {
+  name: "drop7"
+  type: "Dropout"
+  bottom: "fc7"
+  top: "fc7"
+  dropout_param {
+    dropout_ratio: 0.5
+  }
+}
+layer {
+  name: "din_convert8"
+  type: "Convertor"
+  bottom: "fc7"
+  top: "din_conv_data8"
+
+  convert_param {
+    from: DBL
+    to:   INT
+    to_coef {
+        val_num: 6
+        val_den: 1
+        offset_num: 1
+        offset_den: 1
+        bits: 8
+    }
+  }
+}
+
+layer {
+  name: "fc8"
+  type: "InnerProduct"
+  bottom: "din_conv_data8"
+  top: "fc8"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  inner_product_param {
+    num_output: 1000
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+    weight_convert {
+        from: DBL
+        to: INT
+
+        to_coef {
+            val_num: 1800
+            val_den: 1
+            offset_num: 1
+            offset_den: 1
+            bits: 8
+        }
+    }
+
+  }
+}
+
+layer {
+  name: "dout_convert8"
+  type: "Convertor"
+  bottom: "fc8"
+  top: "fc8"
+
+  convert_param {
+    from: DBL
+    to:   INT
+
+    to_coef {
+        val_num: 6
+        val_den: 10800
+        offset_num: 1
+        offset_den: 6
+        bits: 16
+    }
+  }
+}
+
+
+layer {
+  name: "accuracy_1"
+  type: "Accuracy"
+  bottom: "fc8"
+  bottom: "label"
+  top: "accuracy_1"
+  accuracy_param {
+    top_k: 1
+  }
+  include {
+    phase: TEST
+  }
+}
+layer {
+  name: "accuracy_5"
+  type: "Accuracy"
+  bottom: "fc8"
+  bottom: "label"
+  top: "accuracy_5"
+  accuracy_param {
+    top_k: 5
+  }
+  include {
+    phase: TEST
+  }
+}
+layer {
+  name: "loss"
+  type: "SoftmaxWithLoss"
+  bottom: "fc8"
+  bottom: "label"
+  top: "loss"
+}

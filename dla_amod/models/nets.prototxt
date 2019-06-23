@@ -1,0 +1,259 @@
+net {
+    name: "alexnet"
+    date: 20120101      # The exact date is unknown, but it appears in 2012
+    prototxt_file:     "./models/bvlc_alexnet/train_val.prototxt"
+    weight_file:        "./models/bvlc_alexnet/bvlc_alexnet.caffemodel"
+    is_internal_net:    false
+
+    author:             "Alex Krizhevsky, Ilya Sutskever, Geoffrey E. Hinton"
+    url:                "https://www.nvidia.cn/content/tesla/pdf/machine-learning/imagenet-classification-with-deep-convolutional-nn.pdf"
+    accuracy {
+        top1:           0.633
+        top5:           0.846
+    }
+}
+#net {
+#    name: "ZFNet"
+#    date: 20130101      # The exact date is unknown, but it appears in 2012
+#    prototxt_file:     "./models/bvlc_alexnet/train_val.prototxt"
+#    weight_file:        "./models/bvlc_alexnet/bvlc_alexnet.caffemodel"
+#    is_internal_net:    false
+#
+#    author:             "Alex Krizhevsky, Ilya Sutskever, Geoffrey E. Hinton"
+#    url:                "https://www.nvidia.cn/content/tesla/pdf/machine-learning/imagenet-classification-with-deep-convolutional-nn.pdf"
+#    accuracy {
+#        top1:           0.633
+#        top5:           0.846
+#    }
+#}
+#
+#net {
+#    name: "NiN"
+#    date: 20140101      
+#    prototxt_file:     "./models/NIN_imagenet/train_val.prototxt"
+#    weight_file:        "./models/NIN_imagenet/nin_imagenet.caffemodel"
+#    is_internal_net:    false
+#
+#    author:             "M. Lin, Q. Chen, S. Yan"
+#    url:                "arXiv:1409.1556"
+#    accuracy {
+#        top1:           0.0
+#        top5:           0.0
+#    }
+#}
+#
+#net {
+#    name: "GoogLeNet"
+#    date: 20140101      # The exact date is unknown, but it appears in 2012
+#    prototxt_file:     "./models/bvlc_googlenet/train_val.prototxt"
+#    weight_file:        "./models/bvlc_googlenet/bvlc_googlenet.caffemodel"
+#    is_internal_net:    false
+#
+#    author:             "Alex Krizhevsky, Ilya Sutskever, Geoffrey E. Hinton"
+#    url:                "http://arxiv.org/abs/1409.4842, http://arxiv.org/abs/1502.03167, http://arxiv.org/abs/1512.00567, http://arxiv.org/abs/1602.07261"
+#    accuracy {
+#        top1:           0.633
+#        top5:           0.846
+#    }
+#}
+#
+#net {
+#    name: "VGG"
+#    date: 20150101      # The exact date is unknown, but it appears in 2012
+#    prototxt_file:     "./models/VGG_19/VGG_ILSVRC_19_layers_deploy.prototxt"
+#    weight_file:        "./models/VGG_19/VGG_ILSVRC_19_layers.caffemodel"
+#    is_internal_net:    false
+#
+#    author:             "Karen Simonyan, Andrew Zisserman"
+#    url:                "https://arxiv.org/pdf/1409.1556.pdf"
+#    accuracy {
+#        top1:           76.3
+#        top5:           93.2
+#    }
+#}
+#
+#
+#net {
+#    name: "ResNet-50"
+#    date: 20120101      # The exact date is unknown, but it appears in 2012
+#    prototxt_file:     "./models/bvlc_alexnet/train_val.prototxt"
+#    weight_file:        "./models/bvlc_alexnet/bvlc_alexnet.caffemodel"
+#    is_internal_net:    false
+#
+#    author:             "Alex Krizhevsky, Ilya Sutskever, Geoffrey E. Hinton"
+#    url:                "https://www.nvidia.cn/content/tesla/pdf/machine-learning/imagenet-classification-with-deep-convolutional-nn.pdf"
+#    accuracy {
+#        top1:           0.633
+#        top5:           0.846
+#    }
+#}
+#
+#net {
+#    name: "Inception_ResNet"
+#    date: 20120101      # The exact date is unknown, but it appears in 2012
+#    prototxt_file:     "./models/bvlc_alexnet/train_val.prototxt"
+#    weight_file:        "./models/bvlc_alexnet/bvlc_alexnet.caffemodel"
+#    is_internal_net:    false
+#
+#    author:             "Alex Krizhevsky, Ilya Sutskever, Geoffrey E. Hinton"
+#    url:                "https://www.nvidia.cn/content/tesla/pdf/machine-learning/imagenet-classification-with-deep-convolutional-nn.pdf"
+#    accuracy {
+#        top1:           0.633
+#        top5:           0.846
+#    }
+#}
+#
+#
+#net {
+#    name: "DenseNet"
+#    date: 20120101      # The exact date is unknown, but it appears in 2012
+#    prototxt_file:     "./models/bvlc_alexnet/train_val.prototxt"
+#    weight_file:        "./models/bvlc_alexnet/bvlc_alexnet.caffemodel"
+#    is_internal_net:    false
+#
+#    author:             "Alex Krizhevsky, Ilya Sutskever, Geoffrey E. Hinton"
+#    url:                "https://www.nvidia.cn/content/tesla/pdf/machine-learning/imagenet-classification-with-deep-convolutional-nn.pdf"
+#    accuracy {
+#        top1:           0.633
+#        top5:           0.846
+#    }
+#}
+#
+#net {
+#    name: "InceptionV2"
+#    date: 20120101      # The exact date is unknown, but it appears in 2012
+#    prototxt_file:     "./models/bvlc_alexnet/train_val.prototxt"
+#    weight_file:        "./models/bvlc_alexnet/bvlc_alexnet.caffemodel"
+#    is_internal_net:    false
+#
+#    author:             "Alex Krizhevsky, Ilya Sutskever, Geoffrey E. Hinton"
+#    url:                "https://www.nvidia.cn/content/tesla/pdf/machine-learning/imagenet-classification-with-deep-convolutional-nn.pdf"
+#    accuracy {
+#        top1:           0.633
+#        top5:           0.846
+#    }
+#}
+#
+#net {
+#    name: "InceptionV3"
+#    date: 20120101      # The exact date is unknown, but it appears in 2012
+#    prototxt_file:     "./models/bvlc_alexnet/train_val.prototxt"
+#    weight_file:        "./models/bvlc_alexnet/bvlc_alexnet.caffemodel"
+#    is_internal_net:    false
+#
+#    author:             "Alex Krizhevsky, Ilya Sutskever, Geoffrey E. Hinton"
+#    url:                "https://www.nvidia.cn/content/tesla/pdf/machine-learning/imagenet-classification-with-deep-convolutional-nn.pdf"
+#    accuracy {
+#        top1:           0.633
+#        top5:           0.846
+#    }
+#}
+#
+#net {
+#    name: "InceptionV4"
+#    date: 20120101      # The exact date is unknown, but it appears in 2012
+#    prototxt_file:     "./models/bvlc_alexnet/train_val.prototxt"
+#    weight_file:        "./models/bvlc_alexnet/bvlc_alexnet.caffemodel"
+#    is_internal_net:    false
+#
+#    author:             "Alex Krizhevsky, Ilya Sutskever, Geoffrey E. Hinton"
+#    url:                "https://www.nvidia.cn/content/tesla/pdf/machine-learning/imagenet-classification-with-deep-convolutional-nn.pdf"
+#    accuracy {
+#        top1:           0.633
+#        top5:           0.846
+#    }
+#}
+#
+#net {
+#    name: "FCN"
+#    date: 20120101      # The exact date is unknown, but it appears in 2012
+#    prototxt_file:     "./models/bvlc_alexnet/train_val.prototxt"
+#    weight_file:        "./models/bvlc_alexnet/bvlc_alexnet.caffemodel"
+#    is_internal_net:    false
+#
+#    author:             "Alex Krizhevsky, Ilya Sutskever, Geoffrey E. Hinton"
+#    url:                "https://www.nvidia.cn/content/tesla/pdf/machine-learning/imagenet-classification-with-deep-convolutional-nn.pdf"
+#    accuracy {
+#        top1:           0.633
+#        top5:           0.846
+#    }
+#}
+#
+#net {
+#    name: "STNet"
+#    date: 20120101      # The exact date is unknown, but it appears in 2012
+#    prototxt_file:     "./models/bvlc_alexnet/train_val.prototxt"
+#    weight_file:        "./models/bvlc_alexnet/bvlc_alexnet.caffemodel"
+#    is_internal_net:    false
+#
+#    author:             "Alex Krizhevsky, Ilya Sutskever, Geoffrey E. Hinton"
+#    url:                "https://www.nvidia.cn/content/tesla/pdf/machine-learning/imagenet-classification-with-deep-convolutional-nn.pdf"
+#    accuracy {
+#        top1:           0.633
+#        top5:           0.846
+#    }
+#}
+#
+#net {
+#    name: "FastRCNN"
+#    date: 20120101      # The exact date is unknown, but it appears in 2012
+#    prototxt_file:     "./models/bvlc_alexnet/train_val.prototxt"
+#    weight_file:        "./models/bvlc_alexnet/bvlc_alexnet.caffemodel"
+#    is_internal_net:    false
+#
+#    author:             "Alex Krizhevsky, Ilya Sutskever, Geoffrey E. Hinton"
+#    url:                "https://www.nvidia.cn/content/tesla/pdf/machine-learning/imagenet-classification-with-deep-convolutional-nn.pdf"
+#    accuracy {
+#        top1:           0.633
+#        top5:           0.846
+#    }
+#    application:    OBJECT_DETECTION
+#}
+#
+#net {
+#    name: "FasterRCNN"
+#    date: 20120101      # The exact date is unknown, but it appears in 2012
+#    prototxt_file:     "./models/bvlc_alexnet/train_val.prototxt"
+#    weight_file:        "./models/bvlc_alexnet/bvlc_alexnet.caffemodel"
+#    is_internal_net:    false
+#
+#    author:             "Alex Krizhevsky, Ilya Sutskever, Geoffrey E. Hinton"
+#    url:                "https://www.nvidia.cn/content/tesla/pdf/machine-learning/imagenet-classification-with-deep-convolutional-nn.pdf"
+#    accuracy {
+#        top1:           0.633
+#        top5:           0.846
+#    }
+#    application:    OBJECT_DETECTION
+#}
+#
+#net {
+#    name: "SSD"
+#    date: 20120101      # The exact date is unknown, but it appears in 2012
+#    prototxt_file:     "./models/bvlc_alexnet/train_val.prototxt"
+#    weight_file:        "./models/bvlc_alexnet/bvlc_alexnet.caffemodel"
+#    is_internal_net:    false
+#
+#    author:             "Alex Krizhevsky, Ilya Sutskever, Geoffrey E. Hinton"
+#    url:                "https://www.nvidia.cn/content/tesla/pdf/machine-learning/imagenet-classification-with-deep-convolutional-nn.pdf"
+#    accuracy {
+#        top1:           0.633
+#        top5:           0.846
+#    }
+#    application:    OBJECT_DETECTION
+#}
+#net {
+#    name: "YOLO"
+#    date: 20120101      # The exact date is unknown, but it appears in 2012
+#    prototxt_file:     "./models/bvlc_alexnet/train_val.prototxt"
+#    weight_file:        "./models/bvlc_alexnet/bvlc_alexnet.caffemodel"
+#    is_internal_net:    false
+#
+#    author:             "Alex Krizhevsky, Ilya Sutskever, Geoffrey E. Hinton"
+#    url:                "https://www.nvidia.cn/content/tesla/pdf/machine-learning/imagenet-classification-with-deep-convolutional-nn.pdf"
+#    accuracy {
+#        top1:           0.633
+#        top5:           0.846
+#    }
+#    application:    OBJECT_DETECTION
+#}
+#

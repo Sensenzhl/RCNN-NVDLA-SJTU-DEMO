@@ -1,0 +1,66 @@
+name: "Diff"
+debug_info: true
+
+layer {
+  name: "wg"
+  type: "Loader"
+  top: "wg"
+  loader_param {
+      filename: "./temp/winograd/conv3_1.bin"
+      method: LoadMethod_PROTO_TXT
+  }
+}
+layer {
+  name: "sdp"
+  type: "SDPX"
+  bottom: "wg"
+  top: "sub"
+  sdp_x_param {
+    alu_op: SUB
+    alu_type: PER_ELEMENT
+    alu_cvt {
+        to: DBL
+        to_coef {
+            offset: 0
+            scale: 0.24997832102230175560303032691898
+            shifter: 0
+            post_scale: 1
+            bits: 64
+        }
+
+    }
+    alu_loader {
+        filename: "./temp/dc/conv3_1.bin"
+        method: LoadMethod_PROTO_TXT
+    }
+    mul_op: MUL
+    mul_type: PER_CUBE
+    mul_val: 1
+
+    pipe: FP
+  }
+}
+
+
+layer {
+    name: "cvt"
+    bottom: "sub"
+    top: "sub"
+    type: "Convertor"
+    convert_param {
+        to: DBL
+        to_coef {
+            offset: 0
+            scale: 0.01576789656259854935351624093346
+            shifter: 0
+            post_scale: 1
+            bits: 64
+        }
+
+    }
+}
+layer {
+    name: "sil"
+    bottom: "sub"
+    type: "Silence"
+}

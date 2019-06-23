@@ -1,0 +1,7462 @@
+name: "GoogleNet"
+state {
+  phase: TEST
+}
+debug_info: true
+roi_accuracy: NONE
+layer {
+  name: "data"
+  type: "Data"
+  top: "data"
+  top: "label"
+  include {
+    phase: TEST
+  }
+  transform_param {
+    mirror: false
+    crop_size: 227
+    mean_file: "/home/scratch.yilinz_t19x_2/t19x/caffe-master-amodel/data/ilsvrc12/imagenet_mean.binaryproto"
+    shifter: 0
+    bits: 8
+  }
+  data_param {
+    source: "/home/scratch.yilinz_t19x_2/t19x/caffe-master-amodel/../val_db"
+    batch_size: 50
+    backend: LMDB
+  }
+}
+layer {
+  name: "data_convert0"
+  type: "Convertor"
+  bottom: "data"
+  top: "data"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 33720
+      shifter: 17
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 0
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "conv1_7x7_s2"
+  type: "Convolution"
+  bottom: "data"
+  top: "conv1_7x7_s2"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 64
+    pad: 3
+    kernel_size: 7
+    stride: 2
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: SPLITC
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 2
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 105.503466050982
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 6.78553938911266
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    input_mean: 0
+  }
+}
+layer {
+  name: "conv1_relu_7x7"
+  type: "ReLU"
+  bottom: "conv1_7x7_s2"
+  top: "conv1_7x7_s2"
+}
+layer {
+  name: "conv1_relu_7x7_convert0"
+  type: "Convertor"
+  bottom: "conv1_7x7_s2"
+  top: "conv1_7x7_s2"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 39189
+      shifter: 14
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 16
+      offset: 13700.0040266185
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "pool1_3x3_s2"
+  type: "Pooling"
+  bottom: "conv1_7x7_s2"
+  top: "pool1_3x3_s2"
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 2
+  }
+}
+layer {
+  name: "pool1_norm1_convert_in0"
+  type: "Convertor"
+  bottom: "pool1_3x3_s2"
+  top: "pool1_3x3_s2"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 64605
+      shifter: 16
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 17
+      offset: -32767
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.1
+    is_enable_dr_check: false
+  }
+}
+
+layer {
+  name: "pool1_norm1"
+  type: "NVLRN"
+  bottom: "pool1_3x3_s2"
+  top: "pool1_norm1"
+  nv_lrn_param {
+    local_size: 5
+    alpha: 0.0001
+    beta: 0.75
+    norm_region: ACROSS_CHANNELS
+    k: 1
+    lut_param {
+      density_start: -9.67004278877094e-09
+      density_win_size: 22
+      raw_tbl_entry: 65
+      density_tbl_entry: 257
+      sym: NO_SYM
+      lut_convert {
+        from: DBL
+        to: INT
+        to_coef {
+          scale: 32767.0000000001
+          shifter: 0
+          comp_scale: 1
+          comp_shifter: 0
+          bits: 16
+          offset: 0
+        }
+        allow_saturate: false
+        method: STD_RN
+        dr_ratio: 0
+      }
+      raw_step_method: EXP_STEP
+      raw_min: 2.3283064365387e-10
+      raw_max: 8589934592
+      priority: LO_TBL
+      shifter: 8
+      interp_bits: 16
+    }
+  }
+}
+layer {
+  name: "pool1_norm1_convert0"
+  type: "Convertor"
+  bottom: "pool1_norm1"
+  top: "pool1_norm1"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 60708
+      shifter: 34
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 36081309
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "conv2_3x3_reduce"
+  type: "Convolution"
+  bottom: "pool1_norm1"
+  top: "conv2_3x3_reduce"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 64
+    kernel_size: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: SPLITC
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 3
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 115.001241493674
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 26.6311618582486
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    input_mean: 68.8225540493931
+  }
+}
+layer {
+  name: "conv2_relu_3x3_reduce"
+  type: "ReLU"
+  bottom: "conv2_3x3_reduce"
+  top: "conv2_3x3_reduce"
+}
+layer {
+  name: "conv2_relu_3x3_reduce_convert0"
+  type: "Convertor"
+  bottom: "conv2_3x3_reduce"
+  top: "conv2_3x3_reduce"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 49889
+      shifter: 21
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 5360
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "conv2_3x3"
+  type: "Convolution"
+  bottom: "conv2_3x3_reduce"
+  top: "conv2_3x3"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 192
+    pad: 1
+    kernel_size: 3
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: WINOGRAD
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 3
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 4.10668668304278
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    pra_feature_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 2
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    pra_weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 207.432377086137
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    input_mean: 201.267974282535
+  }
+}
+layer {
+  name: "conv2_relu_3x3"
+  type: "ReLU"
+  bottom: "conv2_3x3"
+  top: "conv2_3x3"
+}
+layer {
+  name: "conv2_relu_3x3_convert0"
+  type: "Convertor"
+  bottom: "conv2_3x3"
+  top: "conv2_3x3"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 63315
+      shifter: 11
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 16
+      offset: 1060
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "conv2_norm2_convert_in0"
+  type: "Convertor"
+  bottom: "conv2_3x3"
+  top: "conv2_3x3"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 33036
+      shifter: 15
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 17
+      offset: -32755.7791859903
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.1
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "conv2_norm2"
+  type: "NVLRN"
+  bottom: "conv2_3x3"
+  top: "conv2_norm2"
+  nv_lrn_param {
+    local_size: 5
+    alpha: 0.0001
+    beta: 0.75
+    norm_region: ACROSS_CHANNELS
+    k: 1
+    lut_param {
+      density_start: 5559.75097085405
+      density_win_size: 15
+      raw_tbl_entry: 65
+      density_tbl_entry: 257
+      sym: NO_SYM
+      lut_convert {
+        from: DBL
+        to: INT
+        to_coef {
+          scale: 32767.0000000001
+          shifter: 0
+          comp_scale: 1
+          comp_shifter: 0
+          bits: 16
+          offset: 0
+        }
+        allow_saturate: false
+        method: STD_RN
+        dr_ratio: 0
+      }
+      raw_step_method: EXP_STEP
+      raw_min: 2.3283064365387e-10
+      raw_max: 8589934592
+      priority: LO_TBL
+      shifter: 14
+      interp_bits: 16
+    }
+  }
+}
+layer {
+  name: "conv2_norm2_convert0"
+  type: "Convertor"
+  bottom: "conv2_norm2"
+  top: "conv2_norm2"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 60708
+      shifter: 37
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 288651575
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "pool2_3x3_s2"
+  type: "Pooling"
+  bottom: "conv2_norm2"
+  top: "pool2_3x3_s2"
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 2
+  }
+}
+layer {
+  name: "inception_3a_1x1"
+  type: "Convolution"
+  bottom: "pool2_3x3_s2"
+  top: "inception_3a_1x1"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 64
+    kernel_size: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: SPLITC
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 3
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 116.860034164468
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 27.0617949823253
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    input_mean: 68.8223407953627
+  }
+}
+layer {
+  name: "inception_3a_relu_1x1"
+  type: "ReLU"
+  bottom: "inception_3a_1x1"
+  top: "inception_3a_1x1"
+}
+layer {
+  name: "inception_3a_relu_1x1_convert0"
+  type: "Convertor"
+  bottom: "inception_3a_1x1"
+  top: "inception_3a_1x1"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 40585
+      shifter: 22
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 13177
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_3a_3x3_reduce"
+  type: "Convolution"
+  bottom: "pool2_3x3_s2"
+  top: "inception_3a_3x3_reduce"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 96
+    kernel_size: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: SPLITC
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 3
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 79.188140672381
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 18.3379479839232
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    input_mean: 68.8223407953627
+  }
+}
+layer {
+  name: "inception_3a_relu_3x3_reduce"
+  type: "ReLU"
+  bottom: "inception_3a_3x3_reduce"
+  top: "inception_3a_3x3_reduce"
+}
+layer {
+  name: "inception_3a_relu_3x3_reduce_convert0"
+  type: "Convertor"
+  bottom: "inception_3a_3x3_reduce"
+  top: "inception_3a_3x3_reduce"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 56444
+      shifter: 21
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 4737
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_3a_3x3"
+  type: "Convolution"
+  bottom: "inception_3a_3x3_reduce"
+  top: "inception_3a_3x3"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 128
+    pad: 1
+    kernel_size: 3
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: WINOGRAD
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 1
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 18.277861360602
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    pra_feature_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 2
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    pra_weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 296.26395374225
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    input_mean: 258.318022571391
+  }
+}
+layer {
+  name: "inception_3a_relu_3x3"
+  type: "ReLU"
+  bottom: "inception_3a_3x3"
+  top: "inception_3a_3x3"
+}
+layer {
+  name: "inception_3a_relu_3x3_convert0"
+  type: "Convertor"
+  bottom: "inception_3a_3x3"
+  top: "inception_3a_3x3"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 60089
+      shifter: 22
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 8901.31848261317
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_3a_5x5_reduce"
+  type: "Convolution"
+  bottom: "pool2_3x3_s2"
+  top: "inception_3a_5x5_reduce"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 16
+    kernel_size: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: SPLITC
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 4
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 166.105403449294
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 19.2328814797145
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    input_mean: 68.8223407953627
+  }
+}
+layer {
+  name: "inception_3a_relu_5x5_reduce"
+  type: "ReLU"
+  bottom: "inception_3a_5x5_reduce"
+  top: "inception_3a_5x5_reduce"
+}
+layer {
+  name: "inception_3a_relu_5x5_reduce_convert0"
+  type: "Convertor"
+  bottom: "inception_3a_5x5_reduce"
+  top: "inception_3a_5x5_reduce"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 58091
+      shifter: 21
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 4603
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_3a_5x5"
+  type: "Convolution"
+  bottom: "inception_3a_5x5_reduce"
+  top: "inception_3a_5x5"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 32
+    pad: 2
+    kernel_size: 5
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: SPLITC
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 2
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 234.82339057414
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 31.2755288559766
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    input_mean: 239.329712755466
+  }
+}
+layer {
+  name: "inception_3a_relu_5x5"
+  type: "ReLU"
+  bottom: "inception_3a_5x5"
+  top: "inception_3a_5x5"
+}
+layer {
+  name: "inception_3a_relu_5x5_convert0"
+  type: "Convertor"
+  bottom: "inception_3a_5x5"
+  top: "inception_3a_5x5"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 35117
+      shifter: 22
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 15228
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_3a_pool"
+  type: "Pooling"
+  bottom: "pool2_3x3_s2"
+  top: "inception_3a_pool"
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 1
+    pad: 1
+  }
+}
+layer {
+  name: "inception_3a_pool_proj"
+  type: "Convolution"
+  bottom: "inception_3a_pool"
+  top: "inception_3a_pool_proj"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 32
+    kernel_size: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: SPLITC
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 2
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 141.278502737507
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 65.4326652457088
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    input_mean: 68.8226671272218
+  }
+}
+layer {
+  name: "inception_3a_relu_pool_proj"
+  type: "ReLU"
+  bottom: "inception_3a_pool_proj"
+  top: "inception_3a_pool_proj"
+}
+layer {
+  name: "inception_3a_relu_pool_proj_convert0"
+  type: "Convertor"
+  bottom: "inception_3a_pool_proj"
+  top: "inception_3a_pool_proj"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 33571
+      shifter: 23
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 31865.7079746602
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_3a_output"
+  type: "Concat"
+  bottom: "inception_3a_1x1"
+  bottom: "inception_3a_3x3"
+  bottom: "inception_3a_5x5"
+  bottom: "inception_3a_pool_proj"
+  top: "inception_3a_output"
+}
+layer {
+  name: "inception_3b_1x1"
+  type: "Convolution"
+  bottom: "inception_3a_output"
+  top: "inception_3b_1x1"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 128
+    kernel_size: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: SPLITC
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 3
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 182.756980438706
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 5.981997568355
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    input_mean: 486.922615761676
+  }
+}
+layer {
+  name: "inception_3b_relu_1x1"
+  type: "ReLU"
+  bottom: "inception_3b_1x1"
+  top: "inception_3b_1x1"
+}
+layer {
+  name: "inception_3b_relu_1x1_convert0"
+  type: "Convertor"
+  bottom: "inception_3b_1x1"
+  top: "inception_3b_1x1"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 52659
+      shifter: 20
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 2539
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_3b_3x3_reduce"
+  type: "Convolution"
+  bottom: "inception_3a_output"
+  top: "inception_3b_3x3_reduce"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 128
+    kernel_size: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: SPLITC
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 2
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 188.983437856194
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 12.3716036782986
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    input_mean: 486.922615761676
+  }
+}
+layer {
+  name: "inception_3b_relu_3x3_reduce"
+  type: "ReLU"
+  bottom: "inception_3b_3x3_reduce"
+  top: "inception_3b_3x3_reduce"
+}
+layer {
+  name: "inception_3b_relu_3x3_reduce_convert0"
+  type: "Convertor"
+  bottom: "inception_3b_3x3_reduce"
+  top: "inception_3b_3x3_reduce"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 53677
+      shifter: 21
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 4981
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_3b_3x3"
+  type: "Convolution"
+  bottom: "inception_3b_3x3_reduce"
+  top: "inception_3b_3x3"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 192
+    pad: 1
+    kernel_size: 3
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: WINOGRAD
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 2
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 4.16871283025582
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    pra_feature_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 2
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    pra_weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 210.638443223784
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    input_mean: 402.615548438342
+  }
+}
+layer {
+  name: "inception_3b_relu_3x3"
+  type: "ReLU"
+  bottom: "inception_3b_3x3"
+  top: "inception_3b_3x3"
+}
+layer {
+  name: "inception_3b_relu_3x3_convert0"
+  type: "Convertor"
+  bottom: "inception_3b_3x3"
+  top: "inception_3b_3x3"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 37782
+      shifter: 19
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 1769
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_3b_5x5_reduce"
+  type: "Convolution"
+  bottom: "inception_3a_output"
+  top: "inception_3b_5x5_reduce"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 32
+    kernel_size: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: SPLITC
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 2
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 191.872441547161
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 12.5607292921367
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    input_mean: 486.922615761676
+  }
+}
+layer {
+  name: "inception_3b_relu_5x5_reduce"
+  type: "ReLU"
+  bottom: "inception_3b_5x5_reduce"
+  top: "inception_3b_5x5_reduce"
+}
+layer {
+  name: "inception_3b_relu_5x5_reduce_convert0"
+  type: "Convertor"
+  bottom: "inception_3b_5x5_reduce"
+  top: "inception_3b_5x5_reduce"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 60095
+      shifter: 21
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 4449
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_3b_5x5"
+  type: "Convolution"
+  bottom: "inception_3b_5x5_reduce"
+  top: "inception_3b_5x5"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 96
+    pad: 2
+    kernel_size: 5
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: SPLITC
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 4
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 346.601170245127
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 7.79710402599061
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    input_mean: 354.199178767844
+  }
+}
+layer {
+  name: "inception_3b_relu_5x5"
+  type: "ReLU"
+  bottom: "inception_3b_5x5"
+  top: "inception_3b_5x5"
+}
+layer {
+  name: "inception_3b_relu_5x5_convert0"
+  type: "Convertor"
+  bottom: "inception_3b_5x5"
+  top: "inception_3b_5x5"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 40400
+      shifter: 20
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 3309
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_3b_pool"
+  type: "Pooling"
+  bottom: "inception_3a_output"
+  top: "inception_3b_pool"
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 1
+    pad: 1
+  }
+}
+layer {
+  name: "inception_3b_pool_proj"
+  type: "Convolution"
+  bottom: "inception_3b_pool"
+  top: "inception_3b_pool_proj"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 64
+    kernel_size: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: SPLITC
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 3
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 228.958410760271
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 7.49426179582629
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    input_mean: 486.922615761676
+  }
+}
+layer {
+  name: "inception_3b_relu_pool_proj"
+  type: "ReLU"
+  bottom: "inception_3b_pool_proj"
+  top: "inception_3b_pool_proj"
+}
+layer {
+  name: "inception_3b_relu_pool_proj_convert0"
+  type: "Convertor"
+  bottom: "inception_3b_pool_proj"
+  top: "inception_3b_pool_proj"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 42033
+      shifter: 20
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 3181
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_3b_output"
+  type: "Concat"
+  bottom: "inception_3b_1x1"
+  bottom: "inception_3b_3x3"
+  bottom: "inception_3b_5x5"
+  bottom: "inception_3b_pool_proj"
+  top: "inception_3b_output"
+}
+layer {
+  name: "pool3_3x3_s2"
+  type: "Pooling"
+  bottom: "inception_3b_output"
+  top: "pool3_3x3_s2"
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 2
+  }
+}
+layer {
+  name: "inception_4a_1x1"
+  type: "Convolution"
+  bottom: "pool3_3x3_s2"
+  top: "inception_4a_1x1"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 192
+    kernel_size: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: SPLITC
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 4
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 230.266832057992
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 4.32344889586428
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    input_mean: 424.440159158775
+  }
+}
+layer {
+  name: "inception_4a_relu_1x1"
+  type: "ReLU"
+  bottom: "inception_4a_1x1"
+  top: "inception_4a_1x1"
+}
+layer {
+  name: "inception_4a_relu_1x1_convert0"
+  type: "Convertor"
+  bottom: "inception_4a_1x1"
+  top: "inception_4a_1x1"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 48647
+      shifter: 20
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 2759
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_4a_3x3_reduce"
+  type: "Convolution"
+  bottom: "pool3_3x3_s2"
+  top: "inception_4a_3x3_reduce"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 96
+    kernel_size: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: SPLITC
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 3
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 213.669944660785
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 8.02365740707632
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    input_mean: 424.440159158775
+  }
+}
+layer {
+  name: "inception_4a_relu_3x3_reduce"
+  type: "ReLU"
+  bottom: "inception_4a_3x3_reduce"
+  top: "inception_4a_3x3_reduce"
+}
+layer {
+  name: "inception_4a_relu_3x3_reduce_convert0"
+  type: "Convertor"
+  bottom: "inception_4a_3x3_reduce"
+  top: "inception_4a_3x3_reduce"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 46109
+      shifter: 21
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 5799
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_4a_3x3"
+  type: "Convolution"
+  bottom: "inception_4a_3x3_reduce"
+  top: "inception_4a_3x3"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 208
+    pad: 1
+    kernel_size: 3
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: WINOGRAD
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 2
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 2.05426965130552
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    pra_feature_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 2
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    pra_weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 186.315617983919
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    input_mean: 722.737737392137
+  }
+}
+layer {
+  name: "inception_4a_relu_3x3"
+  type: "ReLU"
+  bottom: "inception_4a_3x3"
+  top: "inception_4a_3x3"
+}
+layer {
+  name: "inception_4a_relu_3x3_convert0"
+  type: "Convertor"
+  bottom: "inception_4a_3x3"
+  top: "inception_4a_3x3"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 51192
+      shifter: 19
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 1311
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_4a_5x5_reduce"
+  type: "Convolution"
+  bottom: "pool3_3x3_s2"
+  top: "inception_4a_5x5_reduce"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 16
+    kernel_size: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: SPLITC
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 3
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 249.757731160591
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 9.37881306976838
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    input_mean: 424.440159158775
+  }
+}
+layer {
+  name: "inception_4a_relu_5x5_reduce"
+  type: "ReLU"
+  bottom: "inception_4a_5x5_reduce"
+  top: "inception_4a_5x5_reduce"
+}
+layer {
+  name: "inception_4a_relu_5x5_reduce_convert0"
+  type: "Convertor"
+  bottom: "inception_4a_5x5_reduce"
+  top: "inception_4a_5x5_reduce"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 38249
+      shifter: 20
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 3495
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_4a_5x5"
+  type: "Convolution"
+  bottom: "inception_4a_5x5_reduce"
+  top: "inception_4a_5x5"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 48
+    pad: 2
+    kernel_size: 5
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: SPLITC
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 2
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 172.204945815858
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 14.7283359260548
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    input_mean: 372.648433655829
+  }
+}
+layer {
+  name: "inception_4a_relu_5x5"
+  type: "ReLU"
+  bottom: "inception_4a_5x5"
+  top: "inception_4a_5x5"
+}
+layer {
+  name: "inception_4a_relu_5x5_convert0"
+  type: "Convertor"
+  bottom: "inception_4a_5x5"
+  top: "inception_4a_5x5"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 57120
+      shifter: 22
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 9399
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_4a_pool"
+  type: "Pooling"
+  bottom: "pool3_3x3_s2"
+  top: "inception_4a_pool"
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 1
+    pad: 1
+  }
+}
+layer {
+  name: "inception_4a_pool_proj"
+  type: "Convolution"
+  bottom: "inception_4a_pool"
+  top: "inception_4a_pool_proj"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 64
+    kernel_size: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: SPLITC
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 3
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 188.650596898886
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 7.08413980057031
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    input_mean: 424.440159158775
+  }
+}
+layer {
+  name: "inception_4a_relu_pool_proj"
+  type: "ReLU"
+  bottom: "inception_4a_pool_proj"
+  top: "inception_4a_pool_proj"
+}
+layer {
+  name: "inception_4a_relu_pool_proj_convert0"
+  type: "Convertor"
+  bottom: "inception_4a_pool_proj"
+  top: "inception_4a_pool_proj"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 59378
+      shifter: 21
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 4521
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_4a_output"
+  type: "Concat"
+  bottom: "inception_4a_1x1"
+  bottom: "inception_4a_3x3"
+  bottom: "inception_4a_5x5"
+  bottom: "inception_4a_pool_proj"
+  top: "inception_4a_output"
+}
+layer {
+  name: "loss1_ave_pool"
+  type: "Pooling"
+  bottom: "inception_4a_output"
+  top: "loss1_ave_pool"
+  pooling_param {
+    pool: AVE
+    kernel_size: 5
+    stride: 3
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: SIMPLE_RN
+      dr_ratio: 0.2
+    }
+  }
+}
+layer {
+  name: "loss1_conv"
+  type: "Convolution"
+  bottom: "loss1_ave_pool"
+  top: "loss1_conv"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 128
+    kernel_size: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: SPLITC
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 3
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 303.011200373391
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 7.59712750111314
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    input_mean: 638.1891894147
+  }
+}
+layer {
+  name: "loss1_relu_conv"
+  type: "ReLU"
+  bottom: "loss1_conv"
+  top: "loss1_conv"
+}
+layer {
+  name: "loss1_relu_conv_convert0"
+  type: "Convertor"
+  bottom: "loss1_conv"
+  top: "loss1_conv"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 47928
+      shifter: 18
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 698.935730102409
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "loss1_fc"
+  type: "InnerProduct"
+  bottom: "loss1_conv"
+  top: "loss1_fc"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  inner_product_param {
+    num_output: 1024
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1616.31851854732
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 35.0790023834375
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 6
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    input_mean: 91.7573131874857
+  }
+}
+layer {
+  name: "loss1_relu_fc"
+  type: "ReLU"
+  bottom: "loss1_fc"
+  top: "loss1_fc"
+}
+layer {
+  name: "loss1_relu_fc_convert0"
+  type: "Convertor"
+  bottom: "loss1_fc"
+  top: "loss1_fc"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 49812
+      shifter: 18
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 671
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "loss1_drop_fc"
+  type: "Dropout"
+  bottom: "loss1_fc"
+  top: "loss1_fc"
+  dropout_param {
+    dropout_ratio: 0.7
+  }
+}
+layer {
+  name: "loss1_classifier"
+  type: "InnerProduct"
+  bottom: "loss1_fc"
+  top: "loss1_classifier"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  inner_product_param {
+    num_output: 1000
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1518.27047375621
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 158.128613747903
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 6
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    input_mean: 19.1282520712964
+  }
+}
+layer {
+  name: "loss1_classifier_convert0"
+  type: "Convertor"
+  bottom: "loss1_classifier"
+  top: "loss1_classifier"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 53496
+      shifter: 13
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 16
+      offset: 2069
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "loss1_top_1_convert_in0"
+  type: "Convertor"
+  bottom: "loss1_classifier"
+  top: "loss1_classifier"
+  convert_param {
+    from: DBL
+    to: DBL
+    to_coef {
+      scale: 0.000968407556922929
+      shifter: 0
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 64
+      offset: -13511.1357421875
+    }
+    allow_saturate: false
+    method: STD_RN
+    dr_ratio: 0.1
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "loss1_top_1"
+  type: "Accuracy"
+  bottom: "loss1_classifier"
+  bottom: "label"
+  top: "loss1_top_1"
+  include {
+    phase: TEST
+  }
+}
+layer {
+  name: "loss1_top_5"
+  type: "Accuracy"
+  bottom: "loss1_classifier"
+  bottom: "label"
+  top: "loss1_top_5"
+  include {
+    phase: TEST
+  }
+  accuracy_param {
+    top_k: 5
+  }
+}
+layer {
+  name: "loss1_loss"
+  type: "SoftmaxWithLoss"
+  bottom: "loss1_classifier"
+  bottom: "label"
+  top: "loss1_loss1"
+  loss_weight: 0.3
+}
+layer {
+  name: "inception_4b_1x1"
+  type: "Convolution"
+  bottom: "inception_4a_output"
+  top: "inception_4b_1x1"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 160
+    kernel_size: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: SPLITC
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 2
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 193.974176486199
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 9.72668039249471
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    input_mean: 638.1891894147
+  }
+}
+layer {
+  name: "inception_4b_relu_1x1"
+  type: "ReLU"
+  bottom: "inception_4b_1x1"
+  top: "inception_4b_1x1"
+}
+layer {
+  name: "inception_4b_relu_1x1_convert0"
+  type: "Convertor"
+  bottom: "inception_4b_1x1"
+  top: "inception_4b_1x1"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 42635
+      shifter: 20
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 3131.9910863833
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_4b_3x3_reduce"
+  type: "Convolution"
+  bottom: "inception_4a_output"
+  top: "inception_4b_3x3_reduce"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 112
+    kernel_size: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: SPLITC
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 2
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 162.319440983497
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 8.13937892422098
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    input_mean: 638.1891894147
+  }
+}
+layer {
+  name: "inception_4b_relu_3x3_reduce"
+  type: "ReLU"
+  bottom: "inception_4b_3x3_reduce"
+  top: "inception_4b_3x3_reduce"
+}
+layer {
+  name: "inception_4b_relu_3x3_reduce_convert0"
+  type: "Convertor"
+  bottom: "inception_4b_3x3_reduce"
+  top: "inception_4b_3x3_reduce"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 45071
+      shifter: 20
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 2962.73392841644
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_4b_3x3"
+  type: "Convolution"
+  bottom: "inception_4b_3x3_reduce"
+  top: "inception_4b_3x3"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 224
+    pad: 1
+    kernel_size: 3
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: WINOGRAD
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 1
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 9.68939851864901
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    pra_feature_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 2
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    pra_weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 221.563688995689
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    input_mean: 364.445763119091
+  }
+}
+layer {
+  name: "inception_4b_relu_3x3"
+  type: "ReLU"
+  bottom: "inception_4b_3x3"
+  top: "inception_4b_3x3"
+}
+layer {
+  name: "inception_4b_relu_3x3_convert0"
+  type: "Convertor"
+  bottom: "inception_4b_3x3"
+  top: "inception_4b_3x3"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 42799
+      shifter: 20
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 3124
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_4b_5x5_reduce"
+  type: "Convolution"
+  bottom: "inception_4a_output"
+  top: "inception_4b_5x5_reduce"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 24
+    kernel_size: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: SPLITC
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 4
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 263.254995676883
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 3.30017795546462
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    input_mean: 638.1891894147
+  }
+}
+layer {
+  name: "inception_4b_relu_5x5_reduce"
+  type: "ReLU"
+  bottom: "inception_4b_5x5_reduce"
+  top: "inception_4b_5x5_reduce"
+}
+layer {
+  name: "inception_4b_relu_5x5_reduce_convert0"
+  type: "Convertor"
+  bottom: "inception_4b_5x5_reduce"
+  top: "inception_4b_5x5_reduce"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 51242
+      shifter: 19
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 1303.57029240852
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_4b_5x5"
+  type: "Convolution"
+  bottom: "inception_4b_5x5_reduce"
+  top: "inception_4b_5x5"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 64
+    pad: 2
+    kernel_size: 5
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: SPLITC
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 4
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 356.568198670826
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 7.18808714466968
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    input_mean: 395.207980531859
+  }
+}
+layer {
+  name: "inception_4b_relu_5x5"
+  type: "ReLU"
+  bottom: "inception_4b_5x5"
+  top: "inception_4b_5x5"
+}
+layer {
+  name: "inception_4b_relu_5x5_convert0"
+  type: "Convertor"
+  bottom: "inception_4b_5x5"
+  top: "inception_4b_5x5"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 57692
+      shifter: 20
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 2317
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_4b_pool"
+  type: "Pooling"
+  bottom: "inception_4a_output"
+  top: "inception_4b_pool"
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 1
+    pad: 1
+  }
+}
+layer {
+  name: "inception_4b_pool_proj"
+  type: "Convolution"
+  bottom: "inception_4b_pool"
+  top: "inception_4b_pool_proj"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 64
+    kernel_size: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: SPLITC
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 4
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 346.335338296857
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 4.34167733724049
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    input_mean: 638.1891894147
+  }
+}
+layer {
+  name: "inception_4b_relu_pool_proj"
+  type: "ReLU"
+  bottom: "inception_4b_pool_proj"
+  top: "inception_4b_pool_proj"
+}
+layer {
+  name: "inception_4b_relu_pool_proj_convert0"
+  type: "Convertor"
+  bottom: "inception_4b_pool_proj"
+  top: "inception_4b_pool_proj"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 47758
+      shifter: 19
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 1398.02010259144
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_4b_output"
+  type: "Concat"
+  bottom: "inception_4b_1x1"
+  bottom: "inception_4b_3x3"
+  bottom: "inception_4b_5x5"
+  bottom: "inception_4b_pool_proj"
+  top: "inception_4b_output"
+}
+layer {
+  name: "inception_4c_1x1"
+  type: "Convolution"
+  bottom: "inception_4b_output"
+  top: "inception_4c_1x1"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 128
+    kernel_size: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: SPLITC
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 1
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 165.722279790973
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 32.7706913256034
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    input_mean: 321.997256640277
+  }
+}
+layer {
+  name: "inception_4c_relu_1x1"
+  type: "ReLU"
+  bottom: "inception_4c_1x1"
+  top: "inception_4c_1x1"
+}
+layer {
+  name: "inception_4c_relu_1x1_convert0"
+  type: "Convertor"
+  bottom: "inception_4c_1x1"
+  top: "inception_4c_1x1"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 34379
+      shifter: 22
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 15566.0783796616
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_4c_3x3_reduce"
+  type: "Convolution"
+  bottom: "inception_4b_output"
+  top: "inception_4c_3x3_reduce"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 128
+    kernel_size: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: SPLITC
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 1
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 167.280460818712
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 33.078813260408
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    input_mean: 321.997256640277
+  }
+}
+layer {
+  name: "inception_4c_relu_3x3_reduce"
+  type: "ReLU"
+  bottom: "inception_4c_3x3_reduce"
+  top: "inception_4c_3x3_reduce"
+}
+layer {
+  name: "inception_4c_relu_3x3_reduce_convert0"
+  type: "Convertor"
+  bottom: "inception_4c_3x3_reduce"
+  top: "inception_4c_3x3_reduce"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 35510
+      shifter: 22
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 15050.8600334857
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_4c_3x3"
+  type: "Convolution"
+  bottom: "inception_4c_3x3_reduce"
+  top: "inception_4c_3x3"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 256
+    pad: 1
+    kernel_size: 3
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: WINOGRAD
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 2
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 7.6220439391149
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    pra_feature_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 2
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    pra_weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 435.461938220404
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    input_mean: 455.275741246171
+  }
+}
+layer {
+  name: "inception_4c_relu_3x3"
+  type: "ReLU"
+  bottom: "inception_4c_3x3"
+  top: "inception_4c_3x3"
+}
+layer {
+  name: "inception_4c_relu_3x3_convert0"
+  type: "Convertor"
+  bottom: "inception_4c_3x3"
+  top: "inception_4c_3x3"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 36953
+      shifter: 20
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 3618
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_4c_5x5_reduce"
+  type: "Convolution"
+  bottom: "inception_4b_output"
+  top: "inception_4c_5x5_reduce"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 24
+    kernel_size: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: SPLITC
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 3
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 307.30280506169
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 15.1918890062455
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    input_mean: 322.378605005274
+  }
+}
+layer {
+  name: "inception_4c_relu_5x5_reduce"
+  type: "ReLU"
+  bottom: "inception_4c_5x5_reduce"
+  top: "inception_4c_5x5_reduce"
+}
+layer {
+  name: "inception_4c_relu_5x5_reduce_convert0"
+  type: "Convertor"
+  bottom: "inception_4c_5x5_reduce"
+  top: "inception_4c_5x5_reduce"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 51231
+      shifter: 22
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 10439
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_4c_5x5"
+  type: "Convolution"
+  bottom: "inception_4c_5x5_reduce"
+  top: "inception_4c_5x5"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 64
+    pad: 2
+    kernel_size: 5
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: SPLITC
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 3
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 239.337100126447
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 5.55142842723686
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    input_mean: 687.142987663248
+  }
+}
+layer {
+  name: "inception_4c_relu_5x5"
+  type: "ReLU"
+  bottom: "inception_4c_5x5"
+  top: "inception_4c_5x5"
+}
+layer {
+  name: "inception_4c_relu_5x5_convert0"
+  type: "Convertor"
+  bottom: "inception_4c_5x5"
+  top: "inception_4c_5x5"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 50736
+      shifter: 20
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 2635
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_4c_pool"
+  type: "Pooling"
+  bottom: "inception_4b_output"
+  top: "inception_4c_pool"
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 1
+    pad: 1
+  }
+}
+layer {
+  name: "inception_4c_pool_proj"
+  type: "Convolution"
+  bottom: "inception_4c_pool"
+  top: "inception_4c_pool_proj"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 64
+    kernel_size: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: SPLITC
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 3
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 292.606042179115
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 14.4653366065095
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    input_mean: 322.378605005274
+  }
+}
+layer {
+  name: "inception_4c_relu_pool_proj"
+  type: "ReLU"
+  bottom: "inception_4c_pool_proj"
+  top: "inception_4c_pool_proj"
+}
+layer {
+  name: "inception_4c_relu_pool_proj_convert0"
+  type: "Convertor"
+  bottom: "inception_4c_pool_proj"
+  top: "inception_4c_pool_proj"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 38943
+      shifter: 21
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 6866
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_4c_output"
+  type: "Concat"
+  bottom: "inception_4c_1x1"
+  bottom: "inception_4c_3x3"
+  bottom: "inception_4c_5x5"
+  bottom: "inception_4c_pool_proj"
+  top: "inception_4c_output"
+}
+layer {
+  name: "inception_4d_1x1"
+  type: "Convolution"
+  bottom: "inception_4c_output"
+  top: "inception_4d_1x1"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 112
+    kernel_size: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: SPLITC
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 2
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 168.708545564432
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 11.3291302561349
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    input_mean: 474.691865783868
+  }
+}
+layer {
+  name: "inception_4d_relu_1x1"
+  type: "ReLU"
+  bottom: "inception_4d_1x1"
+  top: "inception_4d_1x1"
+}
+layer {
+  name: "inception_4d_relu_1x1_convert0"
+  type: "Convertor"
+  bottom: "inception_4d_1x1"
+  top: "inception_4d_1x1"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 39510
+      shifter: 20
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 3397
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_4d_3x3_reduce"
+  type: "Convolution"
+  bottom: "inception_4c_output"
+  top: "inception_4d_3x3_reduce"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 144
+    kernel_size: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: SPLITC
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 4
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 241.418758023379
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 4.05294311970199
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    input_mean: 474.691865783868
+  }
+}
+layer {
+  name: "inception_4d_relu_3x3_reduce"
+  type: "ReLU"
+  bottom: "inception_4d_3x3_reduce"
+  top: "inception_4d_3x3_reduce"
+}
+layer {
+  name: "inception_4d_relu_3x3_reduce_convert0"
+  type: "Convertor"
+  bottom: "inception_4d_3x3_reduce"
+  top: "inception_4d_3x3_reduce"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 44310
+      shifter: 19
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 1509
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_4d_3x3"
+  type: "Convolution"
+  bottom: "inception_4d_3x3_reduce"
+  top: "inception_4d_3x3"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 288
+    pad: 1
+    kernel_size: 3
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: WINOGRAD
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 3
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 4.17347306207999
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    pra_feature_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 2
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    pra_weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 389.892832769564
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    input_mean: 372.322027581516
+  }
+}
+layer {
+  name: "inception_4d_relu_3x3"
+  type: "ReLU"
+  bottom: "inception_4d_3x3"
+  top: "inception_4d_3x3"
+}
+layer {
+  name: "inception_4d_relu_3x3_convert0"
+  type: "Convertor"
+  bottom: "inception_4d_3x3"
+  top: "inception_4d_3x3"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 53626
+      shifter: 19
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 1251
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_4d_5x5_reduce"
+  type: "Convolution"
+  bottom: "inception_4c_output"
+  top: "inception_4d_5x5_reduce"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 32
+    kernel_size: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: SPLITC
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 3
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 283.655791452451
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 9.52403862685352
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    input_mean: 474.691865783868
+  }
+}
+layer {
+  name: "inception_4d_relu_5x5_reduce"
+  type: "ReLU"
+  bottom: "inception_4d_5x5_reduce"
+  top: "inception_4d_5x5_reduce"
+}
+layer {
+  name: "inception_4d_relu_5x5_reduce_convert0"
+  type: "Convertor"
+  bottom: "inception_4d_5x5_reduce"
+  top: "inception_4d_5x5_reduce"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 43102
+      shifter: 20
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 3102
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_4d_5x5"
+  type: "Convolution"
+  bottom: "inception_4d_5x5_reduce"
+  top: "inception_4d_5x5"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 64
+    pad: 2
+    kernel_size: 5
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: SPLITC
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 4
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 400.391733656021
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 9.79678951660071
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    input_mean: 325.70216496747
+  }
+}
+layer {
+  name: "inception_4d_relu_5x5"
+  type: "ReLU"
+  bottom: "inception_4d_5x5"
+  top: "inception_4d_5x5"
+}
+layer {
+  name: "inception_4d_relu_5x5_convert0"
+  type: "Convertor"
+  bottom: "inception_4d_5x5"
+  top: "inception_4d_5x5"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 45689
+      shifter: 20
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 2938
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_4d_pool"
+  type: "Pooling"
+  bottom: "inception_4c_output"
+  top: "inception_4d_pool"
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 1
+    pad: 1
+  }
+}
+layer {
+  name: "inception_4d_pool_proj"
+  type: "Convolution"
+  bottom: "inception_4d_pool"
+  top: "inception_4d_pool_proj"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 64
+    kernel_size: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: SPLITC
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 4
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 315.300139388966
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 5.29326528327942
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    input_mean: 474.691865783868
+  }
+}
+layer {
+  name: "inception_4d_relu_pool_proj"
+  type: "ReLU"
+  bottom: "inception_4d_pool_proj"
+  top: "inception_4d_pool_proj"
+}
+layer {
+  name: "inception_4d_relu_pool_proj_convert0"
+  type: "Convertor"
+  bottom: "inception_4d_pool_proj"
+  top: "inception_4d_pool_proj"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 42281
+      shifter: 19
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 1587
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_4d_output"
+  type: "Concat"
+  bottom: "inception_4d_1x1"
+  bottom: "inception_4d_3x3"
+  bottom: "inception_4d_5x5"
+  bottom: "inception_4d_pool_proj"
+  top: "inception_4d_output"
+}
+layer {
+  name: "loss2_ave_pool"
+  type: "Pooling"
+  bottom: "inception_4d_output"
+  top: "loss2_ave_pool"
+  pooling_param {
+    pool: AVE
+    kernel_size: 5
+    stride: 3
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: SIMPLE_RN
+      dr_ratio: 0.2
+    }
+  }
+}
+layer {
+  name: "loss2_conv"
+  type: "Convolution"
+  bottom: "loss2_ave_pool"
+  top: "loss2_conv"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 128
+    kernel_size: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: SPLITC
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 5
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 440.365533497503
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 5.87437671171183
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    input_mean: 299.81531122576
+  }
+}
+layer {
+  name: "loss2_relu_conv"
+  type: "ReLU"
+  bottom: "loss2_conv"
+  top: "loss2_conv"
+}
+layer {
+  name: "loss2_relu_conv_convert0"
+  type: "Convertor"
+  bottom: "loss2_conv"
+  top: "loss2_conv"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 42531
+      shifter: 17
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 393.583239684693
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "loss2_fc"
+  type: "InnerProduct"
+  bottom: "loss2_conv"
+  top: "loss2_fc"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  inner_product_param {
+    num_output: 1024
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 2049.72955979456
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 122.096992028118
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 5
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    input_mean: 66.9301277581282
+  }
+}
+layer {
+  name: "loss2_relu_fc"
+  type: "ReLU"
+  bottom: "loss2_fc"
+  top: "loss2_fc"
+}
+layer {
+  name: "loss2_relu_fc_convert0"
+  type: "Convertor"
+  bottom: "loss2_fc"
+  top: "loss2_fc"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 54578
+      shifter: 20
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 2450
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "loss2_drop_fc"
+  type: "Dropout"
+  bottom: "loss2_fc"
+  top: "loss2_fc"
+  dropout_param {
+    dropout_ratio: 0.7
+  }
+}
+layer {
+  name: "loss2_classifier"
+  type: "InnerProduct"
+  bottom: "loss2_fc"
+  top: "loss2_classifier"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  inner_product_param {
+    num_output: 1000
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1729.15739498725
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 171.702738137191
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 6
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    input_mean: 20.0660143980925
+  }
+}
+layer {
+  name: "loss2_classifier_convert0"
+  type: "Convertor"
+  bottom: "loss2_classifier"
+  top: "loss2_classifier"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 48924
+      shifter: 13
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 16
+      offset: 2097
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "loss2_top_1_convert_in0"
+  type: "Convertor"
+  bottom: "loss2_classifier"
+  top: "loss2_classifier"
+  convert_param {
+    from: DBL
+    to: DBL
+    to_coef {
+      scale: 0.000975193426662942
+      shifter: 0
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 64
+      offset: -12523.6362304688
+    }
+    allow_saturate: false
+    method: STD_RN
+    dr_ratio: 0.1
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "loss2_top_1"
+  type: "Accuracy"
+  bottom: "loss2_classifier"
+  bottom: "label"
+  top: "loss2_top_1"
+  include {
+    phase: TEST
+  }
+}
+layer {
+  name: "loss2_top_5"
+  type: "Accuracy"
+  bottom: "loss2_classifier"
+  bottom: "label"
+  top: "loss2_top_5"
+  include {
+    phase: TEST
+  }
+  accuracy_param {
+    top_k: 5
+  }
+}
+layer {
+  name: "loss2_loss"
+  type: "SoftmaxWithLoss"
+  bottom: "loss2_classifier"
+  bottom: "label"
+  top: "loss2_loss1"
+  loss_weight: 0.3
+}
+layer {
+  name: "inception_4e_1x1"
+  type: "Convolution"
+  bottom: "inception_4d_output"
+  top: "inception_4e_1x1"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 256
+    kernel_size: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: SPLITC
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 3
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 170.752777459002
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 9.11121387179104
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    input_mean: 299.81531122576
+  }
+}
+layer {
+  name: "inception_4e_relu_1x1"
+  type: "ReLU"
+  bottom: "inception_4e_1x1"
+  top: "inception_4e_1x1"
+}
+layer {
+  name: "inception_4e_relu_1x1_convert0"
+  type: "Convertor"
+  bottom: "inception_4e_1x1"
+  top: "inception_4e_1x1"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 38075
+      shifter: 19
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 1763
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_4e_3x3_reduce"
+  type: "Convolution"
+  bottom: "inception_4d_output"
+  top: "inception_4e_3x3_reduce"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 160
+    kernel_size: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: SPLITC
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 5
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 331.358737322829
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 4.42025068195421
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    input_mean: 299.81531122576
+  }
+}
+layer {
+  name: "inception_4e_relu_3x3_reduce"
+  type: "ReLU"
+  bottom: "inception_4e_3x3_reduce"
+  top: "inception_4e_3x3_reduce"
+}
+layer {
+  name: "inception_4e_relu_3x3_reduce_convert0"
+  type: "Convertor"
+  bottom: "inception_4e_3x3_reduce"
+  top: "inception_4e_3x3_reduce"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 37950
+      shifter: 18
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 879.629885708888
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_4e_3x3"
+  type: "Convolution"
+  bottom: "inception_4e_3x3_reduce"
+  top: "inception_4e_3x3"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 320
+    pad: 1
+    kernel_size: 3
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: WINOGRAD
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 1
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 25.6858982595967
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    pra_feature_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 2
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    pra_weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 321.119723175047
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    input_mean: 199.221237818828
+  }
+}
+layer {
+  name: "inception_4e_relu_3x3"
+  type: "ReLU"
+  bottom: "inception_4e_3x3"
+  top: "inception_4e_3x3"
+}
+layer {
+  name: "inception_4e_relu_3x3_convert0"
+  type: "Convertor"
+  bottom: "inception_4e_3x3"
+  top: "inception_4e_3x3"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 54023
+      shifter: 21
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 4969
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_4e_5x5_reduce"
+  type: "Convolution"
+  bottom: "inception_4d_output"
+  top: "inception_4e_5x5_reduce"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 32
+    kernel_size: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: SPLITC
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 4
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 288.571297664248
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 7.69895181034614
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    input_mean: 299.81531122576
+  }
+}
+layer {
+  name: "inception_4e_relu_5x5_reduce"
+  type: "ReLU"
+  bottom: "inception_4e_5x5_reduce"
+  top: "inception_4e_5x5_reduce"
+}
+layer {
+  name: "inception_4e_relu_5x5_reduce_convert0"
+  type: "Convertor"
+  bottom: "inception_4e_5x5_reduce"
+  top: "inception_4e_5x5_reduce"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 42706
+      shifter: 19
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 1562.88721750027
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_4e_5x5"
+  type: "Convolution"
+  bottom: "inception_4e_5x5_reduce"
+  top: "inception_4e_5x5"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 128
+    pad: 2
+    kernel_size: 5
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: SPLITC
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 5
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 457.386305435543
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 8.96363682706099
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    input_mean: 203.306815999682
+  }
+}
+layer {
+  name: "inception_4e_relu_5x5"
+  type: "ReLU"
+  bottom: "inception_4e_5x5"
+  top: "inception_4e_5x5"
+}
+layer {
+  name: "inception_4e_relu_5x5_convert0"
+  type: "Convertor"
+  bottom: "inception_4e_5x5"
+  top: "inception_4e_5x5"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 38702
+      shifter: 19
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 1734
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_4e_pool"
+  type: "Pooling"
+  bottom: "inception_4d_output"
+  top: "inception_4e_pool"
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 1
+    pad: 1
+  }
+}
+layer {
+  name: "inception_4e_pool_proj"
+  type: "Convolution"
+  bottom: "inception_4e_pool"
+  top: "inception_4e_pool_proj"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 128
+    kernel_size: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: SPLITC
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 4
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 239.612791755555
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 6.3927609980633
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    input_mean: 299.81531122576
+  }
+}
+layer {
+  name: "inception_4e_relu_pool_proj"
+  type: "ReLU"
+  bottom: "inception_4e_pool_proj"
+  top: "inception_4e_pool_proj"
+}
+layer {
+  name: "inception_4e_relu_pool_proj_convert0"
+  type: "Convertor"
+  bottom: "inception_4e_pool_proj"
+  top: "inception_4e_pool_proj"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 54266
+      shifter: 19
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 1237
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_4e_output"
+  type: "Concat"
+  bottom: "inception_4e_1x1"
+  bottom: "inception_4e_3x3"
+  bottom: "inception_4e_5x5"
+  bottom: "inception_4e_pool_proj"
+  top: "inception_4e_output"
+}
+layer {
+  name: "pool4_3x3_s2"
+  type: "Pooling"
+  bottom: "inception_4e_output"
+  top: "pool4_3x3_s2"
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 2
+  }
+}
+layer {
+  name: "inception_5a_1x1"
+  type: "Convolution"
+  bottom: "pool4_3x3_s2"
+  top: "inception_5a_1x1"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 256
+    kernel_size: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: SPLITC
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 3
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 199.742036848906
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 16.5207797662361
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    input_mean: 193.498025601467
+  }
+}
+layer {
+  name: "inception_5a_relu_1x1"
+  type: "ReLU"
+  bottom: "inception_5a_1x1"
+  top: "inception_5a_1x1"
+}
+layer {
+  name: "inception_5a_relu_1x1_convert0"
+  type: "Convertor"
+  bottom: "inception_5a_1x1"
+  top: "inception_5a_1x1"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 46341
+      shifter: 20
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 2891.13645909132
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_5a_3x3_reduce"
+  type: "Convolution"
+  bottom: "pool4_3x3_s2"
+  top: "inception_5a_3x3_reduce"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 160
+    kernel_size: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: SPLITC
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 4
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 332.047338615187
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 13.7319140221244
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    input_mean: 193.498025601467
+  }
+}
+layer {
+  name: "inception_5a_relu_3x3_reduce"
+  type: "ReLU"
+  bottom: "inception_5a_3x3_reduce"
+  top: "inception_5a_3x3_reduce"
+}
+layer {
+  name: "inception_5a_relu_3x3_reduce_convert0"
+  type: "Convertor"
+  bottom: "inception_5a_3x3_reduce"
+  top: "inception_5a_3x3_reduce"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 55595
+      shifter: 20
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 2403.08495387177
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_5a_3x3"
+  type: "Convolution"
+  bottom: "inception_5a_3x3_reduce"
+  top: "inception_5a_3x3"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 320
+    pad: 1
+    kernel_size: 3
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: WINOGRAD
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 2
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 24.0488872700928
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    pra_feature_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 2
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    pra_weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 528.507271937171
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    input_mean: 175.145325558587
+  }
+}
+layer {
+  name: "inception_5a_relu_3x3"
+  type: "ReLU"
+  bottom: "inception_5a_3x3"
+  top: "inception_5a_3x3"
+}
+layer {
+  name: "inception_5a_relu_3x3_convert0"
+  type: "Convertor"
+  bottom: "inception_5a_3x3"
+  top: "inception_5a_3x3"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 63669
+      shifter: 21
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 4200
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_5a_5x5_reduce"
+  type: "Convolution"
+  bottom: "pool4_3x3_s2"
+  top: "inception_5a_5x5_reduce"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 32
+    kernel_size: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: SPLITC
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 4
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 267.603533506418
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 11.0668217653913
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    input_mean: 193.498025601467
+  }
+}
+layer {
+  name: "inception_5a_relu_5x5_reduce"
+  type: "ReLU"
+  bottom: "inception_5a_5x5_reduce"
+  top: "inception_5a_5x5_reduce"
+}
+layer {
+  name: "inception_5a_relu_5x5_reduce_convert0"
+  type: "Convertor"
+  bottom: "inception_5a_5x5_reduce"
+  top: "inception_5a_5x5_reduce"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 38046
+      shifter: 19
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 1759.62466069722
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_5a_5x5"
+  type: "Convolution"
+  bottom: "inception_5a_5x5_reduce"
+  top: "inception_5a_5x5"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 128
+    pad: 2
+    kernel_size: 5
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: SPLITC
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 4
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 569.220340395781
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 28.5706939386685
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    input_mean: 158.761604996169
+  }
+}
+layer {
+  name: "inception_5a_relu_5x5"
+  type: "ReLU"
+  bottom: "inception_5a_5x5"
+  top: "inception_5a_5x5"
+}
+layer {
+  name: "inception_5a_relu_5x5_convert0"
+  type: "Convertor"
+  bottom: "inception_5a_5x5"
+  top: "inception_5a_5x5"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 53593
+      shifter: 21
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 4989
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_5a_pool"
+  type: "Pooling"
+  bottom: "pool4_3x3_s2"
+  top: "inception_5a_pool"
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 1
+    pad: 1
+  }
+}
+layer {
+  name: "inception_5a_pool_proj"
+  type: "Convolution"
+  bottom: "inception_5a_pool"
+  top: "inception_5a_pool_proj"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 128
+    kernel_size: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: SPLITC
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 4
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 355.915136871232
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 14.7189737435373
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    input_mean: 193.498025601467
+  }
+}
+layer {
+  name: "inception_5a_relu_pool_proj"
+  type: "ReLU"
+  bottom: "inception_5a_pool_proj"
+  top: "inception_5a_pool_proj"
+}
+layer {
+  name: "inception_5a_relu_pool_proj_convert0"
+  type: "Convertor"
+  bottom: "inception_5a_pool_proj"
+  top: "inception_5a_pool_proj"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 52013
+      shifter: 20
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 2575.82040511903
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_5a_output"
+  type: "Concat"
+  bottom: "inception_5a_1x1"
+  bottom: "inception_5a_3x3"
+  bottom: "inception_5a_5x5"
+  bottom: "inception_5a_pool_proj"
+  top: "inception_5a_output"
+}
+layer {
+  name: "inception_5b_1x1"
+  type: "Convolution"
+  bottom: "inception_5a_output"
+  top: "inception_5b_1x1"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 384
+    kernel_size: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: SPLITC
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 4
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 356.912443144314
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 16.286856766538
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    input_mean: 174.634878369681
+  }
+}
+layer {
+  name: "inception_5b_relu_1x1"
+  type: "ReLU"
+  bottom: "inception_5b_1x1"
+  top: "inception_5b_1x1"
+}
+layer {
+  name: "inception_5b_relu_1x1_convert0"
+  type: "Convertor"
+  bottom: "inception_5b_1x1"
+  top: "inception_5b_1x1"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 33878
+      shifter: 18
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 987
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_5b_3x3_reduce"
+  type: "Convolution"
+  bottom: "inception_5a_output"
+  top: "inception_5b_3x3_reduce"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 192
+    kernel_size: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: SPLITC
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 5
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 372.704808956783
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 8.50375204938512
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    input_mean: 174.634878369681
+  }
+}
+layer {
+  name: "inception_5b_relu_3x3_reduce"
+  type: "ReLU"
+  bottom: "inception_5b_3x3_reduce"
+  top: "inception_5b_3x3_reduce"
+}
+layer {
+  name: "inception_5b_relu_3x3_reduce_convert0"
+  type: "Convertor"
+  bottom: "inception_5b_3x3_reduce"
+  top: "inception_5b_3x3_reduce"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 40415
+      shifter: 18
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 827
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_5b_3x3"
+  type: "Convolution"
+  bottom: "inception_5b_3x3_reduce"
+  top: "inception_5b_3x3"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 384
+    pad: 1
+    kernel_size: 3
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: WINOGRAD
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 2
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 51.7192564360711
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    pra_feature_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 2
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    pra_weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 631.188394879364
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    input_mean: 97.2511892629557
+  }
+}
+layer {
+  name: "inception_5b_relu_3x3"
+  type: "ReLU"
+  bottom: "inception_5b_3x3"
+  top: "inception_5b_3x3"
+}
+layer {
+  name: "inception_5b_relu_3x3_convert0"
+  type: "Convertor"
+  bottom: "inception_5b_3x3"
+  top: "inception_5b_3x3"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 42673
+      shifter: 20
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 3133
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_5b_5x5_reduce"
+  type: "Convolution"
+  bottom: "inception_5a_output"
+  top: "inception_5b_5x5_reduce"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 48
+    kernel_size: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: SPLITC
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 4
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 500.777341721041
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 22.851791785921
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    input_mean: 174.634878369681
+  }
+}
+layer {
+  name: "inception_5b_relu_5x5_reduce"
+  type: "ReLU"
+  bottom: "inception_5b_5x5_reduce"
+  top: "inception_5b_5x5_reduce"
+}
+layer {
+  name: "inception_5b_relu_5x5_reduce_convert0"
+  type: "Convertor"
+  bottom: "inception_5b_5x5_reduce"
+  top: "inception_5b_5x5_reduce"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 38246
+      shifter: 19
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 1748
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_5b_5x5"
+  type: "Convolution"
+  bottom: "inception_5b_5x5_reduce"
+  top: "inception_5b_5x5"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 128
+    pad: 2
+    kernel_size: 5
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: SPLITC
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 5
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 958.797819570653
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 49.9474615020485
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    input_mean: 76.4929077061233
+  }
+}
+layer {
+  name: "inception_5b_relu_5x5"
+  type: "ReLU"
+  bottom: "inception_5b_5x5"
+  top: "inception_5b_5x5"
+}
+layer {
+  name: "inception_5b_relu_5x5_convert0"
+  type: "Convertor"
+  bottom: "inception_5b_5x5"
+  top: "inception_5b_5x5"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 44187
+      shifter: 20
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 3026
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_5b_pool"
+  type: "Pooling"
+  bottom: "inception_5a_output"
+  top: "inception_5b_pool"
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 1
+    pad: 1
+  }
+}
+layer {
+  name: "inception_5b_pool_proj"
+  type: "Convolution"
+  bottom: "inception_5b_pool"
+  top: "inception_5b_pool_proj"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 128
+    kernel_size: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    engine: SPLITC
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 4
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 379.110336574838
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 17.2998052298552
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    input_mean: 174.634878369681
+  }
+}
+layer {
+  name: "inception_5b_relu_pool_proj"
+  type: "ReLU"
+  bottom: "inception_5b_pool_proj"
+  top: "inception_5b_pool_proj"
+}
+layer {
+  name: "inception_5b_relu_pool_proj_convert0"
+  type: "Convertor"
+  bottom: "inception_5b_pool_proj"
+  top: "inception_5b_pool_proj"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 63788
+      shifter: 19
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 8
+      offset: 1048
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "inception_5b_output"
+  type: "Concat"
+  bottom: "inception_5b_1x1"
+  bottom: "inception_5b_3x3"
+  bottom: "inception_5b_5x5"
+  bottom: "inception_5b_pool_proj"
+  top: "inception_5b_output"
+}
+layer {
+  name: "pool5_7x7_s1"
+  type: "Pooling"
+  bottom: "inception_5b_output"
+  top: "pool5_7x7_s1"
+  pooling_param {
+    pool: AVE
+    kernel_size: 7
+    stride: 1
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: SIMPLE_RN
+      dr_ratio: 0.2
+    }
+  }
+}
+layer {
+  name: "pool5_drop_7x7_s1"
+  type: "Dropout"
+  bottom: "pool5_7x7_s1"
+  top: "pool5_7x7_s1"
+  dropout_param {
+    dropout_ratio: 0.4
+  }
+}
+layer {
+  name: "loss3_classifier"
+  type: "InnerProduct"
+  bottom: "pool5_7x7_s1"
+  top: "loss3_classifier"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  inner_product_param {
+    num_output: 1000
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+    weight_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 772.669279997665
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 8
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+      is_enable_dr_check: false
+    }
+    bias_convert {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 50.8228231819813
+        shifter: 0
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+      is_enable_dr_check: false
+    }
+    output_truncat {
+      from: DBL
+      to: INT
+      to_coef {
+        scale: 1
+        shifter: 5
+        comp_scale: 1
+        comp_shifter: 0
+        bits: 16
+        offset: 0
+      }
+      allow_saturate: true
+      method: SIMPLE_RN
+      dr_ratio: 0
+      is_enable_dr_check: false
+    }
+    input_mean: 60.6010118556352
+  }
+}
+layer {
+  name: "loss3_classifier_convert0"
+  type: "Convertor"
+  bottom: "loss3_classifier"
+  top: "loss3_classifier"
+  convert_param {
+    from: DBL
+    to: INT
+    to_coef {
+      scale: 65167
+      shifter: 12
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 16
+      offset: 985
+    }
+    allow_saturate: true
+    method: SIMPLE_RN
+    dr_ratio: 0.3
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "loss3_top_1_convert_in0"
+  type: "Convertor"
+  bottom: "loss3_classifier"
+  top: "loss3_classifier"
+  convert_param {
+    from: DBL
+    to: DBL
+    to_coef {
+      scale: 0.00123672583517195
+      shifter: 0
+      comp_scale: 1
+      comp_shifter: 0
+      bits: 64
+      offset: -15671.2634277344
+    }
+    allow_saturate: false
+    method: STD_RN
+    dr_ratio: 0.1
+    is_enable_dr_check: false
+  }
+}
+layer {
+  name: "loss3_top_1"
+  type: "Accuracy"
+  bottom: "loss3_classifier"
+  bottom: "label"
+  top: "loss3_top_1"
+  include {
+    phase: TEST
+  }
+}
+layer {
+  name: "loss3_top_5"
+  type: "Accuracy"
+  bottom: "loss3_classifier"
+  bottom: "label"
+  top: "loss3_top_5"
+  include {
+    phase: TEST
+  }
+  accuracy_param {
+    top_k: 5
+  }
+}
+layer {
+  name: "loss3_loss3"
+  type: "SoftmaxWithLoss"
+  bottom: "loss3_classifier"
+  bottom: "label"
+  top: "loss3_loss3"
+  loss_weight: 1
+}

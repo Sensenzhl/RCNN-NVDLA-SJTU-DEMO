@@ -1,0 +1,13 @@
+layers {
+    bottom: "fc8"
+    bottom: "label"
+    top: "accuracy/top-5"
+    name: "accuracy/top-5"
+    type: ACCURACY
+    accuracy_param {
+        top_k: 5
+    }
+    include {
+        phase: TEST
+    }
+}

@@ -1,0 +1,28 @@
+Traceback (most recent call last):
+  File "./amod_scripts/net_anlyzer.py", line 28, in <module>
+    from google.protobuf import text_format as proto_text
+  File "/home/utils/python-protobuf-2.6.1/lib/python2.7/site-packages/google/__init__.py", line 1, in <module>
+    __import__('pkg_resources').declare_namespace(__name__)
+  File "/home/scratch.yilinz_t19x/anaconda2/lib/python2.7/site-packages/pkg_resources/__init__.py", line 3147, in <module>
+    @_call_aside
+  File "/home/scratch.yilinz_t19x/anaconda2/lib/python2.7/site-packages/pkg_resources/__init__.py", line 3131, in _call_aside
+    f(*args, **kwargs)
+  File "/home/scratch.yilinz_t19x/anaconda2/lib/python2.7/site-packages/pkg_resources/__init__.py", line 3160, in _initialize_master_working_set
+    working_set = WorkingSet._build_master()
+  File "/home/scratch.yilinz_t19x/anaconda2/lib/python2.7/site-packages/pkg_resources/__init__.py", line 657, in _build_master
+    ws = cls()
+  File "/home/scratch.yilinz_t19x/anaconda2/lib/python2.7/site-packages/pkg_resources/__init__.py", line 650, in __init__
+    self.add_entry(entry)
+  File "/home/scratch.yilinz_t19x/anaconda2/lib/python2.7/site-packages/pkg_resources/__init__.py", line 706, in add_entry
+    for dist in find_distributions(entry, True):
+  File "/home/scratch.yilinz_t19x/anaconda2/lib/python2.7/site-packages/pkg_resources/__init__.py", line 2044, in find_on_path
+    path_item_entries = _by_version_descending(filtered)
+  File "/home/scratch.yilinz_t19x/anaconda2/lib/python2.7/site-packages/pkg_resources/__init__.py", line 2017, in _by_version_descending
+    return sorted(names, key=_by_version, reverse=True)
+  File "/home/scratch.yilinz_t19x/anaconda2/lib/python2.7/site-packages/pkg_resources/__init__.py", line 2015, in _by_version
+    return [packaging.version.parse(part) for part in parts]
+  File "/home/scratch.yilinz_t19x/anaconda2/lib/python2.7/site-packages/pkg_resources/_vendor/packaging/version.py", line 33, in parse
+    return LegacyVersion(version)
+  File "/home/scratch.yilinz_t19x/anaconda2/lib/python2.7/site-packages/pkg_resources/_vendor/packaging/version.py", line 75, in __init__
+    self._version = str(version)
+KeyboardInterrupt

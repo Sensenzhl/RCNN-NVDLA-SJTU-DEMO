@@ -1,0 +1,1076 @@
+name: "R-CNN-ilsvrc13"
+state {
+  phase: TEST
+}
+debug_info: true
+layer {
+  name: "data"
+  type: "Loader"
+  top: "data"
+  
+  loader_param {
+    filename: "./temp.dat"
+    method: LoadMethod_PROTO_TXT
+  }
+}
+layer {
+  name: "data_convert0"
+  type: "Convertor"
+  bottom: "data"
+  top: "data"
+  convert_param {
+    to: INT
+    to_coef {
+      offset: 0
+      scale: 26772
+      shifter: 15
+      post_scale: 1
+      bits: 8
+    }
+    method: SIMPLE_RN
+    allow_saturate: true
+    dr_ratio: 0.3
+    scale_method: GLOBAL_SCALING
+    is_truncator: false
+    use_offset: false
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "conv1"
+  type: "Convolution"
+  bottom: "data"
+  top: "conv1"
+  convolution_param {
+    num_output: 96
+    kernel_size: 11
+    stride: 4
+    engine: SPLITC
+    bias_convert {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 299.74235680225809
+        shifter: 0
+        post_scale: 1
+        bits: 16
+      }
+      method: STD_RN
+      allow_saturate: false
+      dr_ratio: 0.4
+      scale_method: GLOBAL_SCALING
+      is_truncator: false
+      use_offset: false
+    }
+    input_mean: 0
+    output_truncat {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 1
+        shifter: 0
+        post_scale: 1
+        bits: 32
+      }
+      method: SIMPLE_RN
+      allow_saturate: true
+      dr_ratio: 0
+      scale_method: GLOBAL_SCALING
+      is_truncator: true
+      use_offset: false
+    }
+    weight_convert {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 366.87425473242166
+        shifter: 0
+        post_scale: 1
+        bits: 8
+      }
+      method: STD_RN
+      allow_saturate: false
+      dr_ratio: 0.98
+      scale_method: GLOBAL_SCALING
+      is_truncator: false
+      use_offset: false
+    }
+  }
+}
+layer {
+  name: "relu1"
+  type: "ReLU"
+  bottom: "conv1"
+  top: "conv1"
+}
+layer {
+  name: "relu1_convert0"
+  type: "Convertor"
+  bottom: "conv1"
+  top: "conv1"
+  convert_param {
+    to: INT
+    to_coef {
+      offset: 0
+      scale: 24339
+      shifter: 25
+      post_scale: 1
+      bits: 8
+    }
+    method: SIMPLE_RN
+    allow_saturate: true
+    dr_ratio: 0.3
+    scale_method: GLOBAL_SCALING
+    is_truncator: false
+    use_offset: false
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "pool1"
+  type: "Pooling"
+  bottom: "conv1"
+  top: "pool1"
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 2
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "norm1_convert_in0"
+  type: "Convertor"
+  bottom: "pool1"
+  top: "pool1"
+  convert_param {
+    to: INT
+    to_coef {
+      offset: -0
+      scale: 18802
+      shifter: 14
+      post_scale: 1
+      bits: 9
+    }
+    method: SIMPLE_RN
+    allow_saturate: true
+    dr_ratio: 0.1
+    scale_method: GLOBAL_SCALING
+    is_truncator: false
+    use_offset: false
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "norm1"
+  type: "NVLRN"
+  bottom: "pool1"
+  top: "norm1"
+  nv_lrn_param {
+    local_size: 5
+    alpha: 0.0001
+    beta: 0.75
+    norm_region: ACROSS_CHANNELS
+    k: 1
+    lut_param {
+      x_step_method: EXP_STEP
+      exp_x_shifter: -32
+      x_start: 0
+      x_end: 4294967296
+      y_start: 0
+      y_end: 524288
+      x_tbl_entry: 65
+      y_tbl_entry: 257
+      sym: NO_SYM
+      lut_convert {
+        to: INT
+        to_coef {
+          offset: 0
+          scale: 32767
+          shifter: 0
+          post_scale: 1
+          bits: 16
+        }
+        method: STD_RN
+        allow_saturate: false
+        dr_ratio: 0
+        scale_method: GLOBAL_SCALING
+        is_truncator: false
+        use_offset: false
+      }
+      priority: Y_TBL
+      overflow_priority: X_TBL
+      underflow_priority: X_TBL
+      interp_bits: 16
+      disable_y: false
+      x_overflow_slope: 0
+      x_overflow_shifter: 0
+      x_underflow_slope: 0
+      x_underflow_shifter: 0
+      y_overflow_slope: -2147483648
+      y_overflow_shifter: 73
+      y_underflow_slope: -8246337
+      y_underflow_shifter: 39
+      pipe: INT
+      shifter: -4
+    }
+  }
+}
+layer {
+  name: "norm1_convert0"
+  type: "Convertor"
+  bottom: "norm1"
+  top: "norm1"
+  convert_param {
+    to: INT
+    to_coef {
+      offset: 0
+      scale: 31150
+      shifter: 28
+      post_scale: 1
+      bits: 8
+    }
+    method: SIMPLE_RN
+    allow_saturate: true
+    dr_ratio: 0.3
+    scale_method: GLOBAL_SCALING
+    is_truncator: false
+    use_offset: false
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "conv2"
+  type: "Convolution"
+  bottom: "norm1"
+  top: "conv2"
+  convolution_param {
+    num_output: 256
+    pad: 2
+    kernel_size: 5
+    group: 2
+    engine: SPLITC
+    bias_convert {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 283.3109236162864
+        shifter: 0
+        post_scale: 1
+        bits: 16
+      }
+      method: STD_RN
+      allow_saturate: false
+      dr_ratio: 0.4
+      scale_method: GLOBAL_SCALING
+      is_truncator: false
+      use_offset: false
+    }
+    input_mean: 0
+    output_truncat {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 1
+        shifter: 0
+        post_scale: 1
+        bits: 32
+      }
+      method: SIMPLE_RN
+      allow_saturate: true
+      dr_ratio: 0
+      scale_method: GLOBAL_SCALING
+      is_truncator: true
+      use_offset: false
+    }
+    weight_convert {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 298.62310064921957
+        shifter: 0
+        post_scale: 1
+        bits: 8
+      }
+      method: STD_RN
+      allow_saturate: false
+      dr_ratio: 0.8
+      scale_method: GLOBAL_SCALING
+      is_truncator: false
+      use_offset: false
+    }
+  }
+}
+layer {
+  name: "relu2"
+  type: "ReLU"
+  bottom: "conv2"
+  top: "conv2"
+}
+layer {
+  name: "relu2_convert0"
+  type: "Convertor"
+  bottom: "conv2"
+  top: "conv2"
+  convert_param {
+    to: INT
+    to_coef {
+      offset: 0
+      scale: 18042
+      shifter: 23
+      post_scale: 1
+      bits: 8
+    }
+    method: SIMPLE_RN
+    allow_saturate: true
+    dr_ratio: 0.3
+    scale_method: GLOBAL_SCALING
+    is_truncator: false
+    use_offset: false
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "pool2"
+  type: "Pooling"
+  bottom: "conv2"
+  top: "pool2"
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 2
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "norm2_convert_in0"
+  type: "Convertor"
+  bottom: "pool2"
+  top: "pool2"
+  convert_param {
+    to: INT
+    to_coef {
+      offset: -0
+      scale: 26835
+      shifter: 14
+      post_scale: 1
+      bits: 9
+    }
+    method: SIMPLE_RN
+    allow_saturate: true
+    dr_ratio: 0.1
+    scale_method: GLOBAL_SCALING
+    is_truncator: false
+    use_offset: false
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "norm2"
+  type: "NVLRN"
+  bottom: "pool2"
+  top: "norm2"
+  nv_lrn_param {
+    local_size: 5
+    alpha: 0.0001
+    beta: 0.75
+    norm_region: ACROSS_CHANNELS
+    k: 1
+    lut_param {
+      x_step_method: EXP_STEP
+      exp_x_shifter: -32
+      x_start: 0
+      x_end: 4294967296
+      y_start: 0
+      y_end: 32768
+      x_tbl_entry: 65
+      y_tbl_entry: 257
+      sym: NO_SYM
+      lut_convert {
+        to: INT
+        to_coef {
+          offset: 0
+          scale: 32767
+          shifter: 0
+          post_scale: 1
+          bits: 16
+        }
+        method: STD_RN
+        allow_saturate: false
+        dr_ratio: 0
+        scale_method: GLOBAL_SCALING
+        is_truncator: false
+        use_offset: false
+      }
+      priority: Y_TBL
+      overflow_priority: X_TBL
+      underflow_priority: X_TBL
+      interp_bits: 16
+      disable_y: false
+      x_overflow_slope: 0
+      x_overflow_shifter: 0
+      x_underflow_slope: 0
+      x_underflow_shifter: 0
+      y_overflow_slope: -2147483648
+      y_overflow_shifter: 68
+      y_underflow_slope: -2147483648
+      y_underflow_shifter: 69
+      pipe: INT
+      shifter: 0
+    }
+  }
+}
+layer {
+  name: "norm2_convert0"
+  type: "Convertor"
+  bottom: "norm2"
+  top: "norm2"
+  convert_param {
+    to: INT
+    to_coef {
+      offset: 0
+      scale: 32188
+      shifter: 30
+      post_scale: 1
+      bits: 8
+    }
+    method: SIMPLE_RN
+    allow_saturate: true
+    dr_ratio: 0.3
+    scale_method: GLOBAL_SCALING
+    is_truncator: false
+    use_offset: false
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "conv3"
+  type: "Convolution"
+  bottom: "norm2"
+  top: "conv3"
+  convolution_param {
+    num_output: 384
+    pad: 1
+    kernel_size: 3
+    engine: WINOGRAD
+    bias_convert {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 147.1305811157078
+        shifter: 0
+        post_scale: 1
+        bits: 16
+      }
+      method: STD_RN
+      allow_saturate: false
+      dr_ratio: 0.4
+      scale_method: GLOBAL_SCALING
+      is_truncator: false
+      use_offset: false
+    }
+    pra_feature_truncat {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 1
+        shifter: 2
+        post_scale: 1
+        bits: 8
+      }
+      method: SIMPLE_RN
+      allow_saturate: true
+      dr_ratio: 0
+      scale_method: GLOBAL_SCALING
+      is_truncator: true
+      use_offset: false
+    }
+    pra_weight_convert {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 600.33322436530773
+        shifter: 0
+        post_scale: 1
+        bits: 8
+      }
+      method: STD_RN
+      allow_saturate: false
+      dr_ratio: 0.98
+      scale_method: GLOBAL_SCALING
+      is_truncator: false
+      use_offset: false
+    }
+    input_mean: 0
+    output_truncat {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 1
+        shifter: 0
+        post_scale: 1
+        bits: 32
+      }
+      method: SIMPLE_RN
+      allow_saturate: true
+      dr_ratio: 0
+      scale_method: GLOBAL_SCALING
+      is_truncator: true
+      use_offset: false
+    }
+  }
+}
+layer {
+  name: "relu3"
+  type: "ReLU"
+  bottom: "conv3"
+  top: "conv3"
+}
+layer {
+  name: "relu3_convert0"
+  type: "Convertor"
+  bottom: "conv3"
+  top: "conv3"
+  convert_param {
+    to: INT
+    to_coef {
+      offset: 0
+      scale: 21031
+      shifter: 22
+      post_scale: 1
+      bits: 8
+    }
+    method: SIMPLE_RN
+    allow_saturate: true
+    dr_ratio: 0.3
+    scale_method: GLOBAL_SCALING
+    is_truncator: false
+    use_offset: false
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "conv4"
+  type: "Convolution"
+  bottom: "conv3"
+  top: "conv4"
+  convolution_param {
+    num_output: 384
+    pad: 1
+    kernel_size: 3
+    group: 2
+    engine: WINOGRAD
+    bias_convert {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 109.22264210449455
+        shifter: 0
+        post_scale: 1
+        bits: 16
+      }
+      method: STD_RN
+      allow_saturate: false
+      dr_ratio: 0.4
+      scale_method: GLOBAL_SCALING
+      is_truncator: false
+      use_offset: false
+    }
+    pra_feature_truncat {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 1
+        shifter: 2
+        post_scale: 1
+        bits: 8
+      }
+      method: SIMPLE_RN
+      allow_saturate: true
+      dr_ratio: 0
+      scale_method: GLOBAL_SCALING
+      is_truncator: true
+      use_offset: false
+    }
+    pra_weight_convert {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 592.20176878991856
+        shifter: 0
+        post_scale: 1
+        bits: 8
+      }
+      method: STD_RN
+      allow_saturate: false
+      dr_ratio: 0.8
+      scale_method: GLOBAL_SCALING
+      is_truncator: false
+      use_offset: false
+    }
+    input_mean: 0
+    output_truncat {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 1
+        shifter: 0
+        post_scale: 1
+        bits: 32
+      }
+      method: SIMPLE_RN
+      allow_saturate: true
+      dr_ratio: 0
+      scale_method: GLOBAL_SCALING
+      is_truncator: true
+      use_offset: false
+    }
+  }
+}
+layer {
+  name: "relu4"
+  type: "ReLU"
+  bottom: "conv4"
+  top: "conv4"
+}
+layer {
+  name: "relu4_convert0"
+  type: "Convertor"
+  bottom: "conv4"
+  top: "conv4"
+  convert_param {
+    to: INT
+    to_coef {
+      offset: 0
+      scale: 25234
+      shifter: 21
+      post_scale: 1
+      bits: 8
+    }
+    method: SIMPLE_RN
+    allow_saturate: true
+    dr_ratio: 0.3
+    scale_method: GLOBAL_SCALING
+    is_truncator: false
+    use_offset: false
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "conv5"
+  type: "Convolution"
+  bottom: "conv4"
+  top: "conv5"
+  convolution_param {
+    num_output: 256
+    pad: 1
+    kernel_size: 3
+    group: 2
+    engine: WINOGRAD
+    bias_convert {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 156.1632829944125
+        shifter: 0
+        post_scale: 1
+        bits: 16
+      }
+      method: STD_RN
+      allow_saturate: false
+      dr_ratio: 0.4
+      scale_method: GLOBAL_SCALING
+      is_truncator: false
+      use_offset: false
+    }
+    pra_feature_truncat {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 1
+        shifter: 2
+        post_scale: 1
+        bits: 8
+      }
+      method: SIMPLE_RN
+      allow_saturate: true
+      dr_ratio: 0
+      scale_method: GLOBAL_SCALING
+      is_truncator: true
+      use_offset: false
+    }
+    pra_weight_convert {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 475.30245131451846
+        shifter: 0
+        post_scale: 1
+        bits: 8
+      }
+      method: STD_RN
+      allow_saturate: false
+      dr_ratio: 0.8
+      scale_method: GLOBAL_SCALING
+      is_truncator: false
+      use_offset: false
+    }
+    input_mean: 0
+    output_truncat {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 1
+        shifter: 0
+        post_scale: 1
+        bits: 32
+      }
+      method: SIMPLE_RN
+      allow_saturate: true
+      dr_ratio: 0
+      scale_method: GLOBAL_SCALING
+      is_truncator: true
+      use_offset: false
+    }
+  }
+}
+layer {
+  name: "relu5"
+  type: "ReLU"
+  bottom: "conv5"
+  top: "conv5"
+}
+layer {
+  name: "relu5_convert0"
+  type: "Convertor"
+  bottom: "conv5"
+  top: "conv5"
+  convert_param {
+    to: INT
+    to_coef {
+      offset: 0
+      scale: 25470
+      shifter: 21
+      post_scale: 1
+      bits: 8
+    }
+    method: SIMPLE_RN
+    allow_saturate: true
+    dr_ratio: 0.3
+    scale_method: GLOBAL_SCALING
+    is_truncator: false
+    use_offset: false
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "pool5"
+  type: "Pooling"
+  bottom: "conv5"
+  top: "pool5"
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 2
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "fc6"
+  type: "InnerProduct"
+  bottom: "pool5"
+  top: "fc6"
+  inner_product_param {
+    num_output: 4096
+    weight_convert {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 3405.3476310514243
+        shifter: 0
+        post_scale: 1
+        bits: 8
+      }
+      method: STD_RN
+      allow_saturate: false
+      dr_ratio: 0.98
+      scale_method: GLOBAL_SCALING
+      is_truncator: false
+      use_offset: false
+    }
+    bias_convert {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 6458.61533641002
+        shifter: 0
+        post_scale: 1
+        bits: 16
+      }
+      method: STD_RN
+      allow_saturate: false
+      dr_ratio: 0.4
+      scale_method: GLOBAL_SCALING
+      is_truncator: false
+      use_offset: false
+    }
+    output_truncat {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 1
+        shifter: 0
+        post_scale: 1
+        bits: 32
+      }
+      method: SIMPLE_RN
+      allow_saturate: true
+      dr_ratio: 0
+      scale_method: GLOBAL_SCALING
+      is_truncator: true
+      use_offset: false
+    }
+  }
+}
+layer {
+  name: "relu6"
+  type: "ReLU"
+  bottom: "fc6"
+  top: "fc6"
+}
+layer {
+  name: "relu6_convert0"
+  type: "Convertor"
+  bottom: "fc6"
+  top: "fc6"
+  convert_param {
+    to: INT
+    to_coef {
+      offset: 0
+      scale: 19634
+      shifter: 24
+      post_scale: 1
+      bits: 8
+    }
+    method: SIMPLE_RN
+    allow_saturate: true
+    dr_ratio: 0.3
+    scale_method: GLOBAL_SCALING
+    is_truncator: false
+    use_offset: false
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "drop6"
+  type: "Dropout"
+  bottom: "fc6"
+  top: "fc6"
+  dropout_param {
+    dropout_ratio: 0.5
+  }
+}
+layer {
+  name: "fc7"
+  type: "InnerProduct"
+  bottom: "fc6"
+  top: "fc7"
+  inner_product_param {
+    num_output: 4096
+    weight_convert {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 1709.9336532978932
+        shifter: 0
+        post_scale: 1
+        bits: 8
+      }
+      method: STD_RN
+      allow_saturate: false
+      dr_ratio: 0.98
+      scale_method: GLOBAL_SCALING
+      is_truncator: false
+      use_offset: false
+    }
+    bias_convert {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 12924.316059832998
+        shifter: 0
+        post_scale: 1
+        bits: 16
+      }
+      method: STD_RN
+      allow_saturate: false
+      dr_ratio: 0.4
+      scale_method: GLOBAL_SCALING
+      is_truncator: false
+      use_offset: false
+    }
+    output_truncat {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 1
+        shifter: 0
+        post_scale: 1
+        bits: 32
+      }
+      method: SIMPLE_RN
+      allow_saturate: true
+      dr_ratio: 0
+      scale_method: GLOBAL_SCALING
+      is_truncator: true
+      use_offset: false
+    }
+  }
+}
+layer {
+  name: "relu7"
+  type: "ReLU"
+  bottom: "fc7"
+  top: "fc7"
+}
+layer {
+  name: "relu7_convert0"
+  type: "Convertor"
+  bottom: "fc7"
+  top: "fc7"
+  convert_param {
+    to: INT
+    to_coef {
+      offset: 0
+      scale: 29133
+      shifter: 24
+      post_scale: 1
+      bits: 8
+    }
+    method: SIMPLE_RN
+    allow_saturate: true
+    dr_ratio: 0.3
+    scale_method: GLOBAL_SCALING
+    is_truncator: false
+    use_offset: false
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "drop7"
+  type: "Dropout"
+  bottom: "fc7"
+  top: "fc7"
+  dropout_param {
+    dropout_ratio: 0.5
+  }
+}
+layer {
+  name: "fc_rcnn"
+  type: "InnerProduct"
+  bottom: "fc7"
+  top: "fc_rcnn"
+  inner_product_param {
+    num_output: 200
+    weight_convert {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 1359.0427869637344
+        shifter: 0
+        post_scale: 1
+        bits: 8
+      }
+      method: STD_RN
+      allow_saturate: false
+      dr_ratio: 0.98
+      scale_method: GLOBAL_SCALING
+      is_truncator: false
+      use_offset: false
+    }
+    bias_convert {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 15250.216779468863
+        shifter: 0
+        post_scale: 2
+        bits: 16
+      }
+      method: STD_RN
+      allow_saturate: false
+      dr_ratio: 0.4
+      scale_method: GLOBAL_SCALING
+      is_truncator: false
+      use_offset: false
+    }
+    output_truncat {
+      to: INT
+      to_coef {
+        offset: 0
+        scale: 1
+        shifter: 0
+        post_scale: 1
+        bits: 32
+      }
+      method: SIMPLE_RN
+      allow_saturate: true
+      dr_ratio: 0
+      scale_method: GLOBAL_SCALING
+      is_truncator: true
+      use_offset: false
+    }
+  }
+}
+layer {
+  name: "fc_rcnn_convert0"
+  type: "Convertor"
+  bottom: "fc_rcnn"
+  top: "fc_rcnn"
+  convert_param {
+    to: INT
+    to_coef {
+      offset: 0
+      scale: 30423
+      shifter: 25
+      post_scale: 1
+      bits: 8
+    }
+    method: SIMPLE_RN
+    allow_saturate: true
+    dr_ratio: 0.3
+    scale_method: GLOBAL_SCALING
+    is_truncator: false
+    use_offset: false
+  }
+  enable_dump_top: false
+}
+layer {
+  name: "accuracy_1_convert_in0"
+  type: "Convertor"
+  bottom: "fc_rcnn"
+  top: "fc_rcnn"
+  convert_param {
+    to: DBL
+    to_coef {
+      offset: -0
+      scale: 0.0361611173480672
+      shifter: 0
+      post_scale: 1
+      bits: 64
+    }
+    method: STD_RN
+    allow_saturate: false
+    dr_ratio: 0.1
+    scale_method: GLOBAL_SCALING
+    is_truncator: false
+    use_offset: false
+  }
+  enable_dump_top: true
+}
+
+layer {
+  name: "silence"
+  type: "Silence"
+  bottom: "fc_rcnn"
+}

@@ -1,0 +1,265 @@
+name: "AlexNet"
+debug_info: true
+
+layer {
+  name: "data"
+  type: "Data"
+  top: "data"
+  top: "label"
+  include {
+    phase: TRAIN
+  }
+  transform_param {
+    mirror: true
+    crop_size: 227
+    mean_file: "/home/scratch.yilinz_t19x_2/t19x/caffe-master-amodel/data/ilsvrc12/imagenet_mean.binaryproto"
+  }
+  data_param {
+    source: "/home/scratch.yilinz_t19x_2/t19x/caffe-master-amodel/examples/imagenet/ilsvrc12_train_lmdb"
+    batch_size: 256
+    backend: LMDB
+  }
+}
+layer {
+  name: "data"
+  type: "Data"
+  top: "data"
+  top: "label"
+  include {
+    phase: TEST
+  }
+  transform_param {
+    mirror: false
+    crop_size: 227
+    mean_file: "/home/scratch.yilinz_t19x_2/t19x/caffe-master-amodel/data/ilsvrc12/imagenet_mean.binaryproto"
+  }
+  data_param {
+    source: "/home/scratch.yilinz_t19x_2/t19x/caffe-master-amodel/../val_db0"
+    batch_size: 50
+    backend: LMDB
+  }
+}
+
+# Golden Convolution
+layer {
+  name: "conv1"
+  type: "Convolution"
+  bottom: "data"
+  top: "conv1"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 96
+    kernel_size: 11
+    stride: 4
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+
+    dump_data_type: 6
+    debug_dump {
+        filename: "./testcase/conv/conv1.dat"
+    }
+  }
+}
+
+# Winograd version
+layer {
+  name: "conv1_wg"
+  type: "Convolution"
+  bottom: "data"
+  top: "conv1_wg"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 96
+    kernel_size: 11
+    stride: 4
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+    engine: WINOGRAD
+    accmu_bits: 48
+    output_truncat {
+      to: DBL
+      to_coef {
+        scale: 1
+        shifter: 0
+        post_scale: 1
+        bits: 64
+        offset: 0
+      }
+      allow_saturate: false
+      method: SIMPLE_RN
+      dr_ratio: 0
+    }
+    bias_convert {
+      to: DBL
+      to_coef {
+        scale: 1
+        shifter: 0
+        post_scale: 1
+        bits: 64
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+    }
+    pra_feature_truncat {
+      to: DBL
+      to_coef {
+        scale: 1
+        shifter: 0
+        post_scale: 1
+        bits: 64
+        offset: 0
+      }
+      allow_saturate: false
+      method: SIMPLE_RN
+      dr_ratio: 0
+    }
+    pra_weight_convert {
+      to: DBL
+      to_coef {
+        scale: 1
+        shifter: 0
+        post_scale: 1
+        bits: 64
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+    }
+    load_data_type: 6
+    debug_loader {
+        filename: "./testcase/conv/conv1.dat"
+        format: Format_FP32
+    }
+    testmode: true
+  }
+}
+layer {
+  name: "comp_wg"
+  type: "Comparison"
+  bottom: "conv1"
+  bottom: "conv1_wg"
+  comp_param {
+    method: ABS 
+  }
+}
+
+# SplitC
+layer {
+  name: "conv1_splitc"
+  type: "Convolution"
+  bottom: "data"
+  top: "conv1_splitc"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 96
+    kernel_size: 11
+    stride: 4
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+    engine: SPLITC
+    accmu_bits: 48
+    output_truncat {
+      to: DBL
+      to_coef {
+        scale: 1
+        shifter: 0
+        post_scale: 1
+        bits: 64
+        offset: 0
+      }
+      allow_saturate: false
+      method: SIMPLE_RN
+      dr_ratio: 0
+    }
+    bias_convert {
+      to: DBL
+      to_coef {
+        scale: 1
+        shifter: 0
+        post_scale: 1
+        bits: 64
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.4
+    }
+    weight_convert {
+      to: DBL
+      to_coef {
+        scale: 1
+        shifter: 0
+        post_scale: 1
+        bits: 64
+        offset: 0
+      }
+      allow_saturate: false
+      method: STD_RN
+      dr_ratio: 0.98
+    }
+    load_data_type: 6
+    debug_loader {
+        filename: "./testcase/conv/conv1.dat"
+        format: Format_FP32
+    }
+    testmode: true
+  }
+}
+layer {
+  name: "comp_splitc"
+  type: "Comparison"
+  bottom: "conv1"
+  bottom: "conv1_splitc"
+  comp_param {
+    method: ABS 
+    thresh: 0.0001
+  }
+}
+
+layer {
+    name: "Silience"
+    type: "Silence"
+    bottom: "label"
+}

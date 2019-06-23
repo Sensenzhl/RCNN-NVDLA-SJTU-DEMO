@@ -1,0 +1,120 @@
+name: "ResNet-152"
+debug_info: true
+
+layer {
+  name: "data"
+  type: "Data"
+  top: "data"
+  top: "label"
+  include {
+    phase: TRAIN
+  }
+  transform_param {
+    mirror: true
+    crop_size: 224
+    mean_file: "/home/scratch.yilinz_t19x_2/t19x/caffe-master-amodel/data/ilsvrc12/imagenet_mean.binaryproto"
+  }
+  data_param {
+    source: "/home/scratch.yilinz_t19x_2/t19x/caffe-master-amodel/examples/imagenet/ilsvrc12_train_lmdb"
+    batch_size: 50
+    backend: LMDB
+  }
+}
+layer {
+  name: "data"
+  type: "Data"
+  top: "data"
+  top: "label"
+  include {
+    phase: TEST
+  }
+  transform_param {
+    mirror: false
+    crop_size: 224
+    mean_file: "/home/scratch.yilinz_t19x_2/t19x/caffe-master-amodel/data/ilsvrc12/imagenet_mean.binaryproto"
+  }
+  data_param {
+    source: "/home/scratch.yilinz_t19x_2/t19x/caffe-master-amodel/../val_db0"
+    batch_size: 50
+    backend: LMDB
+  }
+}
+
+
+layer {
+	bottom: "data"
+	top: "conv1"
+	name: "conv1"
+	type: "Convolution"
+	convolution_param {
+		num_output: 64
+		kernel_size: 7
+		pad: 3
+		stride: 2
+		bias_term: false
+	}
+}
+
+layer {
+	bottom: "conv1"
+	top: "bn_conv1"
+	name: "bn_conv1"
+	type: "BatchNorm"
+	batch_norm_param {
+		use_global_stats: true
+
+        dump_param {
+            filename: "./testcase/sdp/batch_norm.dat"
+            method: DumpMethod_PROTO_BIN
+        }
+	}
+}
+
+# SDP_X
+layer {
+	bottom: "conv1"
+	top: "conv1_sdpx"
+	name: "bn_sdpx_conv1"
+	type: "SDPX"
+    sdp_x_param {
+      alu_op:     SUM
+      alu_type:   PER_CHANNEL
+      alu_loader {
+          filename: "./testcase/sdp/batch_norm_mean.bin"
+          format: Format_FP32
+      }
+      alu_cvt {
+          to: DBL
+          to_coef {
+              scale: -1
+              shifter: 0
+              post_scale: 1
+              bits: 0
+              offset: 0
+          }
+      }
+
+      mul_type: PER_CHANNEL
+      mul_loader {
+          filename: "./testcase/sdp/batch_norm_variance.bin"
+          format: Format_FP32
+      }
+    }
+}
+
+layer {
+  name: "comp_sdpx"
+  type: "Comparison"
+  bottom: "bn_conv1"
+  bottom: "conv1_sdpx"
+  comp_param {
+    method: ABS 
+    thresh: 0.0001
+  }
+}
+
+layer {
+    name: "Silience"
+    type: "Silence"
+    bottom: "label"
+}

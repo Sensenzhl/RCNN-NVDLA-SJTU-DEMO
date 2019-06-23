@@ -1,0 +1,303 @@
+name: "R-CNN-ilsvrc13"
+state {
+  phase: TEST
+}
+debug_info: true
+layer {
+  name: "data"
+  type: "Data"
+  top: "data"
+  top: "label"
+  include {
+    phase: TEST
+  }
+  transform_param {
+    mirror: false
+    crop_size: 227
+    mean_file: "/home/scratch.yilinz_t19x/git/dla_amod/data/ilsvrc12/imagenet_mean.binaryproto"
+  }
+  data_param {
+    source: "/home/scratch.yilinz_t19x/git/db/val_db0"
+    batch_size: 50
+    backend: LMDB
+  }
+}
+layer {
+  name: "conv1"
+  type: "Convolution"
+  bottom: "data"
+  top: "conv1"
+  convolution_param {
+    num_output: 96
+    bias_term: false
+    kernel_size: 11
+    stride: 4
+  }
+}
+layer {
+  name: "sdp_conv1"
+  type: "SDPX"
+  bottom: "conv1"
+  top: "conv1"
+  sdp_x_param {
+    alu_op: SUM
+    alu_type: PER_CHANNEL
+    relu: true
+  }
+}
+layer {
+  name: "pool1"
+  type: "Pooling"
+  bottom: "conv1"
+  top: "pool1"
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 2
+  }
+}
+layer {
+  name: "norm1"
+  type: "LRN"
+  bottom: "pool1"
+  top: "norm1"
+  lrn_param {
+    local_size: 5
+    alpha: 0.0001
+    beta: 0.75
+  }
+}
+layer {
+  name: "conv2"
+  type: "Convolution"
+  bottom: "norm1"
+  top: "conv2"
+  convolution_param {
+    num_output: 256
+    bias_term: false
+    pad: 2
+    kernel_size: 5
+    group: 2
+  }
+}
+layer {
+  name: "sdp_conv2"
+  type: "SDPX"
+  bottom: "conv2"
+  top: "conv2"
+  sdp_x_param {
+    alu_op: SUM
+    alu_type: PER_CHANNEL
+    relu: true
+  }
+}
+layer {
+  name: "pool2"
+  type: "Pooling"
+  bottom: "conv2"
+  top: "pool2"
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 2
+  }
+}
+layer {
+  name: "norm2"
+  type: "LRN"
+  bottom: "pool2"
+  top: "norm2"
+  lrn_param {
+    local_size: 5
+    alpha: 0.0001
+    beta: 0.75
+  }
+}
+layer {
+  name: "conv3"
+  type: "Convolution"
+  bottom: "norm2"
+  top: "conv3"
+  convolution_param {
+    num_output: 384
+    bias_term: false
+    pad: 1
+    kernel_size: 3
+  }
+}
+layer {
+  name: "sdp_conv3"
+  type: "SDPX"
+  bottom: "conv3"
+  top: "conv3"
+  sdp_x_param {
+    alu_op: SUM
+    alu_type: PER_CHANNEL
+    relu: true
+  }
+}
+layer {
+  name: "conv4"
+  type: "Convolution"
+  bottom: "conv3"
+  top: "conv4"
+  convolution_param {
+    num_output: 384
+    bias_term: false
+    pad: 1
+    kernel_size: 3
+    group: 2
+  }
+}
+layer {
+  name: "sdp_conv4"
+  type: "SDPX"
+  bottom: "conv4"
+  top: "conv4"
+  sdp_x_param {
+    alu_op: SUM
+    alu_type: PER_CHANNEL
+    relu: true
+  }
+}
+layer {
+  name: "conv5"
+  type: "Convolution"
+  bottom: "conv4"
+  top: "conv5"
+  convolution_param {
+    num_output: 256
+    bias_term: false
+    pad: 1
+    kernel_size: 3
+    group: 2
+  }
+}
+layer {
+  name: "sdp_conv5"
+  type: "SDPX"
+  bottom: "conv5"
+  top: "conv5"
+  sdp_x_param {
+    alu_op: SUM
+    alu_type: PER_CHANNEL
+    relu: true
+  }
+}
+layer {
+  name: "pool5"
+  type: "Pooling"
+  bottom: "conv5"
+  top: "pool5"
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 2
+  }
+}
+layer {
+  name: "fc6"
+  type: "InnerProduct"
+  bottom: "pool5"
+  top: "fc6"
+  inner_product_param {
+    num_output: 4096
+    bias_term: false
+  }
+}
+layer {
+  name: "sdp_fc6"
+  type: "SDPX"
+  bottom: "fc6"
+  top: "fc6"
+  sdp_x_param {
+    alu_op: SUM
+    alu_type: PER_CHANNEL
+    relu: true
+  }
+}
+layer {
+  name: "drop6"
+  type: "Dropout"
+  bottom: "fc6"
+  top: "fc6"
+  dropout_param {
+    dropout_ratio: 0.5
+  }
+}
+layer {
+  name: "fc7"
+  type: "InnerProduct"
+  bottom: "fc6"
+  top: "fc7"
+  inner_product_param {
+    num_output: 4096
+    bias_term: false
+  }
+}
+layer {
+  name: "sdp_fc7"
+  type: "SDPX"
+  bottom: "fc7"
+  top: "fc7"
+  sdp_x_param {
+    alu_op: SUM
+    alu_type: PER_CHANNEL
+    relu: true
+  }
+}
+layer {
+  name: "drop7"
+  type: "Dropout"
+  bottom: "fc7"
+  top: "fc7"
+  dropout_param {
+    dropout_ratio: 0.5
+  }
+}
+layer {
+  name: "fc-rcnn"
+  type: "InnerProduct"
+  bottom: "fc7"
+  top: "fc-rcnn"
+  inner_product_param {
+    num_output: 200
+    bias_term: false
+  }
+}
+layer {
+  name: "sdp_fc-rcnn"
+  type: "SDPX"
+  bottom: "fc-rcnn"
+  top: "fc-rcnn"
+  sdp_x_param {
+    alu_op: SUM
+    alu_type: PER_CHANNEL
+  }
+}
+layer {
+  name: "accuracy_1"
+  type: "Accuracy"
+  bottom: "fc-rcnn"
+  bottom: "label"
+  top: "accuracy_1"
+  include {
+    phase: TEST
+  }
+  accuracy_param {
+    top_k: 1
+  }
+}
+layer {
+  name: "accuracy_5"
+  type: "Accuracy"
+  bottom: "fc-rcnn"
+  bottom: "label"
+  top: "accuracy_5"
+  include {
+    phase: TEST
+  }
+  accuracy_param {
+    top_k: 5
+  }
+}

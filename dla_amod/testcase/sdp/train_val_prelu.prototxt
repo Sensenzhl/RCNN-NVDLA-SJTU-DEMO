@@ -1,0 +1,61 @@
+name: "ResNet-152"
+debug_info: true
+
+
+layer {
+	top: "data"
+	name: "data"
+	type: "Loader"
+    loader_param {
+        filename: "./testcase/sdp/eltwise.dat"
+        method: LoadMethod_PROTO_BIN
+        format: Format_FP32
+    }
+}
+
+layer {
+	bottom: "data"
+	top: "prelu_ref"
+	name: "prelu"
+	type: "PReLU"
+    prelu_param {
+        filler {
+            type: "gaussian"
+            mean: 0
+            std: 0.56
+        }
+
+        dump_param {
+            filename: "./testcase/sdp/prelu.dat"
+            method: DumpMethod_PROTO_BIN
+        }
+    }
+}
+
+
+# SDP_X
+layer {
+	bottom: "data"
+	top: "prelu_sdpx"
+	name: "prelu_sdpx"
+	type: "SDPX"
+    sdp_x_param {
+      mul_op: PRELU
+      mul_type:   PER_CHANNEL
+      mul_loader {
+          filename: "./testcase/sdp/prelu.dat"
+          format: Format_FP32
+      }
+    }
+}
+
+layer {
+  name: "comp_sdpx"
+  type: "Comparison"
+  bottom: "prelu_ref"
+  bottom: "prelu_sdpx"
+  comp_param {
+    method: ABS 
+    thresh: 0.0001
+  }
+}
